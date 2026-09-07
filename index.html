@@ -125,7 +125,7 @@
       text-align: left;
       cursor: pointer;
       user-select: none;
-      margin-right: 8px; /* เว้นระยะห่าง ป้องกันการทับตัวหนังสือเด็ดขาด */
+      margin-right: 8px; /* เว้นระยะห่าง ไม่ทับตัวหนังสือเด็ดขาด */
       color: #1e293b;
     }
 
@@ -133,7 +133,7 @@
       color: #0284c7;
     }
 
-    /* การตั้งค่าเวลาสั่งพิมพ์กระดาษ A4 - ไม่มีเส้นประตามไปเวลาพิมพ์ 100% */
+    /* ปรับแต่งเวลาสั่งพิมพ์กระดาษ A4 - ไม่มีเส้นประตามไปเวลาพิมพ์ 100% */
     @page {
       size: A4 portrait;
       margin: 15mm 15mm 15mm 25mm;
@@ -182,7 +182,7 @@
         -webkit-appearance: none !important;
       }
 
-      /* เส้นสำหรับเซ็นชื่อด้วยปากกาจริง (คงไว้เฉพาะกรณีที่ไม่มีรูปภาพลายเซ็น) */
+      /* เส้นสำหรับเซ็นชื่อด้วยปากกาจริง */
       .sign-pen-line {
         border-bottom: 1.2px dotted #000000 !important;
       }
@@ -202,7 +202,7 @@
   <header id="app-navbar" class="no-print bg-slate-900/95 text-white backdrop-blur border-b border-slate-700 sticky top-0 z-40 shadow-xl px-4 py-2.5">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       
-      <!-- โลโก้และชื่อระบบ -->
+      <!-- โลโก้และระบบผู้ใช้ -->
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center text-white shadow">
           <i class="fa-solid fa-file-signature text-base"></i>
@@ -215,13 +215,23 @@
         </div>
       </div>
 
+      <!-- แถบเลือกลงชื่อผู้ขอจากฐานข้อมูลโรงเรียน -->
+      <div class="flex items-center gap-2 bg-slate-800/80 px-2.5 py-1 rounded-xl border border-slate-700 text-xs">
+        <span class="text-slate-400 flex items-center gap-1">
+          <i class="fa-solid fa-user-check text-sky-400"></i> ผู้ขอ:
+        </span>
+        <select id="sel-teacher-db" onchange="onTeacherSelected(this.value)" class="bg-transparent text-sky-200 font-medium focus:outline-none cursor-pointer">
+          <!-- Populated from teacherDatabase via JS -->
+        </select>
+      </div>
+
       <!-- ปุ่มฟังก์ชันตัวช่วย & การกระทำ -->
       <div class="flex items-center gap-2 flex-wrap text-xs">
         
         <!-- ปุ่มรีเซ็ตฟอร์มว่างเปล่า -->
-        <button onclick="clearForm()" title="ล้างข้อมูลเป็นแบบฟอร์มว่างเปล่าพร้อมกรอก" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 transition flex items-center gap-1.5 border border-slate-700">
+        <button onclick="clearForm()" title="ล้างข้อมูลเขียนใหม่" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 transition flex items-center gap-1.5 border border-slate-700">
           <i class="fa-solid fa-rotate-left text-rose-400"></i>
-          <span>ล้างข้อมูล (เขียนใหม่)</span>
+          <span>ล้างฟอร์ม</span>
         </button>
 
         <!-- โหลดตัวอย่าง -->
@@ -240,7 +250,7 @@
         <!-- ปุ่มพิมพ์และส่งออก -->
         <button onclick="printDocument()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition flex items-center gap-1.5 shadow">
           <i class="fa-solid fa-print"></i>
-          <span>พิมพ์ A4 (ไม่มีเส้นประ)</span>
+          <span>พิมพ์ A4</span>
         </button>
 
         <button onclick="exportToPDF()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold transition flex items-center gap-1.5 shadow">
@@ -253,35 +263,32 @@
           <span>รูปภาพ</span>
         </button>
 
-        <button onclick="saveCurrentDoc()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700" title="บันทึกคำขอลงเครื่อง">
-          <i class="fa-solid fa-floppy-disk"></i>
-        </button>
-
       </div>
 
     </div>
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. MAIN DOCUMENT VIEW (แบบฟอร์มสะอาดตา พร้อมเลือกวันที่)  -->
+  <!-- 2. MAIN DOCUMENT VIEW (ตรงตามระเบียบงานสารบรรณ 100%)       -->
   <!-- ======================================================== -->
   <main class="flex-grow flex justify-center py-4 px-2 overflow-x-auto">
     
     <!-- แผ่นกระดาษ A4 เสมือนจริง ตรงตามมาตรฐานราชการ 100% -->
     <div id="official-doc-paper" class="paper-a4">
       
-      <!-- ส่วนหัว: ตราครุฑ 3 ซม. ด้านซ้ายบน และ ข้อความ "บันทึกข้อความ" กึ่งกลาง -->
-      <div class="relative mb-2">
-        <div class="absolute left-0 top-0 w-[2.8cm] flex items-center justify-start">
-          <!-- ตราครุฑแท้ ไดคัทสมบูรณ์ 100% ไร้ตัวหนังสือใต้ภาพ -->
+      <!-- ส่วนหัว: ตราครุฑ 3 ซม. ด้านซ้ายบน และ ข้อความ "บันทึกข้อความ" กึ่งกลาง ตามระเบียบสำนักนายกฯ -->
+      <!-- กำหนด min-h-[2.8cm] ชัดเจน เพื่อไม่ให้ตราครุฑทับคำว่า ส่วนราชการ เด็ดขาด -->
+      <div class="relative min-h-[2.8cm] flex items-center justify-center mb-2">
+        <div class="absolute left-0 top-0 h-[2.8cm] flex items-start justify-start">
+          <!-- ตราครุฑแท้ ไดคัทสมบูรณ์ 100% ไร้รอยเปื้อน ไม่ทับตัวหนังสือ -->
           <img id="doc-garuda-img" 
                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAABHCAYAAADIvVOXAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAABL0SURBVHhe7d1ld+TIDgbgWWZmnGVmZmZmZmZm3p1lZmZmZmbmP1T3PLVHOU5VMulOsnN33P1Bp9sVu9y2pFevVLIzIaU0oS/tl2qgL+2UaqAv7ZRqoC/tlGqgL+2UaqAp1113Xfrhhx9SOd4m+fzzz9OVV17Z6msk1UDI008/nY499tjW3wBy5plnpuuvv77V11oNkM8++yxf9Lnnntvqiw/Zaqut8nW+/vrrrb3eaoDce++9+YIvuOCC1l54Uw4//PD0zDPPpBtuuKG111sNkH333Tddeuml6bXXXmvthTfl0UcfTaeddlq65JJLWnu91cAXX3yR9t9///T333/ni37vvfem6MXfcsstU/R8rtfnL7/8krbddtspeu4pKdXAq6++mh5++OGBC77ssstGvPhPP/00nXHGGenkk09OX3311Yj7DyfvvPNOEjZeeOGFUc+BX5x99tn5t7z77rsjzvPiiy8O7OMaHnvssRGPmRqlGkBIKDu2n3322fThhx8OuvjnnntuYPuuu+5Kp5xySrrvvvvSG2+8kc4555z0/fffj+pmBcvfe++9R3U89KHkBx98MN15553poIMOyiEo/l6Sra+//jq99NJLeYyxfvLJJ+mOO+4Y1bn/61INhFL32Wef9Pvvv+fvZZ4pv6bUm2++OV1++eX5b2+99VZy48r5upHwQHOXf+tW4jooGql85ZVXkjSquc/999+ft9UKTjzxxPzdtZVztUGqgbvvvjvHZxD4448/JrHrzTffTBdddNGgG/Dbb7+lG2+8MY899dRTY745Rx55ZPao7777LjGa008/fcxzfvnll9n4TjrppPTzzz8Pmm/XXXfN1/XXX38NKNv19oyiL7744nT77benX3/9dUCRIJA3/PTTT3n7/fffH3Qzyu1uBWwuuOCC6dRTT0377bdfDgWLLrpo+vPPP8c0bzPEkI8//jhvMyYx/LzzzsvbgVjic1tTrEEbrJ5H33bbbQMXS+lXX311jtsHHHBAUjI8/vjjx/VmHHrooenAAw9Mhx12WOJpBx98cDrqqKNSJ0SwGzn66KNzSdf5vv3220z6go8wbPF5vM/5X5FBGywenPmuKhYxd/3110+IjNQHTEdcJrH/aIRnTZo0KXuWlO6EE07IvGCnnXbKij7//PPTk08+OWpyR5qQvfHGG6eHHnoolzvxgEMOOST/TYoVoamtZd9BG+IxRYrRiNEHH3yQL9r2dtttlzDwDTbYIC2xxBIJXDOENddcs+sb4wa7sSB70003TRMnTkxzzjlnUqhhYOL1bLPNlhZYYIHMnFWtkKqA2m4EQlC26zHf5ptvngtBjDf2Yazis++8vZyjDVINSE3iOxgPhfI8LFW5kMeBbzfRzX/kkUe6ujlY8O67754LFOZbe+210zzzzJN43F577ZU23HDDtNBCC6X11lsvw/hmm22W1llnnXTNNdd0dR5Gc+utt6ZtttkmI4TfzGB5tXPZx/VJsf7444+EYJYZRlukGuDFzdzziSeeyPCJpPCMjz76KDPT3XbbLce62WefPXtkOc9wYn6MWrynRDkzDz/mmGOSxQV5MAUrSZofpFOQGN6Nt0EhKAEZjjjiiLTzzjtn9i3XptQddtghk07lzzhGqBiP1O6/KNUAef755xP27XswbTeeJ0hH3HAwC+aRl3vuuSdde+21Hd0gJAg6rL766mmppZbKnoUk+RvvomzEyDbYFiqmm266tOyyy6YHHnig41zd78esoQdkEg4YDGMF3Qoq9osYftZZZ6WXX365o7mnRqkGSKxeUYj4GOM8QgoC3t08KRFl8RZpUShsJOHRYHWllVbKCuDVUrlYRDE/RW2//fbZ0xdbbLGstCbSTE5U53bcccc8/8wzz5zWWGONPPfjjz+efz+jZHD2FbtD6c2w1TapBoib6jNKhG4MZupTegK+KYYhlCXDMJLJiVjops4///zpqquuSosvvniG0qhcMaitt946Lb/88vkcK6+8cmbKyGA5VynhtbFtfsqVKfjdijIMQeWMYTahulNDmhqlGiAgbK211sqplhtjzKdCRqQkYBRkg/DyeKXRcqyUWWedNadPQcRAORK2ySabZMWD6mWWWSaPmW/FFVec7JxisvhejkME/CKQieLxAx00tt9+++3MQVZdddWBkm8bpRoIwYqlPyDUDYiqEvIihlOyGKroMFQnijImbyzHQ+aYY468SiaGusnTTjttVjgvR/AYAsLHQ7H9FVZYYdi5hsuzjzvuuFwQUbe/6aabMjo119hdE0LmO2JY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" 
                alt="ตราครุฑ" 
-               class="h-[2.5cm] w-auto object-contain"
+               class="h-[2.6cm] w-auto object-contain"
                title="ตราครุฑราชการ โรงเรียนวัดบางปูน">
         </div>
 
-        <div class="text-center pt-2 pb-2">
+        <div class="text-center pt-3 pb-1">
           <h1 class="text-[28px] font-bold tracking-normal inline-block">บันทึกข้อความ</h1>
         </div>
       </div>
@@ -296,7 +303,7 @@
           <span class="dotted-line ml-1"></span>
         </div>
 
-        <!-- ที่ และ วันที่ (พร้อมปุ่มเลือกวันที่แบบไทย) -->
+        <!-- ที่ และ วันที่ (ขึ้นวันที่อัตโนมัติ พร้อมปุ่มเลือกวันที่แบบไทย) -->
         <div class="flex items-baseline justify-between gap-4 mt-1">
           <div class="flex items-baseline w-[48%]">
             <span class="font-bold shrink-0">ที่</span>
@@ -325,10 +332,10 @@
         </div>
       </div>
 
-      <!-- เนื้อหาบันทึกข้อความ: เรียงตามบรรทัดเป๊ะตามรูปภาพ ไม่ล้นขอบ -->
+      <!-- เนื้อหาบันทึกข้อความ: รองรับทั้งพิมพ์สั้น/ยาว ยืดหยุ่น และรองรับทั้ง 1 วัน และ หลายวัน -->
       <div class="mt-3 text-[16px] space-y-1.5 text-justify leading-[1.35]">
         
-        <!-- บรรทัด 1: ด้วยข้าพเจ้า ... ตำแหน่ง ... โรงเรียนวัดบางปูน -->
+        <!-- บรรทัด 1: ด้วยข้าพเจ้า ... ตำแหน่ง ... โรงเรียนวัดบางปูน (ดึงชื่อ-ตำแหน่งอัตโนมัติจากฐานข้อมูล) -->
         <div class="flex items-baseline">
           <span class="w-[2.2cm] shrink-0"></span><!-- ร่นย่อหน้า 2.2 ซม. -->
           <span class="shrink-0 mr-1.5">ด้วยข้าพเจ้า</span>
@@ -345,9 +352,9 @@
           <span class="shrink-0">เรื่อง</span>
         </div>
 
-        <!-- บรรทัด 3: เรื่อง/วัตถุประสงค์ (เต็มบรรทัด) -->
+        <!-- บรรทัด 3: เรื่อง/วัตถุประสงค์ (Auto-expanding: พิมพ์สั้น 1 บรรทัด พิมพ์ยาวขยายลงอัตโนมัติ) -->
         <div class="flex items-baseline">
-          <input type="text" id="in-purpose" placeholder="ระบุเรื่อง / วัตถุประสงค์การไปราชการ" class="dotted-input w-full">
+          <textarea id="in-purpose" rows="1" placeholder="ระบุเรื่อง / วัตถุประสงค์การไปราชการ" class="dotted-input w-full resize-none overflow-hidden" oninput="autoGrowTextarea(this)"></textarea>
         </div>
 
         <!-- บรรทัด 4: ณ ... ตามหนังสือ -->
@@ -357,32 +364,79 @@
           <span class="shrink-0">ตามหนังสือ</span>
         </div>
 
-        <!-- บรรทัด 5: ตามหนังสือ ... ในวัน ... ที่ ... เดือน ... (พร้อมปุ่มเลือกวันที่เดินทาง) -->
-        <div class="flex items-baseline">
-          <input type="text" id="in-refdoc" placeholder="หนังสือเชิญ / หนังสืออ้างถึง (ถ้ามี)" class="dotted-input flex-grow mr-2">
-          <span class="shrink-0 mr-1">ในวัน</span>
-          <input type="text" id="in-dayname" placeholder="เช่น อังคาร" class="dotted-input w-16 text-center mr-1.5">
-          <span class="shrink-0 mr-1">ที่</span>
-          <input type="text" id="in-daynum" placeholder="เช่น ๒๑" class="dotted-input w-12 text-center mr-1.5">
-          <span class="shrink-0 mr-1">เดือน</span>
-          <input type="text" id="in-month" placeholder="เช่น กรกฎาคม" class="dotted-input w-28 text-center mr-1.5">
-          
-          <!-- ปุ่มช่วยเลือกวันเดินทางจากปฏิทินไทย -->
-          <button type="button" onclick="openTravelDatePicker()" class="no-print text-sky-600 hover:text-sky-700 text-xs px-1.5 py-0.5 rounded border border-sky-300 bg-sky-50 hover:bg-sky-100 transition flex items-center gap-1 shrink-0" title="เลือกวันที่เดินทางจากปฏิทิน">
-            <i class="fa-regular fa-calendar-check text-sky-600"></i>
-            <span class="text-[11px] font-medium">เลือกวัน</span>
-          </button>
-          <input type="date" id="picker-travel-date" class="sr-only absolute" onchange="applyTravelDate(this.value)">
+        <!-- ตัวเลือกรูปแบบวันเดินทาง: วันเดียว หรือ หลายวัน -->
+        <div class="no-print flex items-center justify-end gap-3 text-xs text-slate-500 py-0.5">
+          <span class="font-medium text-slate-600">ระยะเวลาไปราชการ:</span>
+          <label class="inline-flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="travel-duration-mode" value="single" checked onchange="setTravelDurationMode('single')">
+            <span>วันเดียว (ไป-กลับ)</span>
+          </label>
+          <label class="inline-flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="travel-duration-mode" value="multiple" onchange="setTravelDurationMode('multiple')">
+            <span>หลายวัน (ต่อเนื่อง)</span>
+          </label>
         </div>
 
-        <!-- บรรทัด 6: พ.ศ. ... ตั้งแต่เวลา ... ถึง ... -->
-        <div class="flex items-baseline">
-          <span class="shrink-0 mr-1">พ.ศ.</span>
-          <input type="text" id="in-year" placeholder="เช่น ๒๕๖๙" class="dotted-input w-20 text-center mr-3">
-          <span class="shrink-0 mr-2">ตั้งแต่เวลา</span>
-          <input type="text" id="in-timestart" placeholder="๐๘.๐๐" class="dotted-input w-20 text-center mr-1">
-          <span class="shrink-0 mx-1">–</span>
-          <input type="text" id="in-timeend" placeholder="๑๖.๓๐ น." class="dotted-input w-24 text-center">
+        <!-- แบบที่ 1: ไปราชการวันเดียว (Single Day Mode) -->
+        <div id="row-travel-single" class="space-y-1.5">
+          <div class="flex items-baseline">
+            <input type="text" id="in-refdoc" placeholder="หนังสือเชิญ / หนังสืออ้างถึง (ถ้ามี)" class="dotted-input flex-grow mr-2">
+            <span class="shrink-0 mr-1">ในวัน</span>
+            <input type="text" id="in-dayname" placeholder="เช่น อังคาร" class="dotted-input w-16 text-center mr-1.5">
+            <span class="shrink-0 mr-1">ที่</span>
+            <input type="text" id="in-daynum" placeholder="เช่น ๒๑" class="dotted-input w-12 text-center mr-1.5">
+            <span class="shrink-0 mr-1">เดือน</span>
+            <input type="text" id="in-month" placeholder="เช่น กรกฎาคม" class="dotted-input w-28 text-center mr-1.5">
+            
+            <!-- ปุ่มเลือกวันเดินทาง 1 วัน -->
+            <button type="button" onclick="openSingleDatePicker()" class="no-print text-sky-600 hover:text-sky-700 text-xs px-1.5 py-0.5 rounded border border-sky-300 bg-sky-50 hover:bg-sky-100 transition flex items-center gap-1 shrink-0" title="เลือกวันที่เดินทางจากปฏิทิน">
+              <i class="fa-regular fa-calendar-check text-sky-600"></i>
+              <span class="text-[11px] font-medium">เลือกวัน</span>
+            </button>
+            <input type="date" id="picker-single-date" class="sr-only absolute" onchange="applySingleTravelDate(this.value)">
+          </div>
+
+          <div class="flex items-baseline">
+            <span class="shrink-0 mr-1">พ.ศ.</span>
+            <input type="text" id="in-year" placeholder="เช่น ๒๕๖๙" class="dotted-input w-20 text-center mr-3">
+            <span class="shrink-0 mr-2">ตั้งแต่เวลา</span>
+            <input type="text" id="in-timestart" placeholder="๐๘.๐๐" class="dotted-input w-20 text-center mr-1">
+            <span class="shrink-0 mx-1">–</span>
+            <input type="text" id="in-timeend" placeholder="๑๖.๓๐ น." class="dotted-input w-24 text-center">
+          </div>
+        </div>
+
+        <!-- แบบที่ 2: ไปราชการหลายวัน (Multiple Days Mode) -->
+        <div id="row-travel-multiple" class="hidden space-y-1.5">
+          <div class="flex items-baseline">
+            <input type="text" id="in-refdoc-multi" placeholder="หนังสือเชิญ / หนังสืออ้างถึง (ถ้ามี)" class="dotted-input flex-grow mr-2">
+            <span class="shrink-0 mr-1">ตั้งแต่วันที่</span>
+            <input type="text" id="in-m-start-day" placeholder="เช่น ๒๑" class="dotted-input w-12 text-center mr-1">
+            <span class="shrink-0 mr-1">เดือน</span>
+            <input type="text" id="in-m-start-month" placeholder="เช่น กรกฎาคม" class="dotted-input w-24 text-center mr-1">
+            <span class="shrink-0 mr-1">พ.ศ.</span>
+            <input type="text" id="in-m-start-year" placeholder="เช่น ๒๕๖๙" class="dotted-input w-16 text-center mr-1.5">
+            
+            <!-- ปุ่มเลือกช่วงวันเดินทาง -->
+            <button type="button" onclick="openMultiStartPicker()" class="no-print text-sky-600 hover:text-sky-700 text-xs px-1.5 py-0.5 rounded border border-sky-300 bg-sky-50 hover:bg-sky-100 transition flex items-center gap-1 shrink-0" title="เลือกวันเริ่ม - สิ้นสุด">
+              <i class="fa-regular fa-calendar-days text-sky-600"></i>
+              <span class="text-[11px] font-medium">เลือกช่วงวัน</span>
+            </button>
+            <input type="date" id="picker-multi-start" class="sr-only absolute" onchange="applyMultiStartDate(this.value)">
+            <input type="date" id="picker-multi-end" class="sr-only absolute" onchange="applyMultiEndDate(this.value)">
+          </div>
+
+          <div class="flex items-baseline">
+            <span class="shrink-0 mr-1">ถึงวันที่</span>
+            <input type="text" id="in-m-end-day" placeholder="เช่น ๒๓" class="dotted-input w-12 text-center mr-1">
+            <span class="shrink-0 mr-1">เดือน</span>
+            <input type="text" id="in-m-end-month" placeholder="เช่น กรกฎาคม" class="dotted-input w-28 text-center mr-1">
+            <span class="shrink-0 mr-1">พ.ศ.</span>
+            <input type="text" id="in-m-end-year" placeholder="เช่น ๒๕๖๙" class="dotted-input w-20 text-center mr-3">
+            <span class="shrink-0 mr-2">รวมเป็นเวลา</span>
+            <input type="text" id="in-m-total-days" placeholder="เช่น ๓" class="dotted-input w-12 text-center mr-1">
+            <span class="shrink-0">วัน</span>
+          </div>
         </div>
 
       </div>
@@ -509,6 +563,7 @@
 
       <!-- ======================================================== -->
       <!-- ส่วนคำสั่งและการพิจารณาของผู้อำนวยการโรงเรียน              -->
+      <!-- ลายมือชื่อ ผอ. ชิดขวาตรงกับลายมือชื่อผู้ขอด้านบนเป๊ะ 100%    -->
       <!-- ======================================================== -->
       <div class="mt-6 page-break-avoid border-t border-slate-200/60 pt-3">
         <div class="font-bold text-[16px] mb-1">ความเห็นผู้อำนวยการโรงเรียน</div>
@@ -528,25 +583,28 @@
           <input type="text" id="in-dir-comment2" class="dotted-input w-full">
         </div>
 
-        <!-- ลายมือชื่อผู้อำนวยการโรงเรียน (กึ่งกลาง) -->
-        <div class="mt-3 flex flex-col items-center justify-center">
-          <div class="flex items-center justify-center min-h-[45px] relative w-[8.5cm]">
-            <span class="absolute left-2 top-2">(ลงชื่อ)</span>
+        <!-- ลายมือชื่อผู้อำนวยการโรงเรียน: จัดชิดขวา ขนาด 8.5 ซม. ตรงแนวกับลายมือชื่อครูด้านบนเป๊ะ 100% -->
+        <div class="mt-4 flex justify-end">
+          <div class="w-[8.5cm] text-center flex flex-col items-center">
             
-            <div id="dir-sign-box" class="h-12 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('director')" title="คลิกลงนาม ผอ.">
-              <span id="dir-sign-placeholder" class="text-xs text-amber-700 no-print border border-dashed border-amber-400 bg-amber-50/80 px-3 py-1 rounded-lg">
-                <i class="fa-solid fa-stamp mr-1"></i>คลิกลงชื่อ ผอ.
-              </span>
-              <img id="dir-sign-img" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อ ผอ.">
+            <div class="flex items-center justify-center min-h-[45px] relative w-full">
+              <span class="absolute left-2 top-2">(ลงชื่อ)</span>
+              
+              <div id="dir-sign-box" class="h-12 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('director')" title="คลิกลงนาม ผอ.">
+                <span id="dir-sign-placeholder" class="text-xs text-amber-700 no-print border border-dashed border-amber-400 bg-amber-50/80 px-3 py-1 rounded-lg">
+                  <i class="fa-solid fa-stamp mr-1"></i>คลิกลงชื่อ ผอ.
+                </span>
+                <img id="dir-sign-img" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อ ผอ.">
+              </div>
+
+              <span id="dir-sign-line" class="sign-pen-line dotted-line w-44 inline-block absolute bottom-1 right-2 -z-10"></span>
             </div>
 
-            <span id="dir-sign-line" class="sign-pen-line dotted-line w-44 inline-block absolute bottom-1 right-2 -z-10"></span>
+            <div class="mt-1">
+              (<span>นางนัทชพร ตั้งศุภจรูญนุกูล</span>)
+            </div>
+            <div>ตำแหน่ง ผู้อำนวยการโรงเรียนวัดบางปูน</div>
           </div>
-
-          <div class="mt-1">
-            (<span>นางนัทชพร ตั้งศุภจรูญนุกูล</span>)
-          </div>
-          <div>ตำแหน่ง ผู้อำนวยการโรงเรียนวัดบางปูน</div>
         </div>
 
       </div>
@@ -612,11 +670,20 @@
   <!-- 4. JAVASCRIPT: INTERACTIVE LOGIC & EXPORT                -->
   <!-- ======================================================== -->
   <script>
+    // ฐานข้อมูลบุคลากรโรงเรียนวัดบางปูน (Teacher Personnel Database)
+    const teacherDatabase = [
+      { id: 't1', name: 'นายวราภรณ์ จูงาม', position: 'ครูผู้ช่วย' },
+      { id: 't2', name: 'นายสมชาย สายใจ', position: 'ครู ค.ศ.๑' },
+      { id: 't3', name: 'นางสาววิไลลักษณ์ พรหมดี', position: 'ครูชำนาญการ' },
+      { id: 't4', name: 'นางสาวกัลยา สุขเกษม', position: 'ครูอัตราจ้าง' },
+      { id: 't5', name: 'นางสาวรัตนาภรณ์ มีสุข', position: 'พนักงานราชการ' }
+    ];
+
     let currentSigTarget = 'teacher';
-    let currentExpense = ''; // เริ่มต้นว่างเปล่า ไม่ติ๊กอันไหนเลย
-    let vehicleEnabled = false; // เริ่มต้นไม่ติ๊ก
+    let currentExpense = '';
+    let vehicleEnabled = false;
     let otherEnabled = false;
-    let dirDecision = ''; // เริ่มต้นไม่ติ๊ก
+    let dirDecision = '';
 
     let subExpenses = {
       transport: false,
@@ -639,6 +706,9 @@
 
     window.addEventListener('DOMContentLoaded', function() {
       initCanvas();
+      initTeacherDatabase();
+      // ตั้งวันที่หัวหนังสือเป็นวันที่ปัจจุบันอัตโนมัติ
+      setTodayDateAuto();
     });
 
     function initCanvas() {
@@ -700,6 +770,55 @@
     }
 
     // ========================================================
+    // AUTO-GROW TEXTAREA (พิมพ์สั้น/ยาว บรรทัดขยายหดอัตโนมัติ)
+    // ========================================================
+    function autoGrowTextarea(el) {
+      el.style.height = 'auto';
+      el.style.height = (el.scrollHeight) + 'px';
+    }
+
+    // ========================================================
+    // TEACHER DATABASE & AUTO-FILL PROFILE
+    // ========================================================
+    function initTeacherDatabase() {
+      const sel = document.getElementById('sel-teacher-db');
+      if (!sel) return;
+      sel.innerHTML = teacherDatabase.map(function(t) {
+        return '<option value="' + t.id + '">' + t.name + ' (' + t.position + ')</option>';
+      }).join('') + '<option value="custom">-- พิมพ์ระบุเอง --</option>';
+
+      // ตรวจสอบค่าที่เคยบันทึกไว้ในเครื่อง
+      const savedTeacherId = localStorage.getItem('bangpun_active_teacher_id') || 't1';
+      sel.value = savedTeacherId;
+      applyTeacherProfile(savedTeacherId);
+    }
+
+    function onTeacherSelected(tid) {
+      localStorage.setItem('bangpun_active_teacher_id', tid);
+      applyTeacherProfile(tid);
+    }
+
+    function applyTeacherProfile(tid) {
+      if (tid === 'custom') {
+        document.getElementById('in-fullname').value = '';
+        document.getElementById('in-position').value = '';
+        document.getElementById('in-sign-name').value = '';
+        document.getElementById('in-sign-pos').value = '';
+        document.getElementById('in-fullname').focus();
+        showToast('กรุณากรอกชื่อและตำแหน่งของผู้ขอครับ');
+        return;
+      }
+      const t = teacherDatabase.find(function(item) { return item.id === tid; });
+      if (t) {
+        document.getElementById('in-fullname').value = t.name;
+        document.getElementById('in-position').value = t.position;
+        document.getElementById('in-sign-name').value = t.name;
+        document.getElementById('in-sign-pos').value = t.position;
+        showToast('ดึงข้อมูล: ' + t.name + ' (' + t.position + ') เรียบร้อยแล้ว');
+      }
+    }
+
+    // ========================================================
     // DATE PICKER HELPERS (วันที่แบบไทย)
     // ========================================================
     function toThaiNumerals(str) {
@@ -707,20 +826,23 @@
       return str.toString().replace(/[0-9]/g, function(d) { return thaiNums[parseInt(d, 10)]; });
     }
 
-    // เปิด Date Picker ของวันที่หัวบันทึก
+    function setTodayDateAuto() {
+      const now = new Date();
+      const dayNum = toThaiNumerals(now.getDate());
+      const monthName = thaiMonths[now.getMonth()];
+      const yearNum = toThaiNumerals(now.getFullYear() + 543);
+      document.getElementById('in-doc-date').value = dayNum + ' ' + monthName + ' ' + yearNum;
+    }
+
+    // วันที่ในหัวหนังสือ
     function openDocDatePicker() {
       const picker = document.getElementById('picker-doc-date');
       if (picker) {
-        if (picker.showPicker) {
-          picker.showPicker();
-        } else {
-          picker.focus();
-          picker.click();
-        }
+        if (picker.showPicker) picker.showPicker();
+        else picker.click();
       }
     }
 
-    // แปลงวันที่ที่เลือกเป็นรูปแบบไทยในหัวหนังสือ
     function applyDocDate(dateStr) {
       if (!dateStr) return;
       const d = new Date(dateStr);
@@ -729,24 +851,34 @@
       const monthName = thaiMonths[d.getMonth()];
       const yearNum = toThaiNumerals(d.getFullYear() + 543);
       document.getElementById('in-doc-date').value = dayNum + ' ' + monthName + ' ' + yearNum;
-      showToast('เลือกวันที่: ' + dayNum + ' ' + monthName + ' ' + yearNum);
+      showToast('ตั้งวันที่บันทึก: ' + dayNum + ' ' + monthName + ' ' + yearNum);
     }
 
-    // เปิด Date Picker ของวันเดินทาง
-    function openTravelDatePicker() {
-      const picker = document.getElementById('picker-travel-date');
-      if (picker) {
-        if (picker.showPicker) {
-          picker.showPicker();
-        } else {
-          picker.focus();
-          picker.click();
-        }
+    // ========================================================
+    // SINGLE / MULTIPLE DAY TRAVEL SWITCHER
+    // ========================================================
+    function setTravelDurationMode(mode) {
+      const rowSingle = document.getElementById('row-travel-single');
+      const rowMulti = document.getElementById('row-travel-multiple');
+      if (mode === 'single') {
+        rowSingle.classList.remove('hidden');
+        rowMulti.classList.add('hidden');
+      } else {
+        rowSingle.classList.add('hidden');
+        rowMulti.classList.remove('hidden');
       }
     }
 
-    // แปลงวันที่เดินทางเป็น 4 ช่อง: ในวัน... ที่... เดือน... พ.ศ....
-    function applyTravelDate(dateStr) {
+    // วันเดินทาง 1 วัน
+    function openSingleDatePicker() {
+      const picker = document.getElementById('picker-single-date');
+      if (picker) {
+        if (picker.showPicker) picker.showPicker();
+        else picker.click();
+      }
+    }
+
+    function applySingleTravelDate(dateStr) {
       if (!dateStr) return;
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) return;
@@ -763,11 +895,57 @@
       showToast('เลือกวันเดินทาง: วัน' + dayName + 'ที่ ' + dayNum + ' ' + monthName + ' ' + yearNum);
     }
 
+    // วันเดินทาง หลายวัน (เริ่ม - สิ้นสุด)
+    function openMultiStartPicker() {
+      const picker = document.getElementById('picker-multi-start');
+      if (picker) {
+        if (picker.showPicker) picker.showPicker();
+        else picker.click();
+      }
+    }
+
+    function applyMultiStartDate(dateStr) {
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+      document.getElementById('in-m-start-day').value = toThaiNumerals(d.getDate());
+      document.getElementById('in-m-start-month').value = thaiMonths[d.getMonth()];
+      document.getElementById('in-m-start-year').value = toThaiNumerals(d.getFullYear() + 543);
+      
+      // เปิดตัวเลือกวันสิ้นสุดต่อทันที
+      setTimeout(function() {
+        const endPicker = document.getElementById('picker-multi-end');
+        if (endPicker) {
+          endPicker.min = dateStr;
+          if (endPicker.showPicker) endPicker.showPicker();
+          else endPicker.click();
+        }
+      }, 300);
+    }
+
+    function applyMultiEndDate(dateStr) {
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+      document.getElementById('in-m-end-day').value = toThaiNumerals(d.getDate());
+      document.getElementById('in-m-end-month').value = thaiMonths[d.getMonth()];
+      document.getElementById('in-m-end-year').value = toThaiNumerals(d.getFullYear() + 543);
+
+      // คำนวณจำนวนวัน
+      const startStr = document.getElementById('picker-multi-start').value;
+      if (startStr) {
+        const s = new Date(startStr);
+        const diffTime = Math.abs(d - s);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('in-m-total-days').value = toThaiNumerals(diffDays);
+      }
+      showToast('กำหนดช่วงวันเดินทางหลายวันเรียบร้อยแล้ว');
+    }
+
     // ========================================================
     // CHECKBOX TOGGLES (คลิกเพื่อสลับ [✓] และ [ ])
     // ========================================================
     function toggleExpense(type) {
-      // ถ้ากดซ้ำอันเดิม ให้ปลดติ๊กออกเป็น [ ]
       if (currentExpense === type) {
         currentExpense = '';
       } else {
@@ -853,11 +1031,18 @@
         document.getElementById('in-doc-num').value = 'ศธ ๐๔๓๓๓.๐๗/๑๒๕';
         document.getElementById('in-doc-date').value = '๒๑ กรกฎาคม ๒๕๖๙';
         document.getElementById('in-subject').value = 'ขออนุมัติเดินทางไปราชการเพื่อเข้าร่วมการประชุมเชิงปฏิบัติการจัดทำแผนพัฒนาการศึกษา';
-        document.getElementById('in-fullname').value = 'นายวราภรณ์ จูงาม';
-        document.getElementById('in-position').value = 'ครูผู้ช่วย';
-        document.getElementById('in-purpose').value = 'เข้าร่วมการประชุมเชิงปฏิบัติการจัดทำแผนพัฒนาการศึกษาขั้นพื้นฐาน';
+        
+        applyTeacherProfile('t1');
+        
+        const purp = document.getElementById('in-purpose');
+        purp.value = 'เข้าร่วมการประชุมเชิงปฏิบัติการจัดทำแผนพัฒนาการศึกษาขั้นพื้นฐาน';
+        autoGrowTextarea(purp);
+
         document.getElementById('in-location').value = 'โรงแรมสองพันบุรี อำเภอเมือง จังหวัดสุพรรณบุรี';
         document.getElementById('in-refdoc').value = 'สพป.สิงห์บุรี ที่ ศธ ๐๔๑๕๖/ว ๑๑๒ ลว. ๕ กรกฎาคม ๒๕๖๙';
+        
+        setTravelDurationMode('single');
+        document.querySelector('input[name="travel-duration-mode"][value="single"]').checked = true;
         document.getElementById('in-dayname').value = 'อังคาร';
         document.getElementById('in-daynum').value = '๒๑';
         document.getElementById('in-month').value = 'กรกฎาคม';
@@ -878,9 +1063,6 @@
         document.getElementById('chk-other').textContent = '[ ]';
         document.getElementById('in-other-text').value = '';
 
-        document.getElementById('in-sign-name').value = 'นายวราภรณ์ จูงาม';
-        document.getElementById('in-sign-pos').value = 'ครูผู้ช่วย';
-
         toggleDirectorDecision('approved');
         document.getElementById('in-dir-comment1').value = 'ทราบ อนุมัติให้เดินทางไปราชการได้';
         document.getElementById('in-dir-comment2').value = '';
@@ -890,11 +1072,18 @@
         document.getElementById('in-doc-num').value = 'ศธ ๐๔๓๓๓.๐๗/๓๓๔';
         document.getElementById('in-doc-date').value = '๒ กรกฎาคม ๒๕๖๙';
         document.getElementById('in-subject').value = 'ขออนุญาตไปราชการที่โรงเรียนโคกสำโรงวิทยา จังหวัดลพบุรี';
-        document.getElementById('in-fullname').value = 'นายวราภรณ์ จูงาม';
-        document.getElementById('in-position').value = 'ครูผู้ช่วย';
-        document.getElementById('in-purpose').value = 'วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ.';
+        
+        applyTeacherProfile('t1');
+
+        const purp = document.getElementById('in-purpose');
+        purp.value = 'วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ.';
+        autoGrowTextarea(purp);
+
         document.getElementById('in-location').value = 'ห้องศูนย์ประชุมและกิจกรรมโรงเรียนโคกสำโรงวิทยา';
         document.getElementById('in-refdoc').value = 'ศธ ๐๔๓๓๓.๐๗/๓๓๔ ลว. ๑๐ มิถุนายน ๒๕๖๘';
+        
+        setTravelDurationMode('single');
+        document.querySelector('input[name="travel-duration-mode"][value="single"]').checked = true;
         document.getElementById('in-dayname').value = 'พุธ';
         document.getElementById('in-daynum').value = '๘';
         document.getElementById('in-month').value = 'กรกฎาคม';
@@ -909,22 +1098,20 @@
         document.getElementById('chk-vehicle').className = 'chk-symbol text-blue-700';
         document.getElementById('in-vehicle-select').value = 'รถจักรยานยนต์ส่วนตัว';
         document.getElementById('in-vehicle-plate').value = '๑กฉ ๙๕๗๘ สิงห์บุรี';
-        
-        document.getElementById('in-sign-name').value = 'นายวราภรณ์ จูงาม';
-        document.getElementById('in-sign-pos').value = 'ครูผู้ช่วย';
 
         showToast('โหลดข้อมูลตัวอย่าง: โคกสำโรง เรียบร้อยแล้ว');
       }
     }
 
-    // ล้างข้อมูลกลับเป็นฟอร์มว่างเปล่า ไม่ติ๊กช่องใดๆ ไว้ทั้งสิ้น
+    // ล้างข้อมูลเพื่อเขียนใหม่ (ยังคงวันที่ปัจจุบัน และชื่อผู้ใช้จากฐานข้อมูลไว้เพื่อความสะดวก)
     function clearForm() {
       document.getElementById('in-doc-num').value = '';
-      document.getElementById('in-doc-date').value = '';
       document.getElementById('in-subject').value = '';
-      document.getElementById('in-fullname').value = '';
-      document.getElementById('in-position').value = '';
-      document.getElementById('in-purpose').value = '';
+      
+      const purp = document.getElementById('in-purpose');
+      purp.value = '';
+      purp.style.height = 'auto';
+
       document.getElementById('in-location').value = '';
       document.getElementById('in-refdoc').value = '';
       document.getElementById('in-dayname').value = '';
@@ -935,11 +1122,16 @@
       document.getElementById('in-timeend').value = '';
       document.getElementById('in-vehicle-plate').value = '';
       document.getElementById('in-other-text').value = '';
-      document.getElementById('in-sign-name').value = '';
-      document.getElementById('in-sign-pos').value = '';
       document.getElementById('in-dir-comment1').value = '';
       document.getElementById('in-dir-comment2').value = '';
       
+      // วันที่หัวเอกสารตั้งเป็นวันนี้อัตโนมัติ
+      setTodayDateAuto();
+
+      // ดึงข้อมูลครูประจำเครื่องกลับมาอัตโนมัติ
+      const savedTeacherId = localStorage.getItem('bangpun_active_teacher_id') || 't1';
+      applyTeacherProfile(savedTeacherId);
+
       // ปลดติ๊กทั้งหมดเป็น [ ]
       currentExpense = '';
       vehicleEnabled = false;
@@ -976,7 +1168,7 @@
       dirImg.classList.add('hidden');
       document.getElementById('dir-sign-placeholder').classList.remove('hidden');
 
-      showToast('เปิดแบบฟอร์มว่างเปล่า ไม่ติ๊กเลือกช่องใดๆ พร้อมให้คุณครูใช้งานแล้วครับ');
+      showToast('เปิดฟอร์มพร้อมเขียนใหม่ โดยดึงวันที่และชื่อผู้ใช้อัตโนมัติแล้วครับ');
     }
 
     // ========================================================
@@ -1061,22 +1253,6 @@
         link.click();
         showToast('ดาวน์โหลดรูปภาพ PNG สำเร็จแล้ว');
       });
-    }
-
-    function saveCurrentDoc() {
-      const data = {
-        docNum: document.getElementById('in-doc-num').value,
-        docDate: document.getElementById('in-doc-date').value,
-        subject: document.getElementById('in-subject').value,
-        fullname: document.getElementById('in-fullname').value,
-        position: document.getElementById('in-position').value,
-        purpose: document.getElementById('in-purpose').value,
-        location: document.getElementById('in-location').value,
-        refdoc: document.getElementById('in-refdoc').value,
-        savedAt: new Date().toLocaleString('th-TH')
-      };
-      localStorage.setItem('bangpun_last_doc', JSON.stringify(data));
-      showToast('บันทึกข้อมูลลงเครื่องเรียบร้อยแล้ว');
     }
 
     // TOAST HELPER
