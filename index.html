@@ -15,7 +15,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Sarabun & Prompt -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -59,7 +59,7 @@
 
     body {
       font-family: 'Prompt', sans-serif;
-      background-color: #525659;
+      background-color: #475569;
       color: #1e293b;
     }
 
@@ -70,7 +70,7 @@
       padding: 16mm 16mm 16mm 22mm;
       margin: 20px auto;
       background: #ffffff;
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.15);
       font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif;
       font-size: 16px;
       line-height: 1.35;
@@ -105,7 +105,7 @@
       opacity: 0.85;
     }
 
-    /* เส้นประสำหรับต่อท้ายบรรทัด */
+    /* เส้นประสำหรับต่อท้ายบรรทัดบนหน้าจอ */
     .dotted-line {
       border-bottom: 1.2px dotted #000000;
       flex-grow: 1;
@@ -114,7 +114,7 @@
       margin-bottom: 2px;
     }
 
-    /* สัญลักษณ์กล่องติ๊ก [✓] และ [ ] ไม่มีการทับตัวหนังสือ */
+    /* สัญลักษณ์กล่องติ๊ก [✓] และ [ ] */
     .chk-symbol {
       display: inline-block;
       white-space: nowrap !important;
@@ -125,14 +125,15 @@
       text-align: left;
       cursor: pointer;
       user-select: none;
-      margin-right: 6px;
+      margin-right: 8px; /* เว้นระยะห่าง ป้องกันการทับตัวหนังสือเด็ดขาด */
+      color: #1e293b;
     }
 
     .chk-symbol:hover {
       color: #0284c7;
     }
 
-    /* การตั้งค่าเวลาสั่งพิมพ์กระดาษ A4 */
+    /* การตั้งค่าเวลาสั่งพิมพ์กระดาษ A4 - ไม่มีเส้นประตามไปเวลาพิมพ์ 100% */
     @page {
       size: A4 portrait;
       margin: 15mm 15mm 15mm 25mm;
@@ -162,9 +163,16 @@
         font-size: 16pt !important;
         line-height: 1.25 !important;
       }
+      
+      /* ลบเส้นประทั้งหมดเวลาพิมพ์ ไม่ให้มีเส้นประตามไปใต้ตัวหนังสือ */
       .dotted-input {
-        border-bottom: 1.2px dotted #000000 !important;
+        border-bottom: none !important;
         background: transparent !important;
+        padding: 0 !important;
+      }
+      .dotted-line {
+        border-bottom: none !important;
+        display: none !important;
       }
       .dotted-input::placeholder {
         color: transparent !important;
@@ -173,6 +181,12 @@
         appearance: none !important;
         -webkit-appearance: none !important;
       }
+
+      /* เส้นสำหรับเซ็นชื่อด้วยปากกาจริง (คงไว้เฉพาะกรณีที่ไม่มีรูปภาพลายเซ็น) */
+      .sign-pen-line {
+        border-bottom: 1.2px dotted #000000 !important;
+      }
+
       .page-break-avoid {
         page-break-inside: avoid;
         break-inside: avoid;
@@ -206,12 +220,12 @@
         
         <!-- ปุ่มรีเซ็ตฟอร์มว่างเปล่า -->
         <button onclick="clearForm()" title="ล้างข้อมูลเป็นแบบฟอร์มว่างเปล่าพร้อมกรอก" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 transition flex items-center gap-1.5 border border-slate-700">
-          <i class="fa-solid fa-file text-rose-400"></i>
-          <span>แบบฟอร์มว่าง (เขียนใหม่)</span>
+          <i class="fa-solid fa-rotate-left text-rose-400"></i>
+          <span>ล้างข้อมูล (เขียนใหม่)</span>
         </button>
 
         <!-- โหลดตัวอย่าง -->
-        <button onclick="loadSample('suphan')" title="โหลดตัวอย่าง: โรงแรมสองพันบุรี (ตามรูปภาพ)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 transition flex items-center gap-1.5 border border-slate-700">
+        <button onclick="loadSample('suphan')" title="โหลดตัวอย่าง: โรงแรมสองพันบุรี" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 transition flex items-center gap-1.5 border border-slate-700">
           <i class="fa-solid fa-wand-magic-sparkles text-sky-400"></i>
           <span>ตัวอย่าง: สองพันบุรี</span>
         </button>
@@ -221,17 +235,12 @@
           <span>ตัวอย่าง: โคกสำโรง</span>
         </button>
 
-        <button onclick="setTodayDate()" title="ใส่วันที่ปัจจุบันเป็นเลขไทย" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 transition flex items-center gap-1.5 border border-slate-700">
-          <i class="fa-regular fa-calendar-check text-amber-400"></i>
-          <span>ใส่วันนี้</span>
-        </button>
-
         <div class="h-5 w-px bg-slate-700 mx-1"></div>
 
         <!-- ปุ่มพิมพ์และส่งออก -->
         <button onclick="printDocument()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition flex items-center gap-1.5 shadow">
           <i class="fa-solid fa-print"></i>
-          <span>พิมพ์ A4</span>
+          <span>พิมพ์ A4 (ไม่มีเส้นประ)</span>
         </button>
 
         <button onclick="exportToPDF()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold transition flex items-center gap-1.5 shadow">
@@ -244,7 +253,7 @@
           <span>รูปภาพ</span>
         </button>
 
-        <button onclick="saveCurrentDoc()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700" title="บันทึกคำขอลงระบบ">
+        <button onclick="saveCurrentDoc()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700" title="บันทึกคำขอลงเครื่อง">
           <i class="fa-solid fa-floppy-disk"></i>
         </button>
 
@@ -254,7 +263,7 @@
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. MAIN DOCUMENT VIEW (แบบฟอร์มว่างเปล่า พร้อมพิมพ์เติม)  -->
+  <!-- 2. MAIN DOCUMENT VIEW (แบบฟอร์มสะอาดตา พร้อมเลือกวันที่)  -->
   <!-- ======================================================== -->
   <main class="flex-grow flex justify-center py-4 px-2 overflow-x-auto">
     
@@ -264,16 +273,16 @@
       <!-- ส่วนหัว: ตราครุฑ 3 ซม. ด้านซ้ายบน และ ข้อความ "บันทึกข้อความ" กึ่งกลาง -->
       <div class="relative mb-2">
         <div class="absolute left-0 top-0 w-[2.8cm] flex items-center justify-start">
-          <!-- ตราครุฑราชการคมชัด ไดคัทแท้ ฝัง Base64 100% ไร้ตัวหนังสือติด -->
+          <!-- ตราครุฑแท้ ไดคัทสมบูรณ์ 100% ไร้ตัวหนังสือใต้ภาพ -->
           <img id="doc-garuda-img" 
-               src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAABYCAYAAAA6PePZAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAABeYSURBVHhe7d1jlyRL1wbgObZt27Zt27Zt27Zt2zb/ULzrimftWTER1dNdPT3znqmqD3tVVVRmJLbujcgcl1IaN6Dep2ZgQL1JzcCAepOagQH1JjUDA+pNagZKuuGGG9JPP/2U6vFeoi+//DJdddVVPX2NqBkIevbZZ9Nxxx3X8zcAnXXWWenGG2/s6WttBtAXX3yRL/q8887r6YsP2nrrrfN1vvnmmz17vc0Auv/++/MFX3jhhT174SUdccQR6bnnnks33XRTz15vM4D222+/dNlll6U33nijZy+8pMcffzydfvrp6dJLL+3Z620Gvvrqq3TAAQekf//9N1/0Bx98MEUv/rbbbpuix3O9Pn/77be03XbbTdFjT0lqBl5//fX06KOPjr/gyy+/fNiL//zzz9OZZ56ZTjnllPTNN98Mu/1Q9N577yVu46WXXhr1HPDFOeeck8/l/fffH3ael19+efw2ruGJJ54Ydp+pkZoBgASz4/fzzz+fPv744wku/oUXXhj/+5577kmnnnpqeuCBB9Jbb72Vzj333PTjjz+O6mYFyt9nn31GtT/rg8kPP/xwuvvuu9PBBx+cXVD8X4Otb7/9Nr3yyit5jLB+9tln6a677hrVsf/r1AwEU/fdd9/0559/5u91nCm+xtRbb701XXHFFfm/d955J7lx9XzdUGiguev/uqW4DowGKl977bUkjCq3efDBB/NvuYKTTjopf3dt9Vy9QM3Avffem/0zE/jzzz8nvuvtt99OF1988QQ34I8//kg333xzHnvmmWcm+eYcddRRWaN++OGHRGjOOOOMSZ7z66+/zsJ38sknp19//XWC+Xbbbbd8Xf/88894ZrvevmH0JZdcku688870+++/j2ckE0gbfvnll/z7ww8/nOBm1L+7JWZzwQUXTKeddlraf//9sytYdNFF099//z1J85YuBn366af5N2Hiw88///z8OywW/9yrIdYEP0g9jb7jjjvGXyymX3PNNdlvH3jggUnK8IQTThjTm3HYYYelgw46KB1++OGJph1yyCHp6KOPTiMBgt3QMccck1O6jvf9999n0Bd4hGDzz2N9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" 
+               src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAABHCAYAAADIvVOXAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAABL0SURBVHhe7d1ld+TIDgbgWWZmnGVmZmZmZmZm3p1lZmZmZmbmP1T3PLVHOU5VMulOsnN33P1Bp9sVu9y2pFevVLIzIaU0oS/tl2qgL+2UaqAv7ZRqoC/tlGqgL+2UaqAp1113Xfrhhx9SOd4m+fzzz9OVV17Z6msk1UDI008/nY499tjW3wBy5plnpuuvv77V11oNkM8++yxf9Lnnntvqiw/Zaqut8nW+/vrrrb3eaoDce++9+YIvuOCC1l54Uw4//PD0zDPPpBtuuKG111sNkH333Tddeuml6bXXXmvthTfl0UcfTaeddlq65JJLWnu91cAXX3yR9t9///T333/ni37vvfem6MXfcsstU/R8rtfnL7/8krbddtspeu4pKdXAq6++mh5++OGBC77ssstGvPhPP/00nXHGGenkk09OX3311Yj7DyfvvPNOEjZeeOGFUc+BX5x99tn5t7z77rsjzvPiiy8O7OMaHnvssRGPmRqlGkBIKDu2n3322fThhx8OuvjnnntuYPuuu+5Kp5xySrrvvvvSG2+8kc4555z0/fffj+pmBcvfe++9R3U89KHkBx98MN15553poIMOyiEo/l6Sra+//jq99NJLeYyxfvLJJ+mOO+4Y1bn/61INhFL32Wef9Pvvv+fvZZ4pv6bUm2++OV1++eX5b2+99VZy48r5upHwQHOXf+tW4jooGql85ZVXkjSquc/999+ft9UKTjzxxPzdtZVztUGqgbvvvjvHZxD4448/JrHrzTffTBdddNGgG/Dbb7+lG2+8MY899dRTY745Rx55ZPao7777LjGa008/fcxzfvnll9n4TjrppPTzzz8Pmm/XXXfN1/XXX38NKNv19oyiL7744nT77benX3/9dUCRIJA3/PTTT3n7/fffH3Qzyu1uBWwuuOCC6dRTT0377bdfDgWLLrpo+vPPP8c0bzPEkI8//jhvMyYx/LzzzsvbgVjic1tTrEEbrJ5H33bbbQMXS+lXX311jtsHHHBAUjI8/vjjx/VmHHrooenAAw9Mhx12WOJpBx98cDrqqKNSJ0SwGzn66KNzSdf5vv3220z6go8wbPF5vM/5X5FBGywenPmuKhYxd/3110+IjNQHTEdcJrH/aIRnTZo0KXuWlO6EE07IvGCnnXbKij7//PPTk08+OWpyR5qQvfHGG6eHHnoolzvxgEMOOST/TYoVoamtZd9BG+IxRYrRiNEHH3yQL9r2dtttlzDwDTbYIC2xxBIJXDOENddcs+sb4wa7sSB70003TRMnTkxzzjlnUqhhYOL1bLPNlhZYYIHMnFWtkKqA2m4EQlC26zHf5ptvngtBjDf2Yazis++8vZyjDVINSE3iOxgPhfI8LFW5kMeBbzfRzX/kkUe6ujlY8O67754LFOZbe+210zzzzJN43F577ZU23HDDtNBCC6X11lsvw/hmm22W1llnnXTNNdd0dR5Gc+utt6ZtttkmI4TfzGB5tXPZx/VJsf7444+EYJYZRlukGuDFzdzziSeeyPCJpPCMjz76KDPT3XbbLce62WefPXtkOc9wYn6MWrynRDkzDz/mmGOSxQV5MAUrSZofpFOQGN6Nt0EhKAEZjjjiiLTzzjtn9i3XptQddtghk07lzzhGqBiP1O6/KNUAef755xP27XswbTeeJ0hH3HAwC+aRl3vuuSdde+21Hd0gJAg6rL766mmppZbKnoUk+RvvomzEyDbYFiqmm266tOyyy6YHHnig41zd78esoQdkEg4YDGMF3Qoq9osYftZZZ6WXX365o7mnRqkGSKxeUYj4GOM8QgoC3t08KRFl8RZpUShsJOHRYHWllVbKCuDVUrlYRDE/RW2//fbZ0xdbbLGstCbSTE5U53bcccc8/8wzz5zWWGONPPfjjz+efz+jZHD2FbtD6c2w1TapBoib6jNKhG4MZupTegK+KYYhlCXDMJLJiVjops4///zpqquuSosvvniG0qhcMaitt946Lb/88vkcK6+8cmbKyGA5VynhtbFtfsqVKfjdijIMQeWMYTahulNDmhqlGiAgbK211sqplhtjzKdCRqQkYBRkg/DyeKXRcqyUWWedNadPQcRAORK2ySabZMWD6mWWWSaPmW/FFVec7JxisvhejkME/CKQieLxAx00tt9+++3MQVZdddWBkm8bpRoIwYqlPyDUDYiqEvIihlOyGKroMFQnijImbyzHQ+aYY468SiaGusnTTjttVjgvR/AYAsLHQ7H9FVZYYdi5hsuzjzvuuFwQUbe/6aabMjo119hdE0LmO2JY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" 
                alt="ตราครุฑ" 
                class="h-[2.5cm] w-auto object-contain"
                title="ตราครุฑราชการ โรงเรียนวัดบางปูน">
         </div>
 
         <div class="text-center pt-2 pb-2">
-          <h1 class="text-[26px] font-bold tracking-normal inline-block">บันทึกข้อความ</h1>
+          <h1 class="text-[28px] font-bold tracking-normal inline-block">บันทึกข้อความ</h1>
         </div>
       </div>
 
@@ -287,15 +296,19 @@
           <span class="dotted-line ml-1"></span>
         </div>
 
-        <!-- ที่ และ วันที่ -->
+        <!-- ที่ และ วันที่ (พร้อมปุ่มเลือกวันที่แบบไทย) -->
         <div class="flex items-baseline justify-between gap-4 mt-1">
           <div class="flex items-baseline w-[48%]">
             <span class="font-bold shrink-0">ที่</span>
             <input type="text" id="in-doc-num" placeholder="เลขที่บันทึก (ถ้ามี)" class="dotted-input ml-2 flex-grow">
           </div>
-          <div class="flex items-baseline w-[48%]">
+          <div class="flex items-baseline w-[48%] relative">
             <span class="font-bold shrink-0">วันที่</span>
-            <input type="text" id="in-doc-date" placeholder="๒ กรกฎาคม ๒๕๖๙" class="dotted-input ml-2 flex-grow text-center font-medium">
+            <input type="text" id="in-doc-date" placeholder="คลิกเลือกวันที่ หรือพิมพ์เอง" class="dotted-input ml-2 flex-grow text-center font-medium cursor-pointer" onclick="openDocDatePicker()">
+            <button type="button" onclick="openDocDatePicker()" class="no-print text-slate-400 hover:text-sky-600 text-xs ml-1.5" title="เลือกวันที่จากปฏิทิน">
+              <i class="fa-regular fa-calendar-days text-sm text-sky-600"></i>
+            </button>
+            <input type="date" id="picker-doc-date" class="sr-only absolute" onchange="applyDocDate(this.value)">
           </div>
         </div>
 
@@ -344,15 +357,22 @@
           <span class="shrink-0">ตามหนังสือ</span>
         </div>
 
-        <!-- บรรทัด 5: ตามหนังสือ ... ในวัน ... ที่ ... เดือน ... -->
+        <!-- บรรทัด 5: ตามหนังสือ ... ในวัน ... ที่ ... เดือน ... (พร้อมปุ่มเลือกวันที่เดินทาง) -->
         <div class="flex items-baseline">
           <input type="text" id="in-refdoc" placeholder="หนังสือเชิญ / หนังสืออ้างถึง (ถ้ามี)" class="dotted-input flex-grow mr-2">
           <span class="shrink-0 mr-1">ในวัน</span>
-          <input type="text" id="in-dayname" placeholder="เช่น อังคาร" class="dotted-input w-16 text-center mr-2">
+          <input type="text" id="in-dayname" placeholder="เช่น อังคาร" class="dotted-input w-16 text-center mr-1.5">
           <span class="shrink-0 mr-1">ที่</span>
-          <input type="text" id="in-daynum" placeholder="เช่น ๒๑" class="dotted-input w-12 text-center mr-2">
+          <input type="text" id="in-daynum" placeholder="เช่น ๒๑" class="dotted-input w-12 text-center mr-1.5">
           <span class="shrink-0 mr-1">เดือน</span>
-          <input type="text" id="in-month" placeholder="เช่น กรกฎาคม" class="dotted-input w-28 text-center">
+          <input type="text" id="in-month" placeholder="เช่น กรกฎาคม" class="dotted-input w-28 text-center mr-1.5">
+          
+          <!-- ปุ่มช่วยเลือกวันเดินทางจากปฏิทินไทย -->
+          <button type="button" onclick="openTravelDatePicker()" class="no-print text-sky-600 hover:text-sky-700 text-xs px-1.5 py-0.5 rounded border border-sky-300 bg-sky-50 hover:bg-sky-100 transition flex items-center gap-1 shrink-0" title="เลือกวันที่เดินทางจากปฏิทิน">
+            <i class="fa-regular fa-calendar-check text-sky-600"></i>
+            <span class="text-[11px] font-medium">เลือกวัน</span>
+          </button>
+          <input type="date" id="picker-travel-date" class="sr-only absolute" onchange="applyTravelDate(this.value)">
         </div>
 
         <!-- บรรทัด 6: พ.ศ. ... ตั้งแต่เวลา ... ถึง ... -->
@@ -368,7 +388,7 @@
       </div>
 
       <!-- ======================================================== -->
-      <!-- ตัวเลือกค่าใช้จ่าย และ ยานพาหนะ (ตรงตามรูปภาพ 100%)       -->
+      <!-- ตัวเลือกค่าใช้จ่าย และ ยานพาหนะ (เริ่มต้นว่างเปล่า ไม่ติ๊ก)   -->
       <!-- ======================================================== -->
       <div class="mt-2 text-[16px] space-y-1.5">
         <div class="flex items-start">
@@ -377,7 +397,7 @@
             
             <!-- ตัวเลือก 1: ไม่ขอเบิกค่าใช้จ่าย -->
             <div class="flex items-center cursor-pointer select-none" onclick="toggleExpense('none')">
-              <span id="chk-none" class="chk-symbol text-blue-700">[✓]</span>
+              <span id="chk-none" class="chk-symbol">[ ]</span>
               <span>ไม่ขอเบิกค่าใช้จ่าย</span>
             </div>
             
@@ -411,7 +431,7 @@
             <div class="space-y-1">
               <div class="flex items-center flex-wrap">
                 <span class="cursor-pointer flex items-center select-none" onclick="toggleVehicle()">
-                  <span id="chk-vehicle" class="chk-symbol text-blue-700">[✓]</span>
+                  <span id="chk-vehicle" class="chk-symbol">[ ]</span>
                   <span class="mr-1">ไปราชการด้วย</span>
                 </span>
                 
@@ -470,7 +490,7 @@
               <img id="teacher-sign-img" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อผู้ขอ">
             </div>
 
-            <span class="dotted-line w-44 inline-block absolute bottom-1 right-2 -z-10"></span>
+            <span id="teacher-sign-line" class="sign-pen-line dotted-line w-44 inline-block absolute bottom-1 right-2 -z-10"></span>
           </div>
 
           <div class="mt-1 flex items-center justify-center">
@@ -495,7 +515,7 @@
         
         <div class="flex items-center gap-8 my-1 text-[16px]">
           <div class="flex items-center cursor-pointer select-none" onclick="toggleDirectorDecision('approved')">
-            <span id="dir-chk-approved" class="chk-symbol text-blue-700">[✓]</span> <span>อนุมัติ</span>
+            <span id="dir-chk-approved" class="chk-symbol">[ ]</span> <span>อนุมัติ</span>
           </div>
           <div class="flex items-center cursor-pointer select-none" onclick="toggleDirectorDecision('rejected')">
             <span id="dir-chk-rejected" class="chk-symbol">[ ]</span> <span>ไม่อนุมัติ</span>
@@ -520,7 +540,7 @@
               <img id="dir-sign-img" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อ ผอ.">
             </div>
 
-            <span class="dotted-line w-44 inline-block absolute bottom-1 right-2 -z-10"></span>
+            <span id="dir-sign-line" class="sign-pen-line dotted-line w-44 inline-block absolute bottom-1 right-2 -z-10"></span>
           </div>
 
           <div class="mt-1">
@@ -593,10 +613,10 @@
   <!-- ======================================================== -->
   <script>
     let currentSigTarget = 'teacher';
-    let currentExpense = 'none';
-    let vehicleEnabled = true;
+    let currentExpense = ''; // เริ่มต้นว่างเปล่า ไม่ติ๊กอันไหนเลย
+    let vehicleEnabled = false; // เริ่มต้นไม่ติ๊ก
     let otherEnabled = false;
-    let dirDecision = 'approved';
+    let dirDecision = ''; // เริ่มต้นไม่ติ๊ก
 
     let subExpenses = {
       transport: false,
@@ -604,6 +624,12 @@
       allowance: false,
       hotel: false
     };
+
+    const thaiMonths = [
+      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+    ];
+    const thaiDays = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
 
     // Signature Canvas
     let canvas, ctx;
@@ -674,22 +700,96 @@
     }
 
     // ========================================================
-    // CHECKBOX TOGGLES
+    // DATE PICKER HELPERS (วันที่แบบไทย)
+    // ========================================================
+    function toThaiNumerals(str) {
+      const thaiNums = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
+      return str.toString().replace(/[0-9]/g, function(d) { return thaiNums[parseInt(d, 10)]; });
+    }
+
+    // เปิด Date Picker ของวันที่หัวบันทึก
+    function openDocDatePicker() {
+      const picker = document.getElementById('picker-doc-date');
+      if (picker) {
+        if (picker.showPicker) {
+          picker.showPicker();
+        } else {
+          picker.focus();
+          picker.click();
+        }
+      }
+    }
+
+    // แปลงวันที่ที่เลือกเป็นรูปแบบไทยในหัวหนังสือ
+    function applyDocDate(dateStr) {
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+      const dayNum = toThaiNumerals(d.getDate());
+      const monthName = thaiMonths[d.getMonth()];
+      const yearNum = toThaiNumerals(d.getFullYear() + 543);
+      document.getElementById('in-doc-date').value = dayNum + ' ' + monthName + ' ' + yearNum;
+      showToast('เลือกวันที่: ' + dayNum + ' ' + monthName + ' ' + yearNum);
+    }
+
+    // เปิด Date Picker ของวันเดินทาง
+    function openTravelDatePicker() {
+      const picker = document.getElementById('picker-travel-date');
+      if (picker) {
+        if (picker.showPicker) {
+          picker.showPicker();
+        } else {
+          picker.focus();
+          picker.click();
+        }
+      }
+    }
+
+    // แปลงวันที่เดินทางเป็น 4 ช่อง: ในวัน... ที่... เดือน... พ.ศ....
+    function applyTravelDate(dateStr) {
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+      const dayName = thaiDays[d.getDay()];
+      const dayNum = toThaiNumerals(d.getDate());
+      const monthName = thaiMonths[d.getMonth()];
+      const yearNum = toThaiNumerals(d.getFullYear() + 543);
+
+      document.getElementById('in-dayname').value = dayName;
+      document.getElementById('in-daynum').value = dayNum;
+      document.getElementById('in-month').value = monthName;
+      document.getElementById('in-year').value = yearNum;
+
+      showToast('เลือกวันเดินทาง: วัน' + dayName + 'ที่ ' + dayNum + ' ' + monthName + ' ' + yearNum);
+    }
+
+    // ========================================================
+    // CHECKBOX TOGGLES (คลิกเพื่อสลับ [✓] และ [ ])
     // ========================================================
     function toggleExpense(type) {
-      currentExpense = type;
-      document.getElementById('chk-none').textContent = (type === 'none') ? '[✓]' : '[ ]';
-      document.getElementById('chk-full').textContent = (type === 'full') ? '[✓]' : '[ ]';
-      document.getElementById('chk-partial').textContent = (type === 'partial') ? '[✓]' : '[ ]';
+      // ถ้ากดซ้ำอันเดิม ให้ปลดติ๊กออกเป็น [ ]
+      if (currentExpense === type) {
+        currentExpense = '';
+      } else {
+        currentExpense = type;
+      }
+
+      document.getElementById('chk-none').textContent = (currentExpense === 'none') ? '[✓]' : '[ ]';
+      document.getElementById('chk-full').textContent = (currentExpense === 'full') ? '[✓]' : '[ ]';
+      document.getElementById('chk-partial').textContent = (currentExpense === 'partial') ? '[✓]' : '[ ]';
       
-      document.getElementById('chk-none').className = 'chk-symbol ' + (type === 'none' ? 'text-blue-700' : '');
-      document.getElementById('chk-full').className = 'chk-symbol ' + (type === 'full' ? 'text-blue-700' : '');
-      document.getElementById('chk-partial').className = 'chk-symbol ' + (type === 'partial' ? 'text-blue-700' : '');
+      document.getElementById('chk-none').className = 'chk-symbol ' + (currentExpense === 'none' ? 'text-blue-700' : '');
+      document.getElementById('chk-full').className = 'chk-symbol ' + (currentExpense === 'full' ? 'text-blue-700' : '');
+      document.getElementById('chk-partial').className = 'chk-symbol ' + (currentExpense === 'partial' ? 'text-blue-700' : '');
     }
 
     function toggleSubExpense(key) {
       if (currentExpense !== 'partial') {
-        toggleExpense('partial');
+        currentExpense = 'partial';
+        document.getElementById('chk-none').textContent = '[ ]';
+        document.getElementById('chk-full').textContent = '[ ]';
+        document.getElementById('chk-partial').textContent = '[✓]';
+        document.getElementById('chk-partial').className = 'chk-symbol text-blue-700';
       }
       subExpenses[key] = !subExpenses[key];
       const el = document.getElementById('sub-chk-' + key);
@@ -726,11 +826,15 @@
     }
 
     function toggleDirectorDecision(dec) {
-      dirDecision = dec;
-      document.getElementById('dir-chk-approved').textContent = (dec === 'approved') ? '[✓]' : '[ ]';
-      document.getElementById('dir-chk-rejected').textContent = (dec === 'rejected') ? '[✓]' : '[ ]';
-      document.getElementById('dir-chk-approved').className = 'chk-symbol ' + (dec === 'approved' ? 'text-blue-700' : '');
-      document.getElementById('dir-chk-rejected').className = 'chk-symbol ' + (dec === 'rejected' ? 'text-rose-700' : '');
+      if (dirDecision === dec) {
+        dirDecision = '';
+      } else {
+        dirDecision = dec;
+      }
+      document.getElementById('dir-chk-approved').textContent = (dirDecision === 'approved') ? '[✓]' : '[ ]';
+      document.getElementById('dir-chk-rejected').textContent = (dirDecision === 'rejected') ? '[✓]' : '[ ]';
+      document.getElementById('dir-chk-approved').className = 'chk-symbol ' + (dirDecision === 'approved' ? 'text-blue-700' : '');
+      document.getElementById('dir-chk-rejected').className = 'chk-symbol ' + (dirDecision === 'rejected' ? 'text-rose-700' : '');
     }
 
     function syncSignName(val) {
@@ -742,7 +846,7 @@
     }
 
     // ========================================================
-    // LOAD PRESETS
+    // LOAD PRESETS & CLEAR FORM
     // ========================================================
     function loadSample(key) {
       if (key === 'suphan') {
@@ -813,7 +917,7 @@
       }
     }
 
-    // ล้างข้อมูลกลับเป็นฟอร์มว่างเปล่า พร้อมให้ครูพิมพ์ใหม่ได้ทันที
+    // ล้างข้อมูลกลับเป็นฟอร์มว่างเปล่า ไม่ติ๊กช่องใดๆ ไว้ทั้งสิ้น
     function clearForm() {
       document.getElementById('in-doc-num').value = '';
       document.getElementById('in-doc-date').value = '';
@@ -836,7 +940,31 @@
       document.getElementById('in-dir-comment1').value = '';
       document.getElementById('in-dir-comment2').value = '';
       
-      toggleExpense('none');
+      // ปลดติ๊กทั้งหมดเป็น [ ]
+      currentExpense = '';
+      vehicleEnabled = false;
+      otherEnabled = false;
+      dirDecision = '';
+
+      document.getElementById('chk-none').textContent = '[ ]';
+      document.getElementById('chk-full').textContent = '[ ]';
+      document.getElementById('chk-partial').textContent = '[ ]';
+      document.getElementById('sub-chk-transport').textContent = '[ ]';
+      document.getElementById('sub-chk-fuel').textContent = '[ ]';
+      document.getElementById('sub-chk-allowance').textContent = '[ ]';
+      document.getElementById('sub-chk-hotel').textContent = '[ ]';
+      document.getElementById('chk-vehicle').textContent = '[ ]';
+      document.getElementById('chk-other').textContent = '[ ]';
+      document.getElementById('dir-chk-approved').textContent = '[ ]';
+      document.getElementById('dir-chk-rejected').textContent = '[ ]';
+
+      document.getElementById('chk-none').className = 'chk-symbol';
+      document.getElementById('chk-full').className = 'chk-symbol';
+      document.getElementById('chk-partial').className = 'chk-symbol';
+      document.getElementById('chk-vehicle').className = 'chk-symbol';
+      document.getElementById('chk-other').className = 'chk-symbol';
+      document.getElementById('dir-chk-approved').className = 'chk-symbol';
+      document.getElementById('dir-chk-rejected').className = 'chk-symbol';
       
       const teacherImg = document.getElementById('teacher-sign-img');
       teacherImg.src = '';
@@ -848,34 +976,7 @@
       dirImg.classList.add('hidden');
       document.getElementById('dir-sign-placeholder').classList.remove('hidden');
 
-      showToast('เปิดแบบฟอร์มว่างเปล่า พร้อมกรอกข้อความใหม่แล้วครับ');
-    }
-
-    function toThaiNumerals(str) {
-      const thaiNums = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
-      return str.toString().replace(/[0-9]/g, function(d) { return thaiNums[parseInt(d, 10)]; });
-    }
-
-    function setTodayDate() {
-      const now = new Date();
-      const thaiMonths = [
-        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-      ];
-      const thaiDays = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
-
-      const dayName = thaiDays[now.getDay()];
-      const dayNum = toThaiNumerals(now.getDate());
-      const monthName = thaiMonths[now.getMonth()];
-      const yearNum = toThaiNumerals(now.getFullYear() + 543);
-
-      document.getElementById('in-doc-date').value = dayNum + ' ' + monthName + ' ' + yearNum;
-      document.getElementById('in-dayname').value = dayName;
-      document.getElementById('in-daynum').value = dayNum;
-      document.getElementById('in-month').value = monthName;
-      document.getElementById('in-year').value = yearNum;
-
-      showToast('ใส่วันที่ปัจจุบันเป็นเลขไทยเรียบร้อยแล้ว');
+      showToast('เปิดแบบฟอร์มว่างเปล่า ไม่ติ๊กเลือกช่องใดๆ พร้อมให้คุณครูใช้งานแล้วครับ');
     }
 
     // ========================================================
