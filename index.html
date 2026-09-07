@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบ E-Approval ขออนุญาตไปราชการ | โรงเรียนวัดบางปูน</title>
+  <title>บันทึกข้อความขออนุญาตไปราชการ | โรงเรียนวัดบางปูน</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Sarabun & Prompt -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -18,100 +18,80 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Prompt', 'sans-serif'],
-            sarabun: ['Sarabun', 'TH Sarabun New', 'TH Sarabun PSK', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-
   <style>
-    /* กำหนด Font-Face ดึงฟอนต์ไทยสารบรรณแท้ (TH Sarabun New / PSK) จากเครื่องผู้ใช้ */
+    /* บังคับใช้ฟอนต์ไทยสารบรรณแท้ (TH Sarabun New / PSK) จากเครื่อง หรือ Webfont สำรอง */
     @font-face {
       font-family: 'TH Sarabun New';
       font-style: normal;
       font-weight: 400;
-      src: local('TH Sarabun New'), local('THSarabunNew'), local('TH Sarabun PSK'), local('THSarabunPSK'),
+      src: local('TH Sarabun New'), local('THSarabunNew'), local('TH Sarabun PSK'),
            url('https://fonts.gstatic.com/s/sarabun/v13/DtVjJxs035qZL-m92D5Z5G_s.woff2') format('woff2');
     }
     @font-face {
       font-family: 'TH Sarabun New';
       font-style: normal;
       font-weight: 700;
-      src: local('TH Sarabun New Bold'), local('THSarabunNew-Bold'), local('TH Sarabun PSK Bold'), local('THSarabunPSK-Bold'),
+      src: local('TH Sarabun New Bold'), local('THSarabunNew-Bold'), local('TH Sarabun PSK Bold'),
            url('https://fonts.gstatic.com/s/sarabun/v13/DtVoJxs035qZL-m97CRc2X_0wQ.woff2') format('woff2');
     }
 
     body {
       font-family: 'Prompt', sans-serif;
-      background-color: #e2e8f0;
-      color: #1e293b;
+      background-color: #cbd5e1;
+      color: #0f172a;
     }
 
-    /* สไตล์แบบฟอร์มเอกสารบนหน้าจอ - บังคับใช้ฟอนต์ไทยสารบรรณแท้ 16pt */
+    /* แผ่นกระดาษ A4 ถอดแบบจากเอกสารราชการจริง 100% */
     .paper-a4 {
       width: 210mm;
       min-height: 297mm;
       background: #ffffff;
       margin: 0 auto;
-      padding: 16mm 18mm 18mm 25mm; /* ตามแบบราชการไทย */
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      padding: 15mm 20mm 15mm 25mm; /* ขอบบน 1.5ซม., ขวา 2ซม., ล่าง 1.5ซม., ซ้าย 2.5ซม. */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
       font-size: 16pt !important;
-      line-height: 1.22 !important;
-      color: #000;
+      line-height: 1.25 !important;
+      color: #000000;
       position: relative;
+      box-sizing: border-box;
     }
 
-    /* ช่องกรอกข้อมูลแบบอินไลน์เสมือนพิมพ์บนกระดาษจริง */
-    .doc-fill {
-      border: none;
-      border-bottom: 1px dotted #334155;
-      background-color: #eff6ff;
-      color: #000;
-      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
-      font-size: 16pt !important;
-      line-height: 1.2 !important;
-      padding: 0 4px;
+    /* ข้อความที่แก้ไขได้โดยตรงบนหน้ากระดาษ (Inline Editable) */
+    .doc-edit {
       outline: none;
-      transition: all 0.15s ease;
       border-radius: 2px;
+      transition: background-color 0.15s ease;
+      cursor: text;
     }
 
-    .doc-fill:focus {
-      background-color: #dbeafe;
-      border-bottom: 1.5px solid #1d4ed8;
+    /* แสดงสีไฮไลต์อ่อนๆ บนหน้าจอเพื่อให้ผู้ใช้รู้ว่าพิมพ์ตรงนี้ได้ */
+    .doc-edit:hover, .doc-edit:focus {
+      background-color: #dbeafe !important;
     }
 
-    /* ช่องติ๊กเลือกแบบโต้ตอบได้ในเอกสาร */
-    .interactive-chk {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', monospace, sans-serif !important;
+    /* กล่องติ๊กเลือก [✓] และ [ ] */
+    .doc-chk {
+      font-family: 'TH Sarabun New', 'TH Sarabun PSK', monospace, sans-serif !important;
       font-weight: bold;
-      font-size: 15pt;
+      font-size: 16pt;
       cursor: pointer;
       user-select: none;
-      padding: 0 3px;
-      border-radius: 4px;
-      transition: background 0.15s;
+      display: inline-block;
+      width: 22px;
+      text-align: center;
+      transition: color 0.1s;
     }
-    .interactive-chk:hover {
-      background-color: #dbeafe;
+    .doc-chk:hover {
       color: #1d4ed8;
+      background-color: #eff6ff;
+      border-radius: 3px;
     }
 
-    /* การสั่งพิมพ์ (Print Mode) */
+    /* โหมดพิมพ์ (Print Mode) */
     @page {
       size: A4 portrait;
-      margin: 12mm 15mm 15mm 22mm;
+      margin: 12mm 15mm 12mm 22mm;
     }
 
     @media print {
@@ -132,28 +112,20 @@
         margin: 0 !important;
         padding: 0 !important;
         color: #000 !important;
-        font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
-        font-size: 16pt !important;
       }
 
       .paper-a4 {
         box-shadow: none !important;
         border: none !important;
         width: 100% !important;
+        min-height: auto !important;
         margin: 0 !important;
         padding: 0 !important;
         font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
         font-size: 16pt !important;
       }
 
-      /* ซ่อนสีพื้นหลังของช่องกรอก ให้เหลือแต่เส้นประเมื่อพิมพ์ */
-      .doc-fill {
-        background-color: transparent !important;
-        border-bottom: 1px dotted #000 !important;
-        box-shadow: none !important;
-      }
-
-      .interactive-chk:hover {
+      .doc-edit:hover, .doc-edit:focus {
         background-color: transparent !important;
       }
 
@@ -172,7 +144,7 @@
   <div id="quick-account-bar" class="no-print bg-slate-800 text-slate-200 text-xs px-4 py-2 flex flex-wrap items-center justify-between border-b border-slate-700 shadow-inner z-40">
     <div class="flex items-center gap-2 mb-1 sm:mb-0">
       <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
-        <i class="fa-solid fa-flask mr-1.5"></i>โหมดทดสอบระบบ (Demo Switcher)
+        <i class="fa-solid fa-flask mr-1.5"></i>โหมดทดสอบระบบ
       </span>
       <span class="text-slate-400 hidden md:inline">สลับสิทธิ์ใช้งาน:</span>
     </div>
@@ -201,7 +173,6 @@
   <header id="app-navbar" class="no-print bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        <!-- School Logo & Title -->
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-sky-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
             <i class="fa-solid fa-file-signature text-xl"></i>
@@ -209,17 +180,16 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-900 text-base sm:text-lg tracking-tight">E-Approval ขออนุญาตไปราชการ</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold border border-blue-200">แบบฟอร์มเอกสารสด</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold border border-blue-200">แบบฟอร์มเอกสารตรงเป๊ะ</span>
             </div>
-            <p class="text-xs text-slate-500 hidden sm:block">โรงเรียนวัดบางปูน ต.ชีน้ำร้าย อ.อินทร์บุรี จ.สิงห์บุรี</p>
+            <p class="text-xs text-slate-500 hidden sm:block">โรงเรียนวัดบางปูน ตำบลชีน้ำร้าย อำเภออินทร์บุรี จังหวัดสิงห์บุรี</p>
           </div>
         </div>
 
-        <!-- Navigation Tabs & Current User Info -->
         <div class="flex items-center gap-3">
           <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
             <button onclick="setViewMode('form')" id="tab-btn-form" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 flex items-center gap-1.5 transition">
-              <i class="fa-solid fa-pen-to-square"></i>
+              <i class="fa-solid fa-file-lines"></i>
               <span>หน้าหนังสือราชการ</span>
             </button>
             <button onclick="setViewMode('history')" id="tab-btn-history" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
@@ -238,14 +208,14 @@
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. Sticky Action Toolbar (สำหรับพิมพ์, บันทึก, เซ็นชื่อ) -->
+  <!-- 2. Sticky Action Toolbar (สำหรับพิมพ์, บันทึก, ส่งออก)   -->
   <!-- ======================================================== -->
   <div id="doc-action-bar" class="no-print sticky top-16 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm py-2 px-4 transition-all">
     <div class="max-w-[210mm] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
       <div class="flex items-center gap-2">
         <span class="font-bold text-slate-700 flex items-center gap-1.5">
-          <i class="fa-solid fa-file-lines text-blue-600"></i>
-          <span id="bar-doc-title">กรอกข้อมูลลงในหนังสือราชการโดยตรง</span>
+          <i class="fa-solid fa-pencil text-blue-600"></i>
+          <span id="bar-doc-title">คลิกที่ข้อความในกระดาษเพื่อพิมพ์แก้ไขได้โดยตรง</span>
         </span>
         <span id="bar-status-badge" class="hidden text-[11px] px-2 py-0.5 rounded-full font-bold"></span>
       </div>
@@ -257,7 +227,7 @@
           <span>บันทึก / ยื่นคำขอ</span>
         </button>
 
-        <!-- ปุ่มสำหรับผู้อำนวยการ (จะแสดงเมื่อเป็น ผอ.) -->
+        <!-- ปุ่มสำหรับผู้อำนวยการ -->
         <div id="director-quick-actions" class="hidden flex items-center gap-2">
           <button onclick="handleDirectorSignAndApprove('approved')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-sm flex items-center gap-1.5 transition">
             <i class="fa-solid fa-circle-check"></i>
@@ -269,25 +239,25 @@
           </button>
         </div>
 
-        <!-- ปุ่มพิมพ์เอกสาร A4 -->
-        <button onclick="window.print()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+        <!-- ปุ่มพิมพ์ A4 -->
+        <button onclick="window.print()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
           <i class="fa-solid fa-print"></i>
           <span>พิมพ์ A4</span>
         </button>
 
         <!-- ปุ่มดาวน์โหลด PDF -->
-        <button onclick="downloadDocumentPDF()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+        <button onclick="downloadDocumentPDF()" class="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
           <i class="fa-solid fa-file-pdf"></i>
           <span>PDF</span>
         </button>
 
         <!-- ปุ่มดาวน์โหลดรูปภาพ -->
-        <button onclick="downloadDocumentImage()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+        <button onclick="downloadDocumentImage()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
           <i class="fa-solid fa-file-image"></i>
           <span>รูปภาพ (PNG)</span>
         </button>
 
-        <!-- ปุ่มสร้างเอกสารใหม่ -->
+        <!-- ปุ่มรีเซ็ต / เขียนใหม่ -->
         <button onclick="createNewBlankDocument()" title="เริ่มกรอกเอกสารใหม่" class="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition">
           <i class="fa-solid fa-rotate text-sm"></i>
         </button>
@@ -304,8 +274,8 @@
     <div id="history-view" class="hidden max-w-5xl mx-auto space-y-4">
       <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
         <div>
-          <h2 class="text-lg font-bold text-slate-900" id="history-header-title">รายการคำขอไปราชการ</h2>
-          <p class="text-xs text-slate-500">คลิกที่รายการเพื่อเปิดดูหรือแก้ไขในหน้าหนังสือราชการ</p>
+          <h2 class="text-lg font-bold text-slate-900">รายการคำขอไปราชการ</h2>
+          <p class="text-xs text-slate-500">คลิกที่รายการเพื่อเปิดดูหรือลงนามอนุมัติในหน้าหนังสือราชการ</p>
         </div>
         <button onclick="setViewMode('form'); createNewBlankDocument();" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-2">
           <i class="fa-solid fa-plus"></i> เขียนคำขอใหม่
@@ -320,9 +290,9 @@
                 <th class="py-3.5 px-4">เลขที่คำขอ</th>
                 <th class="py-3.5 px-4">ผู้ยื่นคำขอ</th>
                 <th class="py-3.5 px-4">เรื่องขออนุญาต</th>
-                <th class="py-3.5 px-4">วันที่ไปราชการ</th>
+                <th class="py-3.5 px-4">วันที่เขียน</th>
                 <th class="py-3.5 px-4 text-center">สถานะ</th>
-                <th class="py-3.5 px-4 text-right">เปิดดู</th>
+                <th class="py-3.5 px-4 text-right">การกระทำ</th>
               </tr>
             </thead>
             <tbody id="history-tbody" class="divide-y divide-slate-100 font-normal">
@@ -333,164 +303,144 @@
       </div>
     </div>
 
-    <!-- VIEW 2: หน้าหนังสือราชการแบบพิมพ์เติมได้โดยตรง (WYSIWYG Form) -->
+    <!-- VIEW 2: หน้าหนังสือราชการตรงตามรูปภาพเป๊ะ 100% (WYSIWYG) -->
     <div id="form-view" class="flex justify-center">
       
-      <!-- หน้ากระดาษ A4 เสมือนจริง ตรงตามรูปภาพต้นฉบับ 100% -->
+      <!-- หน้ากระดาษ A4 เสมือนจริง ตรงตามรูปภาพต้นฉบับเป๊ะ -->
       <div id="official-document-paper" class="paper-a4">
         
         <!-- ส่วนหัว: ตราครุฑ 3 ซม. ด้านซ้ายบน และ ข้อความ "บันทึกข้อความ" กึ่งกลาง -->
-        <div class="relative mb-3">
+        <div class="relative mb-2">
           <div class="absolute left-0 top-0 w-[2.8cm] flex items-center justify-start">
-            <!-- ตราครุฑทางการแท้ 100% ดึงจากต้นฉบับคมชัด พื้นหลังโปร่งใส -->
+            <!-- ตราครุฑราชการคมชัด ดึงจาก garuda.png หรือ Base64 สำรอง -->
             <img id="doc-garuda-img" 
-                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAACCCAYAAACJmNyQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAB3KSURBVHhe7d3zlyRJ1wfwnbVt786as7Zt27Zt2zb/oXzPJ59z+0RHVHVXdffMu1WVP3xPZUZlRuLGZdy4OV1VVdM16H8UDQ36E0VDg/5E0dCgP1E0NOhPFA0pbrjhhuqnn36q8vZ+wpdfflldddVVff2MUDQEnn322eq4447r+xcAZ511VnXjjTf29bMWDfDFF1/UD33eeef19cMHtt566/o533zzzb593qIB7r///vqBL7zwwr598BRHHHFE9dxzz1U33XRT3z5v0QD77bdfddlll1VvvPFG3z54iscff7w6/fTTq0svvbRvn7do+Oqrr6oDDjig+vfff+uH/uCDD6bpw992223T9Hqe1+9vv/1WbbfddtP02tMSRcPrr79ePfroo0MPfPnll4/68J9//nl15plnVqecckr1zTffjHp8O7z33nsVtfHSSy+NuQ/2xTnnnFPfy/vvvz9qPy+//PLQMZ7hiSeeGPWcXkTRwCBB7Nh//vnnq48//njYw7/wwgtD+/fcc0916qmnVg888ED11ltvVeeee271448/jullhZW/zz77jOl80geRH3744eruu++uDj744FoFxf+5sfXtt99Wr7zySt1msH722WfVXXfdNaZr/9dRNARR99133+rPP/+st3M/k3+NqLfeemt1xRVX1P+98847lReX99cNggP1nf/XLeI5EJpR+dprr1XcqPSYBx98sN4XKzjppJPqbc+W99UPKBruvffeWj8TgT///HNFd7399tvVxRdfPOwF/PHHH9XNN99ctz3zzDPjfjlHHXVUzVE//PBDZdCcccYZ4+7z66+/rgffySefXP3666/D+tttt93q5/rnn3+GiO15B4bQl1xySXXnnXdWv//++xAhiUDc8Msvv9T7H3744bCXke93C2Jz4YUXrk477bRq//33r1XB4osvXv3999/j6jdVMfDpp5/W+wYTHX7++efX+yGx6Od+dbGG7Rj1OPqOO+4YelhEv+aaa2q9feCBB1ZChieccMKEvozDDjusOuigg6rDDz+8wmmHHHJIdfTRR1edGILd4JhjjqlDuq73/fff10Zf2CMG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" 
+                 src="garuda.png" 
                  alt="ตราครุฑ" 
                  class="h-[2.8cm] w-auto object-contain cursor-pointer hover:opacity-80 transition" 
-                 title="ตราครุฑทางการ (คลิกเพื่อเปลี่ยนรูปถ้าต้องการ)"
+                 title="ตราครุฑราชการ (คลิกเพื่อเปลี่ยนรูปได้หากต้องการ)"
                  onclick="document.getElementById('garuda-file-input').click()">
             <input type="file" id="garuda-file-input" accept="image/*" class="hidden" onchange="handleGarudaCustomUpload(event)">
           </div>
 
           <div class="text-center pt-2 pb-2">
-            <h1 class="text-[29pt] font-bold tracking-tight inline-block">บันทึกข้อความ</h1>
+            <h1 class="text-[29pt] font-bold tracking-normal inline-block">บันทึกข้อความ</h1>
           </div>
         </div>
 
-        <!-- รายละเอียดส่วนหัว (ส่วนราชการ / ที่ / วันที่ / เรื่อง / เรียน) -->
+        <!-- รายละเอียดส่วนหัว: ส่วนราชการ / ที่ / วันที่ / เรื่อง / เรียน -->
         <div class="space-y-1 mt-1 text-[16pt]">
-          <!-- ส่วนราชการ -->
+          
+          <!-- บรรทัด 1: ส่วนราชการ -->
           <div class="flex items-baseline">
-            <span class="font-bold w-[2.8cm] shrink-0">ส่วนราชการ</span>
-            <span class="border-b border-dotted border-black flex-grow pb-0.5">
-              โรงเรียนวัดบางปูน ตำบลชีน้ำร้าย อำเภออินทร์บุรี จังหวัดสิงห์บุรี
-            </span>
+            <span class="font-bold shrink-0">ส่วนราชการ</span>
+            <span class="ml-2 font-normal shrink-0">โรงเรียนวัดบางปูน ตำบลชีน้ำร้าย อำเภออินทร์บุรี จังหวัดสิงห์บุรี</span>
+            <span class="border-b border-dotted border-black flex-grow ml-1 mb-1"></span>
           </div>
 
-          <!-- ที่ และ วันที่ -->
-          <div class="flex items-baseline justify-between gap-4">
-            <div class="flex items-baseline w-1/2">
-              <span class="font-bold w-[0.8cm] shrink-0">ที่</span>
-              <input type="text" id="in-doc-num" class="doc-fill flex-grow" placeholder="เลขที่บันทึก (ถ้ามี)">
+          <!-- บรรทัด 2: ที่ และ วันที่ -->
+          <div class="flex items-baseline justify-between gap-4 mt-1">
+            <div class="flex items-baseline w-[48%]">
+              <span class="font-bold shrink-0">ที่</span>
+              <span contenteditable="true" id="ed-doc-num" class="doc-edit ml-2 border-b border-dotted border-black flex-grow inline-block min-h-[1.2em]"></span>
             </div>
-            <div class="flex items-baseline w-1/2">
-              <span class="font-bold w-[1.4cm] shrink-0">วันที่</span>
-              <input type="text" id="in-doc-date" class="doc-fill flex-grow text-center font-medium" value="๒ กรกฎาคม ๒๕๖๙">
+            <div class="flex items-baseline w-[48%]">
+              <span class="font-bold shrink-0">วันที่</span>
+              <span contenteditable="true" id="ed-doc-date" class="doc-edit ml-2 text-center border-b border-dotted border-black flex-grow inline-block min-h-[1.2em] font-medium">๒ กรกฎาคม ๒๕๖๙</span>
             </div>
           </div>
 
-          <!-- เรื่อง -->
-          <div class="flex items-baseline">
-            <span class="font-bold w-[1.4cm] shrink-0">เรื่อง</span>
-            <input type="text" id="in-doc-subject" class="doc-fill flex-grow font-bold" value="ขออนุญาตไปราชการที่โรงเรียนโคกสำโรงวิทยา จังหวัดลพบุรี">
+          <!-- บรรทัด 3: เรื่อง -->
+          <div class="flex items-baseline mt-1">
+            <span class="font-bold shrink-0">เรื่อง</span>
+            <span contenteditable="true" id="ed-subject" class="doc-edit ml-2 border-b border-dotted border-black flex-grow inline-block min-h-[1.2em]">ขออนุญาตไปราชการที่โรงเรียนโคกสำโรงวิทยา จังหวัดลพบุรี</span>
           </div>
 
-          <!-- เรียน -->
+          <!-- บรรทัด 4: เรียน -->
           <div class="flex items-baseline pt-1">
-            <span class="font-bold w-[1.4cm] shrink-0">เรียน</span>
-            <span>ผู้อำนวยการโรงเรียนวัดบางปูน</span>
+            <span class="font-bold shrink-0">เรียน</span>
+            <span class="ml-2">ผู้อำนวยการโรงเรียนวัดบางปูน</span>
           </div>
         </div>
 
-        <!-- เนื้อหาบันทึกข้อความ (พิมพ์เติมในช่องได้โดยตรง) -->
-        <div class="mt-3 space-y-2 text-[16pt] leading-[1.28] text-justify">
+        <!-- เนื้อหาบันทึกข้อความ: ย่อหน้าความเรียงต่อเนื่องเป๊ะตามรูปต้นฉบับ -->
+        <div class="mt-3 text-[16pt] leading-[1.28] text-justify">
           
-          <!-- ย่อหน้าเนื้อความหลัก -->
           <p class="indent-[2.5cm]">
-            ด้วยข้าพเจ้า <input type="text" id="in-fullname" class="doc-fill w-44 font-medium" value="นายวราภรณ์ จูงาม"> 
-            ตำแหน่ง <input type="text" id="in-position" class="doc-fill w-28" value="ครูผู้ช่วย"> 
-            โรงเรียนวัดบางปูน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี มีความประสงค์จะขออนุญาตไปราชการ เรื่อง 
-            <input type="text" id="in-purpose" class="doc-fill w-full mt-1" value="วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ."> 
-            ณ <input type="text" id="in-location" class="doc-fill w-[8.5cm]" value="ห้องศูนย์ประชุมและกิจกรรม โรงเรียนโคกสำโรงวิทยา"> 
-            ตามหนังสือ <input type="text" id="in-ref-doc" class="doc-fill w-[7.8cm]" value="ศธ ๐๔๓๓๓.๐๗/๓๓๔ ลว. ๑๐ มิถุนายน ๒๕๖๘"> 
-            ในวัน<input type="text" id="in-day-name" class="doc-fill w-16 text-center" value="พุธ"> 
-            ที่ <input type="text" id="in-day-num" class="doc-fill w-12 text-center" value="๘"> 
-            เดือน <input type="text" id="in-month-name" class="doc-fill w-28 text-center" value="กรกฎาคม"> 
-            พ.ศ. <input type="text" id="in-year-num" class="doc-fill w-16 text-center" value="๒๕๖๘"> 
-            ตั้งแต่เวลา <input type="text" id="in-time-start" class="doc-fill w-20 text-center" value="๐๘.๐๐"> – 
-            <input type="text" id="in-time-end" class="doc-fill w-24 text-center" value="๑๖.๓๐ น.">
+            ด้วยข้าพเจ้า<span contenteditable="true" class="doc-edit font-medium mx-1" id="ed-fullname">นายวราภรณ์ จูงาม</span>ตำแหน่ง <span contenteditable="true" class="doc-edit mx-1" id="ed-position">ครูผู้ช่วย</span>โรงเรียนวัดบางปูน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี มีความประสงค์จะขออนุญาตไปราชการ เรื่อง <span contenteditable="true" class="doc-edit" id="ed-purpose">วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ.</span> ณ <span contenteditable="true" class="doc-edit" id="ed-location">ห้องศูนย์ประชุมและกิจกรรมโรงเรียนโคกสำโรงวิทยา</span> ตามหนังสือ <span contenteditable="true" class="doc-edit" id="ed-ref-doc">ศธ ๐๔๓๓๓.๐๗/๓๓๔ ลว. ๑๐ มิถุนายน ๒๕๖๘</span> ในวัน<span contenteditable="true" class="doc-edit" id="ed-dayname">พุธ</span>ที่ <span contenteditable="true" class="doc-edit" id="ed-daynum">๘</span> เดือน<span contenteditable="true" class="doc-edit" id="ed-month">กรกฎาคม</span> พ.ศ. <span contenteditable="true" class="doc-edit" id="ed-year">๒๕๖๘</span> ตั้งแต่เวลา <span contenteditable="true" class="doc-edit" id="ed-timestart">๐๘.๐๐</span> – <span contenteditable="true" class="doc-edit" id="ed-timeend">๑๖.๓๐ น.</span>
           </p>
 
-          <!-- ตัวเลือกค่าใช้จ่าย และ ยานพาหนะ (คลิกติ๊กเลือกได้โดยตรงในเอกสาร) -->
-          <div class="pt-0.5">
-            <div class="flex items-baseline">
-              <span class="w-[2.2cm] shrink-0">โดยข้าพเจ้า</span>
-              <div class="flex-grow space-y-1">
-                
-                <!-- ตัวเลือก 1: ไม่ขอเบิก -->
-                <div class="cursor-pointer" onclick="toggleExpenseChoice('none')">
-                  <span id="chk-none" class="interactive-chk text-blue-600">[✓]</span> 
-                  <span>ไม่ขอเบิกค่าใช้จ่าย</span>
-                </div>
-                
-                <!-- ตัวเลือก 2: ขอเบิกตามสิทธิ -->
-                <div class="cursor-pointer" onclick="toggleExpenseChoice('full')">
-                  <span id="chk-full" class="interactive-chk">[ ]</span> 
-                  <span>ขอเบิกค่าใช้จ่ายตามสิทธิจากเงินงบประมาณหรือเงินนอกงบประมาณของสถานศึกษา (ค่าพาหนะเดินทาง,ค่าเบี้ยเลี้ยง,ค่าที่พัก) ตามระเบียบกระทรวงการคลังว่าด้วยค่าใช้จ่ายในการเดินทางไปราชการ</span>
-                </div>
-
-                <!-- ตัวเลือก 3: ขอเบิกเฉพาะบางส่วน -->
-                <div class="flex items-baseline flex-wrap gap-x-1">
-                  <span onclick="toggleExpenseChoice('partial')" class="cursor-pointer">
-                    <span id="chk-partial" class="interactive-chk">[ ]</span> ขอเบิกเฉพาะค่าใช้จ่าย:
-                  </span>
-                  <span onclick="toggleSubExpense('transport')" class="cursor-pointer ml-1">
-                    <span id="sub-chk-transport" class="interactive-chk">[ ]</span> ค่าพาหนะเดินทาง
-                  </span>
-                  <span onclick="toggleSubExpense('fuel')" class="cursor-pointer ml-1">
-                    <span id="sub-chk-fuel" class="interactive-chk">[ ]</span> ค่าน้ำมัน
-                  </span>
-                  <span onclick="toggleSubExpense('allowance')" class="cursor-pointer ml-1">
-                    <span id="sub-chk-allowance" class="interactive-chk">[ ]</span> ค่าเบี้ยเลี้ยง
-                  </span>
-                  <span onclick="toggleSubExpense('hotel')" class="cursor-pointer ml-1">
-                    <span id="sub-chk-hotel" class="interactive-chk">[ ]</span> ค่าที่พัก
-                  </span>
-                </div>
-
-                <!-- ตัวเลือก 4: ยานพาหนะ -->
-                <div class="flex items-baseline flex-wrap gap-1">
-                  <span onclick="toggleVehicleChoice()" class="cursor-pointer">
-                    <span id="chk-vehicle" class="interactive-chk text-blue-600">[✓]</span> ไปราชการด้วย
-                  </span>
-                  <select id="in-vehicle-type" onchange="updateVehicleText()" class="doc-fill py-0 text-sm">
-                    <option value="รถจักรยานยนต์ส่วนตัว" selected>รถจักรยานยนต์ส่วนตัว</option>
-                    <option value="รถยนต์ส่วนตัว">รถยนต์ส่วนตัว</option>
-                    <option value="รถยนต์ส่วนกลางของสถานศึกษา">รถยนต์ส่วนกลางของสถานศึกษา</option>
-                  </select>
-                  <span>หมายเลขทะเบียน</span>
-                  <input type="text" id="in-vehicle-plate" class="doc-fill w-44" value="๑กฉ ๙๕๗๘ สิงห์บุรี">
-                </div>
-
-                <!-- ตัวเลือก 5: อื่นๆ -->
-                <div class="flex items-baseline gap-1">
-                  <span onclick="toggleOtherChoice()" class="cursor-pointer">
-                    <span id="chk-other" class="interactive-chk">[ ]</span> อื่น ๆ
-                  </span>
-                  <input type="text" id="in-other-text" class="doc-fill flex-grow" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)">
-                </div>
-
+          <!-- ตัวเลือกค่าใช้จ่าย และ ยานพาหนะ (ตรงตามรูปภาพ 100%) -->
+          <div class="mt-1 flex items-start">
+            <span class="w-[2.4cm] shrink-0">โดยข้าพเจ้า</span>
+            <div class="flex-grow space-y-1">
+              
+              <!-- ตัวเลือก 1: ไม่ขอเบิกค่าใช้จ่าย -->
+              <div class="cursor-pointer" onclick="toggleExpenseChoice('none')">
+                <span id="chk-none" class="doc-chk text-blue-600">[✓]</span> <span>ไม่ขอเบิกค่าใช้จ่าย</span>
               </div>
+              
+              <!-- ตัวเลือก 2: ขอเบิกตามสิทธิ -->
+              <div class="cursor-pointer" onclick="toggleExpenseChoice('full')">
+                <span id="chk-full" class="doc-chk">[ ]</span> <span>ขอเบิกค่าใช้จ่ายตามสิทธิจากเงินงบประมาณหรือเงินนอกงบประมาณของสถานศึกษา (ค่าพาหนะเดินทาง,ค่าเบี้ยเลี้ยง,ค่าที่พัก) ตามระเบียบกระทรวงการคลังว่าด้วยค่าใช้จ่ายในการเดินทางไปราชการ</span>
+              </div>
+
+              <!-- ตัวเลือก 3: ขอเบิกเฉพาะบางส่วน -->
+              <div class="flex items-baseline flex-wrap">
+                <span onclick="toggleExpenseChoice('partial')" class="cursor-pointer">
+                  <span id="chk-partial" class="doc-chk">[ ]</span> ขอเบิกเฉพาะค่าใช้จ่าย:
+                </span>
+                <span onclick="toggleSubExpense('transport')" class="cursor-pointer ml-1">
+                  <span id="sub-chk-transport" class="doc-chk">[ ]</span> ค่าพาหนะเดินทาง
+                </span>
+                <span onclick="toggleSubExpense('fuel')" class="cursor-pointer ml-1">
+                  <span id="sub-chk-fuel" class="doc-chk">[ ]</span> ค่าน้ำมัน
+                </span>
+                <span onclick="toggleSubExpense('allowance')" class="cursor-pointer ml-1">
+                  <span id="sub-chk-allowance" class="doc-chk">[ ]</span> ค่าเบี้ยเลี้ยง
+                </span>
+                <span onclick="toggleSubExpense('hotel')" class="cursor-pointer ml-1">
+                  <span id="sub-chk-hotel" class="doc-chk">[ ]</span> ค่าที่พัก
+                </span>
+              </div>
+
+              <!-- ตัวเลือก 4: ยานพาหนะเดินทาง -->
+              <div class="flex items-baseline flex-wrap">
+                <span onclick="toggleVehicleChoice()" class="cursor-pointer">
+                  <span id="chk-vehicle" class="doc-chk text-blue-600">[✓]</span> ไปราชการด้วย
+                </span>
+                <span contenteditable="true" class="doc-edit mx-1" id="ed-vehicle-type">รถจักรยานยนต์ส่วนตัว</span>
+                <span>หมายเลขทะเบียน</span>
+                <span contenteditable="true" class="doc-edit ml-1" id="ed-vehicle-plate">๑กฉ ๙๕๗๘ สิงห์บุรี</span>
+              </div>
+
+              <!-- ตัวเลือก 5: อื่นๆ -->
+              <div class="flex items-baseline">
+                <span onclick="toggleOtherChoice()" class="cursor-pointer shrink-0">
+                  <span id="chk-other" class="doc-chk">[ ]</span> อื่น ๆ
+                </span>
+                <span contenteditable="true" class="doc-edit ml-2 flex-grow border-b border-dotted border-black min-h-[1.2em]" id="ed-other-text"></span>
+              </div>
+
             </div>
           </div>
 
           <!-- ย่อหน้าคำลงท้าย -->
-          <p class="indent-[2.5cm] pt-1">
+          <p class="indent-[2.5cm] mt-2">
             จึงเรียนมาเพื่อโปรดทราบอนุมัติการเดินทางไปราชการตามที่เสนอ
           </p>
         </div>
 
-        <!-- กล่องลงลายมือชื่อผู้ขออนุมัติ (วาดสด หรือ แนบภาพลายเซ็นได้ตรงนี้เลย) -->
+        <!-- ลายมือชื่อผู้ขออนุมัติ (ชิดขวา พร้อมภาพลายเซ็น) -->
         <div class="mt-6 flex justify-end page-break-avoid">
-          <div class="w-[8.8cm] text-center flex flex-col items-center">
+          <div class="w-[8.5cm] text-center flex flex-col items-center">
             
-            <div class="flex items-center justify-center min-h-[50px] relative w-full">
-              <span class="absolute left-2 top-3">(ลงชื่อ)</span>
+            <div class="flex items-center justify-center min-h-[45px] relative w-full">
+              <span class="absolute left-2 top-2">(ลงชื่อ)</span>
               
               <!-- กล่องแสดงลายเซ็นครู -->
-              <div id="teacher-signature-display" class="h-14 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('teacher')" title="คลิกเพื่อเซ็นชื่อหรือแนบรูปภาพ">
-                <span id="teacher-sign-placeholder" class="text-xs text-blue-600 border border-dashed border-blue-400 bg-blue-50/70 px-3 py-1 rounded-lg no-print flex items-center gap-1 group-hover:bg-blue-100">
-                  <i class="fa-solid fa-pen-nib"></i> คลิกเพื่อลงชื่อ / แนบลายเซ็น
+              <div id="teacher-signature-display" class="h-12 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('teacher')" title="คลิกเพื่อลงชื่อ หรือ แนบลายเซ็น">
+                <span id="teacher-sign-placeholder" class="text-xs text-blue-600 no-print border border-dashed border-blue-400 bg-blue-50/70 px-3 py-1 rounded-lg">
+                  <i class="fa-solid fa-pen-nib mr-1"></i>คลิกลงลายมือชื่อ
                 </span>
                 <img id="teacher-sign-image" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อครู">
               </div>
@@ -499,54 +449,50 @@
             </div>
 
             <div class="mt-1">
-              (<input type="text" id="in-sign-name" class="doc-fill text-center font-medium w-52" value="นายวราภรณ์ จูงาม">)
+              (<span contenteditable="true" id="ed-sign-name" class="doc-edit font-medium">นายวราภรณ์ จูงาม</span>)
             </div>
             <div>
-              ตำแหน่ง <input type="text" id="in-sign-position" class="doc-fill text-center w-36" value="ครูผู้ช่วย">
+              ตำแหน่ง <span contenteditable="true" id="ed-sign-position" class="doc-edit">ครูผู้ช่วย</span>
             </div>
 
           </div>
         </div>
 
         <!-- ส่วนคำสั่งและการพิจารณาของผู้อำนวยการ (ตรงตามรูปภาพต้นฉบับ 100%) -->
-        <div class="mt-8 page-break-avoid">
+        <div class="mt-6 page-break-avoid">
           <div class="font-bold text-[16pt] mb-1">ความเห็นผู้อำนวยการโรงเรียน</div>
           
           <div class="flex items-center gap-6 my-1">
             <div class="cursor-pointer" onclick="toggleDirectorDecision('approved')">
-              <span id="chk-dir-approved" class="interactive-chk text-blue-600">[✓]</span> <span>อนุมัติ</span>
+              <span id="chk-dir-approved" class="doc-chk text-blue-600">[✓]</span> <span>อนุมัติ</span>
             </div>
             <div class="cursor-pointer" onclick="toggleDirectorDecision('rejected')">
-              <span id="chk-dir-rejected" class="interactive-chk">[ ]</span> <span>ไม่อนุมัติ</span>
+              <span id="chk-dir-rejected" class="doc-chk">[ ]</span> <span>ไม่อนุมัติ</span>
             </div>
           </div>
 
-          <!-- เส้นประข้อความความเห็น (พิมพ์ข้อสั่งการลงในบรรทัดได้) -->
-          <div class="my-1">
-            <input type="text" id="in-dir-comment1" class="doc-fill w-full" placeholder="ข้อสั่งการ/ความเห็นเพิ่มเติม (ถ้ามี)">
-          </div>
-          <div class="my-1">
-            <input type="text" id="in-dir-comment2" class="doc-fill w-full" placeholder="">
-          </div>
+          <!-- เส้นประข้อความความเห็น 2 บรรทัด (พิมพ์ข้อสั่งการลงในบรรทัดได้) -->
+          <div class="my-1 border-b border-dotted border-black w-full min-h-[1.4em] outline-none text-slate-800" contenteditable="true" id="ed-dir-comment1"></div>
+          <div class="my-1 border-b border-dotted border-black w-full min-h-[1.4em] outline-none" contenteditable="true" id="ed-dir-comment2"></div>
 
-          <!-- ลายมือชื่อผู้อำนวยการโรงเรียน -->
+          <!-- ลายมือชื่อผู้อำนวยการโรงเรียน (กึ่งกลาง) -->
           <div class="mt-4 flex flex-col items-center justify-center">
-            <div class="flex items-center justify-center min-h-[50px] relative w-[8.8cm]">
-              <span class="absolute left-2 top-3">(ลงชื่อ)</span>
+            <div class="flex items-center justify-center min-h-[45px] relative w-[8.5cm]">
+              <span class="absolute left-2 top-2">(ลงชื่อ)</span>
               
               <!-- กล่องแสดงลายเซ็น ผอ. -->
-              <div id="director-signature-display" class="h-14 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('director')" title="คลิกเพื่อลงชื่อผู้อำนวยการ">
-                <span id="director-sign-placeholder" class="text-xs text-amber-700 border border-dashed border-amber-400 bg-amber-50/80 px-3 py-1 rounded-lg no-print flex items-center gap-1 group-hover:bg-amber-100">
-                  <i class="fa-solid fa-stamp"></i> คลิกเพื่อลงชื่อ ผอ.
+              <div id="director-signature-display" class="h-12 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('director')" title="คลิกเพื่อลงชื่อ ผอ.">
+                <span id="director-sign-placeholder" class="text-xs text-amber-700 no-print border border-dashed border-amber-400 bg-amber-50/80 px-3 py-1 rounded-lg">
+                  <i class="fa-solid fa-stamp mr-1"></i>คลิกลงชื่อ ผอ.
                 </span>
-                <img id="director-sign-image" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อผู้อำนวยการ">
+                <img id="director-sign-image" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อ ผอ.">
               </div>
 
               <span class="border-b border-dotted border-black w-48 inline-block absolute bottom-1 right-2 -z-10"></span>
             </div>
 
             <div class="mt-1">
-              (<span id="label-dir-name" class="font-medium">นางนัทชพร ตั้งศุภจรูญนุกูล</span>)
+              (<span>นางนัทชพร ตั้งศุภจรูญนุกูล</span>)
             </div>
             <div>ตำแหน่ง ผู้อำนวยการโรงเรียนวัดบางปูน</div>
           </div>
@@ -621,38 +567,15 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 5. JAVASCRIPT APP LOGIC                                  -->
+  <!-- 5. JAVASCRIPT APPLICATION LOGIC                          -->
   <!-- ======================================================== -->
   <script>
-    // Initial Database Users (โรงเรียนวัดบางปูน จ.สิงห์บุรี)
     const DEFAULT_USERS = [
-      {
-        id: 1,
-        username: "teacher1",
-        password: "1234",
-        fullname: "นายวราภรณ์ จูงาม",
-        position: "ครูผู้ช่วย",
-        role: "teacher"
-      },
-      {
-        id: 2,
-        username: "teacher2",
-        password: "1234",
-        fullname: "นายสมชาย ใจดี",
-        position: "ครู ชำนาญการ",
-        role: "teacher"
-      },
-      {
-        id: 3,
-        username: "director",
-        password: "1234",
-        fullname: "นางนัทชพร ตั้งศุภจรูญนุกูล",
-        position: "ผู้อำนวยการโรงเรียนวัดบางปูน",
-        role: "director"
-      }
+      { id: 1, username: "teacher1", password: "1234", fullname: "นายวราภรณ์ จูงาม", position: "ครูผู้ช่วย", role: "teacher" },
+      { id: 2, username: "teacher2", password: "1234", fullname: "นายสมชาย ใจดี", position: "ครู ชำนาญการ", role: "teacher" },
+      { id: 3, username: "director", password: "1234", fullname: "นางนัทชพร ตั้งศุภจรูญนุกูล", position: "ผู้อำนวยการโรงเรียนวัดบางปูน", role: "director" }
     ];
 
-    // Initial Default Seed Requests (ตรงตามรูปภาพต้นฉบับ)
     const DEFAULT_REQUESTS = [
       {
         request_id: "REQ-2569-001",
@@ -663,7 +586,7 @@
         fullname: "นายวราภรณ์ จูงาม",
         position: "ครูผู้ช่วย",
         purpose: "วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ.",
-        location: "ห้องศูนย์ประชุมและกิจกรรม โรงเรียนโคกสำโรงวิทยา",
+        location: "ห้องศูนย์ประชุมและกิจกรรมโรงเรียนโคกสำโรงวิทยา",
         ref_doc: "ศธ ๐๔๓๓๓.๐๗/๓๓๔ ลว. ๑๐ มิถุนายน ๒๕๖๘",
         day_name: "พุธ",
         day_num: "๘",
@@ -680,21 +603,19 @@
         other_text: "",
         teacher_sign: "",
         director_decision: "approved",
-        director_comment1: "อนุมัติให้ไปราชการตามที่เสนอ",
+        director_comment1: "",
         director_comment2: "",
         director_sign: "",
-        status: "approved", // pending / approved / rejected
+        status: "approved",
         created_at: "2026-07-02 08:30"
       }
     ];
 
-    // App State
     let currentUser = null;
     let currentRequestId = "REQ-2569-001";
-    let activeSigRole = "teacher"; // 'teacher' or 'director'
+    let activeSigRole = "teacher";
     let tempUploadData = "";
 
-    // Signature Canvas State
     let sigCanvas, sigCtx, isDrawing = false, hasDrawn = false;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -727,7 +648,6 @@
     function getRequests() { return JSON.parse(localStorage.getItem("tb_requests") || "[]"); }
     function saveRequests(r) { localStorage.setItem("tb_requests", JSON.stringify(r)); }
 
-    // Authentication Session
     function checkAuthSession() {
       const saved = sessionStorage.getItem("auth_user");
       if (saved) {
@@ -744,14 +664,13 @@
       if (user) {
         currentUser = user;
         sessionStorage.setItem("auth_user", JSON.stringify(user));
-        showToast(`สลับใช้งานเป็น: ${user.fullname} (${user.role === 'director' ? 'ผู้อำนวยการ' : 'ครู'})`, "info");
+        showToast(`สลับใช้งานเป็น: ${user.fullname}`, "info");
         renderCurrentSession();
       }
     }
 
     function renderCurrentSession() {
       if (!currentUser) return;
-      
       const badge = document.getElementById("nav-user-badge");
       const isDirector = currentUser.role === 'director';
 
@@ -765,7 +684,6 @@
         </div>
       `;
 
-      // ปรับการแสดงปุ่ม Director Quick Action บนแถบเครื่องมือ
       const dirActions = document.getElementById("director-quick-actions");
       const teacherSaveBtn = document.getElementById("btn-save-request");
 
@@ -791,7 +709,6 @@
       }
     }
 
-    // View Navigation (Form vs History)
     function setViewMode(mode) {
       const formView = document.getElementById("form-view");
       const historyView = document.getElementById("history-view");
@@ -812,7 +729,6 @@
       }
     }
 
-    // History Table Renderer
     function renderHistoryTable() {
       const tbody = document.getElementById("history-tbody");
       const reqs = getRequests();
@@ -824,13 +740,9 @@
 
       tbody.innerHTML = reqs.map(r => {
         let statusBadge = "";
-        if (r.status === 'approved') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">อนุมัติแล้ว</span>`;
-        } else if (r.status === 'rejected') {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">ไม่อนุมัติ</span>`;
-        } else {
-          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">รอการพิจารณา</span>`;
-        }
+        if (r.status === 'approved') statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">อนุมัติแล้ว</span>`;
+        else if (r.status === 'rejected') statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">ไม่อนุมัติ</span>`;
+        else statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">รอการพิจารณา</span>`;
 
         return `
           <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="loadRequestIntoDocument('${r.request_id}'); setViewMode('form');">
@@ -848,89 +760,82 @@
     }
 
     // ========================================================
-    // DOCUMENT DATA BINDING (โหลดข้อมูลใส่ในหนังสือราชการ)
+    // LOAD & BIND DATA INTO DOCUMENT
     // ========================================================
     function loadRequestIntoDocument(reqId) {
       currentRequestId = reqId;
       const req = getRequests().find(r => r.request_id === reqId);
       if (!req) return;
 
-      document.getElementById("in-doc-num").value = req.doc_num || "";
-      document.getElementById("in-doc-date").value = req.doc_date || "";
-      document.getElementById("in-doc-subject").value = req.subject || "";
+      document.getElementById("ed-doc-num").textContent = req.doc_num || "";
+      document.getElementById("ed-doc-date").textContent = req.doc_date || "";
+      document.getElementById("ed-subject").textContent = req.subject || "";
 
-      document.getElementById("in-fullname").value = req.fullname || "";
-      document.getElementById("in-position").value = req.position || "";
-      document.getElementById("in-purpose").value = req.purpose || "";
-      document.getElementById("in-location").value = req.location || "";
-      document.getElementById("in-ref-doc").value = req.ref_doc || "";
+      document.getElementById("ed-fullname").textContent = req.fullname || "";
+      document.getElementById("ed-position").textContent = req.position || "";
+      document.getElementById("ed-purpose").textContent = req.purpose || "";
+      document.getElementById("ed-location").textContent = req.location || "";
+      document.getElementById("ed-ref-doc").textContent = req.ref_doc || "";
 
-      document.getElementById("in-day-name").value = req.day_name || "";
-      document.getElementById("in-day-num").value = req.day_num || "";
-      document.getElementById("in-month-name").value = req.month_name || "";
-      document.getElementById("in-year-num").value = req.year_num || "";
-      document.getElementById("in-time-start").value = req.time_start || "๐๘.๐๐";
-      document.getElementById("in-time-end").value = req.time_end || "๑๖.๓๐ น.";
+      document.getElementById("ed-dayname").textContent = req.day_name || "";
+      document.getElementById("ed-daynum").textContent = req.day_num || "";
+      document.getElementById("ed-month").textContent = req.month_name || "";
+      document.getElementById("ed-year").textContent = req.year_num || "";
+      document.getElementById("ed-timestart").textContent = req.time_start || "๐๘.๐๐";
+      document.getElementById("ed-timeend").textContent = req.time_end || "๑๖.๓๐ น.";
 
-      // Expenses choices
       setExpenseChoiceUI(req.expense_choice);
       document.getElementById("sub-chk-transport").textContent = req.sub_expenses?.transport ? '[✓]' : '[ ]';
       document.getElementById("sub-chk-fuel").textContent = req.sub_expenses?.fuel ? '[✓]' : '[ ]';
       document.getElementById("sub-chk-allowance").textContent = req.sub_expenses?.allowance ? '[✓]' : '[ ]';
       document.getElementById("sub-chk-hotel").textContent = req.sub_expenses?.hotel ? '[✓]' : '[ ]';
 
-      // Vehicle
       document.getElementById("chk-vehicle").textContent = req.vehicle_checked ? '[✓]' : '[ ]';
-      document.getElementById("in-vehicle-type").value = req.vehicle_type || "รถจักรยานยนต์ส่วนตัว";
-      document.getElementById("in-vehicle-plate").value = req.vehicle_plate || "";
+      document.getElementById("ed-vehicle-type").textContent = req.vehicle_type || "รถจักรยานยนต์ส่วนตัว";
+      document.getElementById("ed-vehicle-plate").textContent = req.vehicle_plate || "";
 
-      // Other
       document.getElementById("chk-other").textContent = req.other_checked ? '[✓]' : '[ ]';
-      document.getElementById("in-other-text").value = req.other_text || "";
+      document.getElementById("ed-other-text").textContent = req.other_text || "";
 
-      // Signature values
-      document.getElementById("in-sign-name").value = req.fullname || "";
-      document.getElementById("in-sign-position").value = req.position || "";
+      document.getElementById("ed-sign-name").textContent = req.fullname || "";
+      document.getElementById("ed-sign-position").textContent = req.position || "";
 
       renderSignatureImage('teacher', req.teacher_sign);
       renderSignatureImage('director', req.director_sign);
 
-      // Director section
       setDirectorDecisionUI(req.director_decision || 'approved');
-      document.getElementById("in-dir-comment1").value = req.director_comment1 || "";
-      document.getElementById("in-dir-comment2").value = req.director_comment2 || "";
+      document.getElementById("ed-dir-comment1").textContent = req.director_comment1 || "";
+      document.getElementById("ed-dir-comment2").textContent = req.director_comment2 || "";
 
-      // Status Bar update
       updateDocumentStatusBar(req);
     }
 
     function createNewBlankDocument() {
       currentRequestId = null;
-      document.getElementById("in-doc-num").value = "";
-      
+      document.getElementById("ed-doc-num").textContent = "";
+
       const now = new Date();
       const thaiMonths = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
       const thaiDays = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
-      
-      document.getElementById("in-doc-date").value = `${toThaiDigits(now.getDate())} ${thaiMonths[now.getMonth()]} ${toThaiDigits(now.getFullYear()+543)}`;
-      document.getElementById("in-doc-subject").value = "ขออนุญาตไปราชการที่...";
 
-      // Auto-fill from current user
-      document.getElementById("in-fullname").value = currentUser.fullname;
-      document.getElementById("in-position").value = currentUser.position;
-      document.getElementById("in-sign-name").value = currentUser.fullname;
-      document.getElementById("in-sign-position").value = currentUser.position;
+      document.getElementById("ed-doc-date").textContent = `${toThaiDigits(now.getDate())} ${thaiMonths[now.getMonth()]} ${toThaiDigits(now.getFullYear()+543)}`;
+      document.getElementById("ed-subject").textContent = "ขออนุญาตไปราชการที่...";
 
-      document.getElementById("in-purpose").value = "";
-      document.getElementById("in-location").value = "";
-      document.getElementById("in-ref-doc").value = "";
+      document.getElementById("ed-fullname").textContent = currentUser.fullname;
+      document.getElementById("ed-position").textContent = currentUser.position;
+      document.getElementById("ed-sign-name").textContent = currentUser.fullname;
+      document.getElementById("ed-sign-position").textContent = currentUser.position;
 
-      document.getElementById("in-day-name").value = thaiDays[now.getDay()];
-      document.getElementById("in-day-num").value = toThaiDigits(now.getDate());
-      document.getElementById("in-month-name").value = thaiMonths[now.getMonth()];
-      document.getElementById("in-year-num").value = toThaiDigits(now.getFullYear()+543);
-      document.getElementById("in-time-start").value = "๐๘.๐๐";
-      document.getElementById("in-time-end").value = "๑๖.๓๐ น.";
+      document.getElementById("ed-purpose").textContent = "เข้าร่วมการประชุม/อบรม...";
+      document.getElementById("ed-location").textContent = "...";
+      document.getElementById("ed-ref-doc").textContent = "ศธ ๐๔๓๓๓/...";
+
+      document.getElementById("ed-dayname").textContent = thaiDays[now.getDay()];
+      document.getElementById("ed-daynum").textContent = toThaiDigits(now.getDate());
+      document.getElementById("ed-month").textContent = thaiMonths[now.getMonth()];
+      document.getElementById("ed-year").textContent = toThaiDigits(now.getFullYear()+543);
+      document.getElementById("ed-timestart").textContent = "๐๘.๐๐";
+      document.getElementById("ed-timeend").textContent = "๑๖.๓๐ น.";
 
       setExpenseChoiceUI('none');
       document.getElementById("sub-chk-transport").textContent = '[ ]';
@@ -939,18 +844,18 @@
       document.getElementById("sub-chk-hotel").textContent = '[ ]';
 
       document.getElementById("chk-vehicle").textContent = '[✓]';
-      document.getElementById("in-vehicle-type").value = "รถจักรยานยนต์ส่วนตัว";
-      document.getElementById("in-vehicle-plate").value = "";
+      document.getElementById("ed-vehicle-type").textContent = "รถจักรยานยนต์ส่วนตัว";
+      document.getElementById("ed-vehicle-plate").textContent = "๑กฉ ๙๕๗๘ สิงห์บุรี";
 
       document.getElementById("chk-other").textContent = '[ ]';
-      document.getElementById("in-other-text").value = "";
+      document.getElementById("ed-other-text").textContent = "";
 
       renderSignatureImage('teacher', "");
       renderSignatureImage('director', "");
 
       setDirectorDecisionUI('approved');
-      document.getElementById("in-dir-comment1").value = "";
-      document.getElementById("in-dir-comment2").value = "";
+      document.getElementById("ed-dir-comment1").textContent = "";
+      document.getElementById("ed-dir-comment2").textContent = "";
 
       document.getElementById("bar-doc-title").textContent = "สร้างคำขอใหม่ (กรอกข้อมูลในหนังสือราชการ)";
       document.getElementById("bar-status-badge").classList.add("hidden");
@@ -974,7 +879,7 @@
     }
 
     // ========================================================
-    // INTERACTIVE CHECKBOXES & TOGGLES
+    // CHECKBOXES & TOGGLES
     // ========================================================
     let currentExpenseChoice = 'none';
 
@@ -985,13 +890,13 @@
 
     function setExpenseChoiceUI(choice) {
       document.getElementById("chk-none").textContent = choice === 'none' ? '[✓]' : '[ ]';
-      document.getElementById("chk-none").className = `interactive-chk ${choice === 'none' ? 'text-blue-600 font-bold' : ''}`;
+      document.getElementById("chk-none").className = `doc-chk ${choice === 'none' ? 'text-blue-600 font-bold' : ''}`;
 
       document.getElementById("chk-full").textContent = choice === 'full' ? '[✓]' : '[ ]';
-      document.getElementById("chk-full").className = `interactive-chk ${choice === 'full' ? 'text-blue-600 font-bold' : ''}`;
+      document.getElementById("chk-full").className = `doc-chk ${choice === 'full' ? 'text-blue-600 font-bold' : ''}`;
 
       document.getElementById("chk-partial").textContent = choice === 'partial' ? '[✓]' : '[ ]';
-      document.getElementById("chk-partial").className = `interactive-chk ${choice === 'partial' ? 'text-blue-600 font-bold' : ''}`;
+      document.getElementById("chk-partial").className = `doc-chk ${choice === 'partial' ? 'text-blue-600 font-bold' : ''}`;
     }
 
     function toggleSubExpense(key) {
@@ -1016,21 +921,21 @@
 
     function setDirectorDecisionUI(decision) {
       document.getElementById("chk-dir-approved").textContent = decision === 'approved' ? '[✓]' : '[ ]';
-      document.getElementById("chk-dir-approved").className = `interactive-chk ${decision === 'approved' ? 'text-blue-600 font-bold' : ''}`;
+      document.getElementById("chk-dir-approved").className = `doc-chk ${decision === 'approved' ? 'text-blue-600 font-bold' : ''}`;
 
       document.getElementById("chk-dir-rejected").textContent = decision === 'rejected' ? '[✓]' : '[ ]';
-      document.getElementById("chk-dir-rejected").className = `interactive-chk ${decision === 'rejected' ? 'text-rose-600 font-bold' : ''}`;
+      document.getElementById("chk-dir-rejected").className = `doc-chk ${decision === 'rejected' ? 'text-rose-600 font-bold' : ''}`;
     }
 
     // ========================================================
-    // SIGNATURE PAD & MODAL CONTROLLER
+    // SIGNATURE PAD & MODAL
     // ========================================================
     function initSigCanvas() {
       sigCanvas = document.getElementById("active-sig-canvas");
       sigCtx = sigCanvas.getContext("2d");
       sigCtx.lineWidth = 2.8;
       sigCtx.lineCap = "round";
-      sigCtx.strokeStyle = "#082f49"; // น้ำเงินเข้มลายเซ็นจริง
+      sigCtx.strokeStyle = "#082f49";
 
       function getPos(e) {
         const rect = sigCanvas.getBoundingClientRect();
@@ -1135,13 +1040,13 @@
       }
 
       if (!finalSign) {
-        showToast("กรุณาวาดลายเซ็นหรือแนบไฟล์รูปภาพก่อนกดยืนยัน", "error");
+        showToast("กรุณาวาดลายเซ็นหรือแนบไฟล์รูปภาพ", "error");
         return;
       }
 
       renderSignatureImage(activeSigRole, finalSign);
       closeSignatureModal();
-      showToast("บันทึกลายมือชื่อลงในเอกสารแล้ว", "success");
+      showToast("บันทึกลายมือชื่อเรียบร้อย", "success");
     }
 
     function renderSignatureImage(role, dataUrl) {
@@ -1162,7 +1067,7 @@
     }
 
     // ========================================================
-    // SAVE & APPROVE ACTIONS
+    // SAVE & APPROVE
     // ========================================================
     function collectCurrentDocumentData() {
       const reqs = getRequests();
@@ -1172,20 +1077,20 @@
       return {
         request_id: reqId,
         user_id: currentUser.id,
-        doc_num: document.getElementById("in-doc-num").value.trim(),
-        doc_date: document.getElementById("in-doc-date").value.trim(),
-        subject: document.getElementById("in-doc-subject").value.trim(),
-        fullname: document.getElementById("in-fullname").value.trim(),
-        position: document.getElementById("in-position").value.trim(),
-        purpose: document.getElementById("in-purpose").value.trim(),
-        location: document.getElementById("in-location").value.trim(),
-        ref_doc: document.getElementById("in-ref-doc").value.trim(),
-        day_name: document.getElementById("in-day-name").value.trim(),
-        day_num: document.getElementById("in-day-num").value.trim(),
-        month_name: document.getElementById("in-month-name").value.trim(),
-        year_num: document.getElementById("in-year-num").value.trim(),
-        time_start: document.getElementById("in-time-start").value.trim(),
-        time_end: document.getElementById("in-time-end").value.trim(),
+        doc_num: document.getElementById("ed-doc-num").textContent.trim(),
+        doc_date: document.getElementById("ed-doc-date").textContent.trim(),
+        subject: document.getElementById("ed-subject").textContent.trim(),
+        fullname: document.getElementById("ed-fullname").textContent.trim(),
+        position: document.getElementById("ed-position").textContent.trim(),
+        purpose: document.getElementById("ed-purpose").textContent.trim(),
+        location: document.getElementById("ed-location").textContent.trim(),
+        ref_doc: document.getElementById("ed-ref-doc").textContent.trim(),
+        day_name: document.getElementById("ed-dayname").textContent.trim(),
+        day_num: document.getElementById("ed-daynum").textContent.trim(),
+        month_name: document.getElementById("ed-month").textContent.trim(),
+        year_num: document.getElementById("ed-year").textContent.trim(),
+        time_start: document.getElementById("ed-timestart").textContent.trim(),
+        time_end: document.getElementById("ed-timeend").textContent.trim(),
         expense_choice: currentExpenseChoice,
         sub_expenses: {
           transport: document.getElementById("sub-chk-transport").textContent.includes('✓'),
@@ -1194,14 +1099,14 @@
           hotel: document.getElementById("sub-chk-hotel").textContent.includes('✓')
         },
         vehicle_checked: document.getElementById("chk-vehicle").textContent.includes('✓'),
-        vehicle_type: document.getElementById("in-vehicle-type").value,
-        vehicle_plate: document.getElementById("in-vehicle-plate").value.trim(),
+        vehicle_type: document.getElementById("ed-vehicle-type").textContent.trim(),
+        vehicle_plate: document.getElementById("ed-vehicle-plate").textContent.trim(),
         other_checked: document.getElementById("chk-other").textContent.includes('✓'),
-        other_text: document.getElementById("in-other-text").value.trim(),
+        other_text: document.getElementById("ed-other-text").textContent.trim(),
         teacher_sign: document.getElementById("teacher-sign-image").dataset.signature || "",
         director_decision: document.getElementById("chk-dir-approved").textContent.includes('✓') ? 'approved' : 'rejected',
-        director_comment1: document.getElementById("in-dir-comment1").value.trim(),
-        director_comment2: document.getElementById("in-dir-comment2").value.trim(),
+        director_comment1: document.getElementById("ed-dir-comment1").textContent.trim(),
+        director_comment2: document.getElementById("ed-dir-comment2").textContent.trim(),
         director_sign: document.getElementById("director-sign-image").dataset.signature || "",
         status: "pending",
         created_at: new Date().toISOString()
@@ -1214,7 +1119,7 @@
       const existingIndex = reqs.findIndex(r => r.request_id === data.request_id);
 
       if (existingIndex >= 0) {
-        data.status = reqs[existingIndex].status; // maintain status
+        data.status = reqs[existingIndex].status;
         data.director_sign = reqs[existingIndex].director_sign;
         reqs[existingIndex] = data;
       } else {
@@ -1225,12 +1130,12 @@
       saveRequests(reqs);
       updateDocumentStatusBar(data);
       updatePendingBadge();
-      showToast("บันทึกข้อมูลหนังสือราชการเรียบร้อยแล้ว", "success");
+      showToast("บันทึกคำขอไปราชการเรียบร้อยแล้ว", "success");
     }
 
     function handleDirectorSignAndApprove(decision) {
       if (!currentRequestId) {
-        showToast("กรุณาเลือกคำขอที่ต้องการอนุมัติ", "error");
+        showToast("กรุณาเลือกคำขอก่อนลงนาม", "error");
         return;
       }
 
@@ -1240,15 +1145,14 @@
 
       reqs[idx].status = decision;
       reqs[idx].director_decision = decision;
-      reqs[idx].director_comment1 = document.getElementById("in-dir-comment1").value.trim() || (decision === 'approved' ? 'อนุมัติให้ไปราชการตามที่เสนอ' : 'ไม่อนุมัติ');
-      reqs[idx].director_comment2 = document.getElementById("in-dir-comment2").value.trim();
+      reqs[idx].director_comment1 = document.getElementById("ed-dir-comment1").textContent.trim();
+      reqs[idx].director_comment2 = document.getElementById("ed-dir-comment2").textContent.trim();
       reqs[idx].director_sign = document.getElementById("director-sign-image").dataset.signature || "";
 
       saveRequests(reqs);
       loadRequestIntoDocument(currentRequestId);
       updatePendingBadge();
-
-      showToast(decision === 'approved' ? "ผู้อำนวยการลงนามอนุมัติเรียบร้อยแล้ว" : "บันทึกคำสั่งไม่อนุมัติแล้ว", "success");
+      showToast(decision === 'approved' ? "ผู้อำนวยการลงนามอนุมัติเรียบร้อยแล้ว" : "บันทึกไม่อนุมัติแล้ว", "success");
     }
 
     // ========================================================
@@ -1269,7 +1173,7 @@
         const imgData = canvas.toDataURL("image/png");
         const a = document.createElement("a");
         a.href = imgData;
-        a.download = `บันทึกข้อความ_ขออนุญาตไปราชการ_${document.getElementById("in-fullname").value.trim()}.png`;
+        a.download = `บันทึกข้อความ_${document.getElementById("ed-fullname").textContent.trim()}.png`;
         a.click();
         showToast("ดาวน์โหลดรูปภาพสำเร็จ!", "success");
       } catch (err) {
@@ -1279,7 +1183,7 @@
     }
 
     async function downloadDocumentPDF() {
-      showToast("กำลังประมวลผลเอกสาร PDF...", "info");
+      showToast("กำลังประมวลผล PDF...", "info");
       const element = document.getElementById("official-document-paper");
 
       try {
@@ -1297,7 +1201,7 @@
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-        pdf.save(`บันทึกข้อความ_${document.getElementById("in-fullname").value.trim()}.pdf`);
+        pdf.save(`บันทึกข้อความ_${document.getElementById("ed-fullname").textContent.trim()}.pdf`);
         showToast("ดาวน์โหลด PDF สำเร็จ!", "success");
       } catch (err) {
         console.error(err);
@@ -1307,14 +1211,14 @@
 
     // ========================================================
     // UTILITY HELPERS & GARUDA UPLOADER
-    // ==========================================
+    // ========================================================
     function handleGarudaCustomUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(evt) {
         document.getElementById("doc-garuda-img").src = evt.target.result;
-        showToast("เปลี่ยนตราครุฑเรียบร้อยแล้ว", "success");
+        showToast("เปลี่ยนรูปตราครุฑเรียบร้อยแล้ว", "success");
       };
       reader.readAsDataURL(file);
     }
