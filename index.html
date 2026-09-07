@@ -14,28 +14,17 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+  <!-- Libraries for Image & PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
             sans: ['Prompt', 'sans-serif'],
-            sarabun: ['Sarabun', 'sans-serif'],
-          },
-          colors: {
-            primary: {
-              50: '#eef8ff',
-              100: '#d8eeff',
-              500: '#1d7ed6',
-              600: '#1367b7',
-              700: '#105294',
-              800: '#124578',
-              900: '#143b63',
-            },
-            school: {
-              gold: '#d4af37',
-              blue: '#0e417a',
-            }
+            sarabun: ['Sarabun', 'TH Sarabun New', 'TH Sarabun PSK', 'sans-serif'],
           }
         }
       }
@@ -43,29 +32,95 @@
   </script>
 
   <style>
-    /* Base UI styling */
+    /* กำหนด Font-Face ดึงฟอนต์ไทยสารบรรณแท้ (TH Sarabun New / PSK) จากเครื่องผู้ใช้ */
+    @font-face {
+      font-family: 'TH Sarabun New';
+      font-style: normal;
+      font-weight: 400;
+      src: local('TH Sarabun New'), local('THSarabunNew'), local('TH Sarabun PSK'), local('THSarabunPSK'),
+           url('https://fonts.gstatic.com/s/sarabun/v13/DtVjJxs035qZL-m92D5Z5G_s.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'TH Sarabun New';
+      font-style: normal;
+      font-weight: 700;
+      src: local('TH Sarabun New Bold'), local('THSarabunNew-Bold'), local('TH Sarabun PSK Bold'), local('THSarabunPSK-Bold'),
+           url('https://fonts.gstatic.com/s/sarabun/v13/DtVoJxs035qZL-m97CRc2X_0wQ.woff2') format('woff2');
+    }
+
     body {
       font-family: 'Prompt', sans-serif;
-      background-color: #f1f5f9;
+      background-color: #e2e8f0;
       color: #1e293b;
     }
 
-    /* Print styling strictly tailored for Thai Official Memorandum (บันทึกข้อความ) */
+    /* สไตล์แบบฟอร์มเอกสารบนหน้าจอ - บังคับใช้ฟอนต์ไทยสารบรรณแท้ 16pt */
+    .paper-a4 {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      margin: 0 auto;
+      padding: 16mm 18mm 18mm 25mm; /* ตามแบบราชการไทย */
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
+      font-size: 16pt !important;
+      line-height: 1.22 !important;
+      color: #000;
+      position: relative;
+    }
+
+    /* ช่องกรอกข้อมูลแบบอินไลน์เสมือนพิมพ์บนกระดาษจริง */
+    .doc-fill {
+      border: none;
+      border-bottom: 1px dotted #334155;
+      background-color: #eff6ff;
+      color: #000;
+      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
+      font-size: 16pt !important;
+      line-height: 1.2 !important;
+      padding: 0 4px;
+      outline: none;
+      transition: all 0.15s ease;
+      border-radius: 2px;
+    }
+
+    .doc-fill:focus {
+      background-color: #dbeafe;
+      border-bottom: 1.5px solid #1d4ed8;
+    }
+
+    /* ช่องติ๊กเลือกแบบโต้ตอบได้ในเอกสาร */
+    .interactive-chk {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'Sarabun', monospace, sans-serif !important;
+      font-weight: bold;
+      font-size: 15pt;
+      cursor: pointer;
+      user-select: none;
+      padding: 0 3px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .interactive-chk:hover {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    /* การสั่งพิมพ์ (Print Mode) */
     @page {
       size: A4 portrait;
-      margin: 15mm 20mm 15mm 25mm; /* ขอบบน 1.5-2cm, ขวา 2cm, ล่าง 1.5cm, ซ้าย 2.5cm ตามงานสารบรรณ */
+      margin: 12mm 15mm 15mm 22mm;
     }
 
     @media print {
-      /* ซ่อน UI ทั้งหมดที่ไม่เกี่ยวข้องกับการพิมพ์ */
       .no-print,
       #app-navbar,
       #quick-account-bar,
-      #teacher-view,
-      #director-view,
-      #login-view,
+      #doc-action-bar,
+      #history-view,
       #notification-toast,
-      .modal-backdrop,
       button,
       header,
       footer {
@@ -77,961 +132,578 @@
         margin: 0 !important;
         padding: 0 !important;
         color: #000 !important;
-        font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif !important;
+        font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
         font-size: 16pt !important;
-        line-height: 1.25 !important;
       }
 
-      /* แสดงเฉพาะกล่องเอกสาร A4 เท่านั้น */
-      #print-paper {
-        display: block !important;
-        position: static !important;
+      .paper-a4 {
+        box-shadow: none !important;
+        border: none !important;
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif !important;
+        font-family: 'TH Sarabun New', 'TH Sarabun PSK', 'THSarabunNew', 'Sarabun', sans-serif !important;
         font-size: 16pt !important;
-        line-height: 1.25 !important;
       }
 
-      /* บังคับไม่ให้เกิดการตัดหน้ากระดาษแบบกระทันหัน */
-      .page-break-inside-avoid {
+      /* ซ่อนสีพื้นหลังของช่องกรอก ให้เหลือแต่เส้นประเมื่อพิมพ์ */
+      .doc-fill {
+        background-color: transparent !important;
+        border-bottom: 1px dotted #000 !important;
+        box-shadow: none !important;
+      }
+
+      .interactive-chk:hover {
+        background-color: transparent !important;
+      }
+
+      .page-break-avoid {
         page-break-inside: avoid;
         break-inside: avoid;
       }
-    }
-
-    /* Custom Checkbox for Document */
-    .doc-checkbox {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 15px;
-      height: 15px;
-      border: 1.5px solid #000;
-      vertical-align: middle;
-      margin-right: 4px;
-      font-size: 11pt;
-      line-height: 1;
-      font-weight: bold;
-    }
-
-    /* Tab transitions */
-    .tab-active {
-      border-bottom: 3px solid #1d7ed6;
-      color: #1d7ed6;
-      font-weight: 600;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
   <!-- ======================================================== -->
-  <!-- 0. Quick Account Switcher Toolbar (เพื่อทดสอบระบบได้ง่าย) -->
+  <!-- 0. Quick Account Switcher Toolbar                        -->
   <!-- ======================================================== -->
-  <div id="quick-account-bar" class="no-print bg-slate-800 text-slate-200 text-xs px-4 py-2 flex flex-wrap items-center justify-between border-b border-slate-700 shadow-inner">
+  <div id="quick-account-bar" class="no-print bg-slate-800 text-slate-200 text-xs px-4 py-2 flex flex-wrap items-center justify-between border-b border-slate-700 shadow-inner z-40">
     <div class="flex items-center gap-2 mb-1 sm:mb-0">
       <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
         <i class="fa-solid fa-flask mr-1.5"></i>โหมดทดสอบระบบ (Demo Switcher)
       </span>
-      <span class="text-slate-400 hidden md:inline">คลิกเพื่อสลับสิทธิ์ใช้งานทันที:</span>
+      <span class="text-slate-400 hidden md:inline">สลับสิทธิ์ใช้งาน:</span>
     </div>
     <div class="flex items-center gap-2 flex-wrap">
       <button onclick="switchUser('teacher1')" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-100 transition flex items-center gap-1.5">
         <i class="fa-solid fa-user text-sky-400"></i>
-        <span>ครูสมชาย (ผู้ขอ)</span>
+        <span>ครูวราภรณ์ (ผู้ขอ)</span>
       </button>
       <button onclick="switchUser('teacher2')" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-100 transition flex items-center gap-1.5">
         <i class="fa-solid fa-user text-emerald-400"></i>
-        <span>ครูสายใจ (ผู้ขอ)</span>
+        <span>ครูสมชาย (ผู้ขอ)</span>
       </button>
       <button onclick="switchUser('director')" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-100 transition flex items-center gap-1.5 font-medium text-amber-300">
         <i class="fa-solid fa-user-tie"></i>
-        <span>ผอ.วิชัย (ผู้อำนวยการ)</span>
+        <span>ผอ.นัทชพร (ผู้อำนวยการ)</span>
       </button>
-      <button onclick="resetToDefaultData()" title="รีเซ็ตข้อมูลตัวอย่างทั้งหมด" class="px-2 py-1 rounded bg-rose-900/60 hover:bg-rose-800 text-rose-200 transition text-[11px] ml-1">
+      <button onclick="resetToDefaultData()" title="รีเซ็ตข้อมูลตัวอย่าง" class="px-2 py-1 rounded bg-rose-900/60 hover:bg-rose-800 text-rose-200 transition text-[11px] ml-1">
         <i class="fa-solid fa-rotate-left mr-1"></i>รีเซ็ตข้อมูล
       </button>
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- 1. Main Navigation Bar                                   -->
+  <!-- 1. Navigation Header & View Mode Switcher                -->
   <!-- ======================================================== -->
-  <header id="app-navbar" class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+  <header id="app-navbar" class="no-print bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
-        <!-- Logo & School Info -->
+        <!-- School Logo & Title -->
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-sky-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
             <i class="fa-solid fa-file-signature text-xl"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-900 text-base md:text-lg tracking-tight">E-Approval ขออนุญาตไปราชการ</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold border border-blue-200">v1.0</span>
+              <span class="font-bold text-slate-900 text-base sm:text-lg tracking-tight">E-Approval ขออนุญาตไปราชการ</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold border border-blue-200">แบบฟอร์มเอกสารสด</span>
             </div>
-            <p class="text-xs text-slate-500 font-normal">โรงเรียนวัดบางปูน สพป.สุพรรณบุรี เขต 1</p>
+            <p class="text-xs text-slate-500 hidden sm:block">โรงเรียนวัดบางปูน ต.ชีน้ำร้าย อ.อินทร์บุรี จ.สิงห์บุรี</p>
           </div>
         </div>
 
-        <!-- User Profile & Actions -->
-        <div id="nav-user-section" class="flex items-center gap-3">
-          <!-- Will be rendered via JS -->
+        <!-- Navigation Tabs & Current User Info -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+            <button onclick="setViewMode('form')" id="tab-btn-form" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-pen-to-square"></i>
+              <span>หน้าหนังสือราชการ</span>
+            </button>
+            <button onclick="setViewMode('history')" id="tab-btn-history" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-list-check"></i>
+              <span>รายการคำขอ</span>
+              <span id="nav-pending-badge" class="hidden bg-amber-500 text-white text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+            </button>
+          </div>
+
+          <div id="nav-user-badge" class="flex items-center gap-2 pl-2 border-l border-slate-200">
+            <!-- User Info from JS -->
+          </div>
         </div>
       </div>
     </div>
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. Main Content Container                                -->
+  <!-- 2. Sticky Action Toolbar (สำหรับพิมพ์, บันทึก, เซ็นชื่อ) -->
   <!-- ======================================================== -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 no-print">
+  <div id="doc-action-bar" class="no-print sticky top-16 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm py-2 px-4 transition-all">
+    <div class="max-w-[210mm] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-file-lines text-blue-600"></i>
+          <span id="bar-doc-title">กรอกข้อมูลลงในหนังสือราชการโดยตรง</span>
+        </span>
+        <span id="bar-status-badge" class="hidden text-[11px] px-2 py-0.5 rounded-full font-bold"></span>
+      </div>
 
-    <!-- 2.1 View: Login Form (เมื่อยังไม่ได้ล็อกอิน) -->
-    <div id="login-view" class="hidden max-w-md mx-auto my-12">
-      <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-700 to-sky-600 p-6 text-white text-center">
-          <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
-            <i class="fa-solid fa-graduation-cap text-3xl text-amber-300"></i>
-          </div>
-          <h2 class="text-xl font-bold">เข้าสู่ระบบ E-Approval</h2>
-          <p class="text-xs text-blue-100 mt-1">ระบบขออนุญาตเดินทางไปราชการ โรงเรียนวัดบางปูน</p>
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- ปุ่มบันทึกคำขอสำหรับครู -->
+        <button id="btn-save-request" onclick="handleSaveRequest()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>บันทึก / ยื่นคำขอ</span>
+        </button>
+
+        <!-- ปุ่มสำหรับผู้อำนวยการ (จะแสดงเมื่อเป็น ผอ.) -->
+        <div id="director-quick-actions" class="hidden flex items-center gap-2">
+          <button onclick="handleDirectorSignAndApprove('approved')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-sm flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>อนุมัติคำขอ (ลงนาม)</span>
+          </button>
+          <button onclick="handleDirectorSignAndApprove('rejected')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl font-semibold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <span>ไม่อนุมัติ</span>
+          </button>
         </div>
 
-        <form onsubmit="handleLogin(event)" class="p-6 space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ชื่อผู้ใช้งาน (Username)</label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <i class="fa-regular fa-user"></i>
-              </span>
-              <input type="text" id="login-username" required placeholder="เช่น teacher1 หรือ director"
-                class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-            </div>
-          </div>
+        <!-- ปุ่มพิมพ์เอกสาร A4 -->
+        <button onclick="window.print()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-print"></i>
+          <span>พิมพ์ A4</span>
+        </button>
 
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">รหัสผ่าน (Password)</label>
-            <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <i class="fa-solid fa-lock"></i>
-              </span>
-              <input type="password" id="login-password" required placeholder="••••••••"
-                class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-            </div>
-          </div>
+        <!-- ปุ่มดาวน์โหลด PDF -->
+        <button onclick="downloadDocumentPDF()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>PDF</span>
+        </button>
 
-          <div class="pt-2">
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl shadow-md shadow-blue-500/30 transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-right-to-bracket"></i>
-              <span>เข้าสู่ระบบ</span>
-            </button>
-          </div>
+        <!-- ปุ่มดาวน์โหลดรูปภาพ -->
+        <button onclick="downloadDocumentImage()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-medium shadow-sm flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-file-image"></i>
+          <span>รูปภาพ (PNG)</span>
+        </button>
 
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-500 space-y-1">
-            <div class="font-semibold text-slate-700 flex items-center gap-1">
-              <i class="fa-solid fa-circle-info text-blue-500"></i> ข้อมูลสำหรับทดสอบ:
-            </div>
-            <div>• ครู 1: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">teacher1</code> / รหัสผ่าน: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">1234</code></div>
-            <div>• ครู 2: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">teacher2</code> / รหัสผ่าน: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">1234</code></div>
-            <div>• ผอ.: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">director</code> / รหัสผ่าน: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">1234</code></div>
-          </div>
-        </form>
+        <!-- ปุ่มสร้างเอกสารใหม่ -->
+        <button onclick="createNewBlankDocument()" title="เริ่มกรอกเอกสารใหม่" class="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition">
+          <i class="fa-solid fa-rotate text-sm"></i>
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- 2.2 View: Teacher Dashboard -->
-    <div id="teacher-view" class="hidden space-y-6">
-      <!-- Header Banner & Create Button -->
-      <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <!-- ======================================================== -->
+  <!-- 3. MAIN WORKSPACE CONTAINER                              -->
+  <!-- ======================================================== -->
+  <main class="flex-grow py-6 px-2 sm:px-4">
+
+    <!-- VIEW 1: หน้ารายการคำขอ / ประวัติ (History View) -->
+    <div id="history-view" class="hidden max-w-5xl mx-auto space-y-4">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900">แดชบอร์ดคำขอไปราชการ (ครูผู้ขอ)</h1>
-          </div>
-          <p class="text-sm text-slate-500 mt-1">ยินดีต้อนรับคุณ <span id="teacher-welcome-name" class="font-semibold text-blue-600"></span> | จัดการและติดตามสถานะคำขอของคุณ</p>
+          <h2 class="text-lg font-bold text-slate-900" id="history-header-title">รายการคำขอไปราชการ</h2>
+          <p class="text-xs text-slate-500">คลิกที่รายการเพื่อเปิดดูหรือแก้ไขในหน้าหนังสือราชการ</p>
         </div>
-        <button onclick="openNewRequestModal()" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/25 transition transform active:scale-95">
-          <i class="fa-solid fa-circle-plus text-base"></i>
-          <span>สร้างคำขอไปราชการใหม่</span>
+        <button onclick="setViewMode('form'); createNewBlankDocument();" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> เขียนคำขอใหม่
         </button>
       </div>
 
-      <!-- Quick Metrics -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-file-lines"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-slate-900" id="metric-teacher-total">0</div>
-            <div class="text-xs text-slate-500 font-medium">คำขอทั้งหมด</div>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-clock"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-amber-600" id="metric-teacher-pending">0</div>
-            <div class="text-xs text-slate-500 font-medium">รอผู้อำนวยการอนุมัติ</div>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-circle-check"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-emerald-600" id="metric-teacher-approved">0</div>
-            <div class="text-xs text-slate-500 font-medium">อนุมัติแล้ว (พิมพ์ได้)</div>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-circle-xmark"></i>
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-rose-600" id="metric-teacher-rejected">0</div>
-            <div class="text-xs text-slate-500 font-medium">ไม่อนุมัติ</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Requests Table Section -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-list-check text-blue-600"></i>
-            <h2 class="font-bold text-slate-800 text-lg">ประวัติคำขอไปราชการของฉัน</h2>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="relative w-full sm:w-64">
-              <input type="text" id="search-teacher-requests" onkeyup="renderTeacherRequests()" placeholder="ค้นหาเรื่อง / สถานที่..." 
-                class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500">
-              <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table Responsive -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-600">
             <thead class="bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">
               <tr>
                 <th class="py-3.5 px-4">เลขที่คำขอ</th>
+                <th class="py-3.5 px-4">ผู้ยื่นคำขอ</th>
                 <th class="py-3.5 px-4">เรื่องขออนุญาต</th>
                 <th class="py-3.5 px-4">วันที่ไปราชการ</th>
-                <th class="py-3.5 px-4">สถานที่</th>
-                <th class="py-3.5 px-4">การเบิกงบ</th>
                 <th class="py-3.5 px-4 text-center">สถานะ</th>
-                <th class="py-3.5 px-4 text-right">การกระทำ</th>
+                <th class="py-3.5 px-4 text-right">เปิดดู</th>
               </tr>
             </thead>
-            <tbody id="teacher-requests-tbody" class="divide-y divide-slate-100 font-normal">
-              <!-- Rendered dynamically via JS -->
+            <tbody id="history-tbody" class="divide-y divide-slate-100 font-normal">
+              <!-- Rendered via JS -->
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- 2.3 View: Director Dashboard -->
-    <div id="director-view" class="hidden space-y-6">
-      <!-- Header Banner -->
-      <div class="bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-2xl p-5 sm:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="bg-amber-400 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-md">ผู้อำนวยการ</span>
-            <h1 class="text-xl sm:text-2xl font-bold">ระบบพิจารณาคำขอไปราชการ</h1>
+    <!-- VIEW 2: หน้าหนังสือราชการแบบพิมพ์เติมได้โดยตรง (WYSIWYG Form) -->
+    <div id="form-view" class="flex justify-center">
+      
+      <!-- หน้ากระดาษ A4 เสมือนจริง ตรงตามรูปภาพต้นฉบับ 100% -->
+      <div id="official-document-paper" class="paper-a4">
+        
+        <!-- ส่วนหัว: ตราครุฑ 3 ซม. ด้านซ้ายบน และ ข้อความ "บันทึกข้อความ" กึ่งกลาง -->
+        <div class="relative mb-3">
+          <div class="absolute left-0 top-0 w-[2.8cm] flex items-center justify-start">
+            <!-- ตราครุฑทางการแท้ 100% ดึงจากต้นฉบับคมชัด พื้นหลังโปร่งใส -->
+            <img id="doc-garuda-img" 
+                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAACCCAYAAACJmNyQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAB3KSURBVHhe7d3zlyRJ1wfwnbVt786as7Zt27Zt2zb/oXzPJ59z+0RHVHVXdffMu1WVP3xPZUZlRuLGZdy4OV1VVdM16H8UDQ36E0VDg/5E0dCgP1E0NOhPFA0pbrjhhuqnn36q8vZ+wpdfflldddVVff2MUDQEnn322eq4447r+xcAZ511VnXjjTf29bMWDfDFF1/UD33eeef19cMHtt566/o533zzzb593qIB7r///vqBL7zwwr598BRHHHFE9dxzz1U33XRT3z5v0QD77bdfddlll1VvvPFG3z54iscff7w6/fTTq0svvbRvn7do+Oqrr6oDDjig+vfff+uH/uCDD6bpw992223T9Hqe1+9vv/1WbbfddtP02tMSRcPrr79ePfroo0MPfPnll4/68J9//nl15plnVqecckr1zTffjHp8O7z33nsVtfHSSy+NuQ/2xTnnnFPfy/vvvz9qPy+//PLQMZ7hiSeeGPWcXkTRwCBB7Nh//vnnq48//njYw7/wwgtD+/fcc0916qmnVg888ED11ltvVeeee271448/jullhZW/zz77jOl80geRH3744eruu++uDj744FoFxf+5sfXtt99Wr7zySt1msH722WfVXXfdNaZr/9dRNARR99133+rPP/+st3M/k3+NqLfeemt1xRVX1P+98847lReX99cNggP1nf/XLeI5EJpR+dprr1XcqPSYBx98sN4XKzjppJPqbc+W99UPKBruvffeWj8TgT///HNFd7399tvVxRdfPOwF/PHHH9XNN99ctz3zzDPjfjlHHXVUzVE//PBDZdCcccYZ4+7z66+/rgffySefXP3666/D+tttt93q5/rnn3+GiO15B4bQl1xySXXnnXdWv//++xAhiUDc8Msvv9T7H3744bCXke93C2Jz4YUXrk477bRq//33r1XB4osvXv3999/j6jdVMfDpp5/W+wYTHX7++efX+yGx6Od+dbGG7Rj1OPqOO+4YelhEv+aaa2q9feCBB1ZChieccMKEvozDDjusOuigg6rDDz+8wmmHHHJIdfTRR1edGILd4JhjjqlDuq73/fff10Zf2CMG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" 
+                 alt="ตราครุฑ" 
+                 class="h-[2.8cm] w-auto object-contain cursor-pointer hover:opacity-80 transition" 
+                 title="ตราครุฑทางการ (คลิกเพื่อเปลี่ยนรูปถ้าต้องการ)"
+                 onclick="document.getElementById('garuda-file-input').click()">
+            <input type="file" id="garuda-file-input" accept="image/*" class="hidden" onchange="handleGarudaCustomUpload(event)">
           </div>
-          <p class="text-sm text-blue-200 mt-1">ยินดีต้อนรับ ผอ. <span id="director-welcome-name" class="font-semibold text-white"></span> | ตรวจสอบและลงนามอนุมัติคำขอ</p>
-        </div>
-        <div class="flex items-center gap-2 bg-white/10 px-4 py-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
-          <i class="fa-solid fa-bell text-amber-300 text-lg animate-bounce"></i>
-          <div>
-            <div class="text-xs text-blue-200">คำขอรอพิจารณาขณะนี้</div>
-            <div class="text-xl font-black text-amber-300"><span id="director-pending-badge">0</span> รายการ</div>
+
+          <div class="text-center pt-2 pb-2">
+            <h1 class="text-[29pt] font-bold tracking-tight inline-block">บันทึกข้อความ</h1>
           </div>
         </div>
-      </div>
 
-      <!-- Filter Tabs -->
-      <div class="flex items-center gap-4 border-b border-slate-200 pb-1 text-sm">
-        <button onclick="setDirectorFilter('pending')" id="filter-btn-pending" class="tab-active py-2 px-3 flex items-center gap-2 transition">
-          <i class="fa-solid fa-hourglass-half"></i>
-          <span>รอการพิจารณา</span>
-          <span id="director-tab-pending-count" class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
-        </button>
-        <button onclick="setDirectorFilter('all')" id="filter-btn-all" class="py-2 px-3 text-slate-500 hover:text-slate-800 flex items-center gap-2 transition">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <span>ประวัติคำขอทั้งหมด</span>
-          <span id="director-tab-all-count" class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
-        </button>
-      </div>
+        <!-- รายละเอียดส่วนหัว (ส่วนราชการ / ที่ / วันที่ / เรื่อง / เรียน) -->
+        <div class="space-y-1 mt-1 text-[16pt]">
+          <!-- ส่วนราชการ -->
+          <div class="flex items-baseline">
+            <span class="font-bold w-[2.8cm] shrink-0">ส่วนราชการ</span>
+            <span class="border-b border-dotted border-black flex-grow pb-0.5">
+              โรงเรียนวัดบางปูน ตำบลชีน้ำร้าย อำเภออินทร์บุรี จังหวัดสิงห์บุรี
+            </span>
+          </div>
 
-      <!-- Requests Table Section for Director -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-600">
-            <thead class="bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">
-              <tr>
-                <th class="py-3.5 px-4">เลขที่ / วันที่ยื่น</th>
-                <th class="py-3.5 px-4">ผู้ยื่นคำขอ / ตำแหน่ง</th>
-                <th class="py-3.5 px-4">เรื่องขออนุญาต</th>
-                <th class="py-3.5 px-4">ช่วงเวลา / สถานที่</th>
-                <th class="py-3.5 px-4">งบประมาณ & พาหนะ</th>
-                <th class="py-3.5 px-4 text-center">สถานะ</th>
-                <th class="py-3.5 px-4 text-right">การพิจารณา</th>
-              </tr>
-            </thead>
-            <tbody id="director-requests-tbody" class="divide-y divide-slate-100 font-normal">
-              <!-- Rendered dynamically via JS -->
-            </tbody>
-          </table>
+          <!-- ที่ และ วันที่ -->
+          <div class="flex items-baseline justify-between gap-4">
+            <div class="flex items-baseline w-1/2">
+              <span class="font-bold w-[0.8cm] shrink-0">ที่</span>
+              <input type="text" id="in-doc-num" class="doc-fill flex-grow" placeholder="เลขที่บันทึก (ถ้ามี)">
+            </div>
+            <div class="flex items-baseline w-1/2">
+              <span class="font-bold w-[1.4cm] shrink-0">วันที่</span>
+              <input type="text" id="in-doc-date" class="doc-fill flex-grow text-center font-medium" value="๒ กรกฎาคม ๒๕๖๙">
+            </div>
+          </div>
+
+          <!-- เรื่อง -->
+          <div class="flex items-baseline">
+            <span class="font-bold w-[1.4cm] shrink-0">เรื่อง</span>
+            <input type="text" id="in-doc-subject" class="doc-fill flex-grow font-bold" value="ขออนุญาตไปราชการที่โรงเรียนโคกสำโรงวิทยา จังหวัดลพบุรี">
+          </div>
+
+          <!-- เรียน -->
+          <div class="flex items-baseline pt-1">
+            <span class="font-bold w-[1.4cm] shrink-0">เรียน</span>
+            <span>ผู้อำนวยการโรงเรียนวัดบางปูน</span>
+          </div>
         </div>
+
+        <!-- เนื้อหาบันทึกข้อความ (พิมพ์เติมในช่องได้โดยตรง) -->
+        <div class="mt-3 space-y-2 text-[16pt] leading-[1.28] text-justify">
+          
+          <!-- ย่อหน้าเนื้อความหลัก -->
+          <p class="indent-[2.5cm]">
+            ด้วยข้าพเจ้า <input type="text" id="in-fullname" class="doc-fill w-44 font-medium" value="นายวราภรณ์ จูงาม"> 
+            ตำแหน่ง <input type="text" id="in-position" class="doc-fill w-28" value="ครูผู้ช่วย"> 
+            โรงเรียนวัดบางปูน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี มีความประสงค์จะขออนุญาตไปราชการ เรื่อง 
+            <input type="text" id="in-purpose" class="doc-fill w-full mt-1" value="วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ."> 
+            ณ <input type="text" id="in-location" class="doc-fill w-[8.5cm]" value="ห้องศูนย์ประชุมและกิจกรรม โรงเรียนโคกสำโรงวิทยา"> 
+            ตามหนังสือ <input type="text" id="in-ref-doc" class="doc-fill w-[7.8cm]" value="ศธ ๐๔๓๓๓.๐๗/๓๓๔ ลว. ๑๐ มิถุนายน ๒๕๖๘"> 
+            ในวัน<input type="text" id="in-day-name" class="doc-fill w-16 text-center" value="พุธ"> 
+            ที่ <input type="text" id="in-day-num" class="doc-fill w-12 text-center" value="๘"> 
+            เดือน <input type="text" id="in-month-name" class="doc-fill w-28 text-center" value="กรกฎาคม"> 
+            พ.ศ. <input type="text" id="in-year-num" class="doc-fill w-16 text-center" value="๒๕๖๘"> 
+            ตั้งแต่เวลา <input type="text" id="in-time-start" class="doc-fill w-20 text-center" value="๐๘.๐๐"> – 
+            <input type="text" id="in-time-end" class="doc-fill w-24 text-center" value="๑๖.๓๐ น.">
+          </p>
+
+          <!-- ตัวเลือกค่าใช้จ่าย และ ยานพาหนะ (คลิกติ๊กเลือกได้โดยตรงในเอกสาร) -->
+          <div class="pt-0.5">
+            <div class="flex items-baseline">
+              <span class="w-[2.2cm] shrink-0">โดยข้าพเจ้า</span>
+              <div class="flex-grow space-y-1">
+                
+                <!-- ตัวเลือก 1: ไม่ขอเบิก -->
+                <div class="cursor-pointer" onclick="toggleExpenseChoice('none')">
+                  <span id="chk-none" class="interactive-chk text-blue-600">[✓]</span> 
+                  <span>ไม่ขอเบิกค่าใช้จ่าย</span>
+                </div>
+                
+                <!-- ตัวเลือก 2: ขอเบิกตามสิทธิ -->
+                <div class="cursor-pointer" onclick="toggleExpenseChoice('full')">
+                  <span id="chk-full" class="interactive-chk">[ ]</span> 
+                  <span>ขอเบิกค่าใช้จ่ายตามสิทธิจากเงินงบประมาณหรือเงินนอกงบประมาณของสถานศึกษา (ค่าพาหนะเดินทาง,ค่าเบี้ยเลี้ยง,ค่าที่พัก) ตามระเบียบกระทรวงการคลังว่าด้วยค่าใช้จ่ายในการเดินทางไปราชการ</span>
+                </div>
+
+                <!-- ตัวเลือก 3: ขอเบิกเฉพาะบางส่วน -->
+                <div class="flex items-baseline flex-wrap gap-x-1">
+                  <span onclick="toggleExpenseChoice('partial')" class="cursor-pointer">
+                    <span id="chk-partial" class="interactive-chk">[ ]</span> ขอเบิกเฉพาะค่าใช้จ่าย:
+                  </span>
+                  <span onclick="toggleSubExpense('transport')" class="cursor-pointer ml-1">
+                    <span id="sub-chk-transport" class="interactive-chk">[ ]</span> ค่าพาหนะเดินทาง
+                  </span>
+                  <span onclick="toggleSubExpense('fuel')" class="cursor-pointer ml-1">
+                    <span id="sub-chk-fuel" class="interactive-chk">[ ]</span> ค่าน้ำมัน
+                  </span>
+                  <span onclick="toggleSubExpense('allowance')" class="cursor-pointer ml-1">
+                    <span id="sub-chk-allowance" class="interactive-chk">[ ]</span> ค่าเบี้ยเลี้ยง
+                  </span>
+                  <span onclick="toggleSubExpense('hotel')" class="cursor-pointer ml-1">
+                    <span id="sub-chk-hotel" class="interactive-chk">[ ]</span> ค่าที่พัก
+                  </span>
+                </div>
+
+                <!-- ตัวเลือก 4: ยานพาหนะ -->
+                <div class="flex items-baseline flex-wrap gap-1">
+                  <span onclick="toggleVehicleChoice()" class="cursor-pointer">
+                    <span id="chk-vehicle" class="interactive-chk text-blue-600">[✓]</span> ไปราชการด้วย
+                  </span>
+                  <select id="in-vehicle-type" onchange="updateVehicleText()" class="doc-fill py-0 text-sm">
+                    <option value="รถจักรยานยนต์ส่วนตัว" selected>รถจักรยานยนต์ส่วนตัว</option>
+                    <option value="รถยนต์ส่วนตัว">รถยนต์ส่วนตัว</option>
+                    <option value="รถยนต์ส่วนกลางของสถานศึกษา">รถยนต์ส่วนกลางของสถานศึกษา</option>
+                  </select>
+                  <span>หมายเลขทะเบียน</span>
+                  <input type="text" id="in-vehicle-plate" class="doc-fill w-44" value="๑กฉ ๙๕๗๘ สิงห์บุรี">
+                </div>
+
+                <!-- ตัวเลือก 5: อื่นๆ -->
+                <div class="flex items-baseline gap-1">
+                  <span onclick="toggleOtherChoice()" class="cursor-pointer">
+                    <span id="chk-other" class="interactive-chk">[ ]</span> อื่น ๆ
+                  </span>
+                  <input type="text" id="in-other-text" class="doc-fill flex-grow" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)">
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- ย่อหน้าคำลงท้าย -->
+          <p class="indent-[2.5cm] pt-1">
+            จึงเรียนมาเพื่อโปรดทราบอนุมัติการเดินทางไปราชการตามที่เสนอ
+          </p>
+        </div>
+
+        <!-- กล่องลงลายมือชื่อผู้ขออนุมัติ (วาดสด หรือ แนบภาพลายเซ็นได้ตรงนี้เลย) -->
+        <div class="mt-6 flex justify-end page-break-avoid">
+          <div class="w-[8.8cm] text-center flex flex-col items-center">
+            
+            <div class="flex items-center justify-center min-h-[50px] relative w-full">
+              <span class="absolute left-2 top-3">(ลงชื่อ)</span>
+              
+              <!-- กล่องแสดงลายเซ็นครู -->
+              <div id="teacher-signature-display" class="h-14 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('teacher')" title="คลิกเพื่อเซ็นชื่อหรือแนบรูปภาพ">
+                <span id="teacher-sign-placeholder" class="text-xs text-blue-600 border border-dashed border-blue-400 bg-blue-50/70 px-3 py-1 rounded-lg no-print flex items-center gap-1 group-hover:bg-blue-100">
+                  <i class="fa-solid fa-pen-nib"></i> คลิกเพื่อลงชื่อ / แนบลายเซ็น
+                </span>
+                <img id="teacher-sign-image" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อครู">
+              </div>
+
+              <span class="border-b border-dotted border-black w-48 inline-block absolute bottom-1 right-2 -z-10"></span>
+            </div>
+
+            <div class="mt-1">
+              (<input type="text" id="in-sign-name" class="doc-fill text-center font-medium w-52" value="นายวราภรณ์ จูงาม">)
+            </div>
+            <div>
+              ตำแหน่ง <input type="text" id="in-sign-position" class="doc-fill text-center w-36" value="ครูผู้ช่วย">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ส่วนคำสั่งและการพิจารณาของผู้อำนวยการ (ตรงตามรูปภาพต้นฉบับ 100%) -->
+        <div class="mt-8 page-break-avoid">
+          <div class="font-bold text-[16pt] mb-1">ความเห็นผู้อำนวยการโรงเรียน</div>
+          
+          <div class="flex items-center gap-6 my-1">
+            <div class="cursor-pointer" onclick="toggleDirectorDecision('approved')">
+              <span id="chk-dir-approved" class="interactive-chk text-blue-600">[✓]</span> <span>อนุมัติ</span>
+            </div>
+            <div class="cursor-pointer" onclick="toggleDirectorDecision('rejected')">
+              <span id="chk-dir-rejected" class="interactive-chk">[ ]</span> <span>ไม่อนุมัติ</span>
+            </div>
+          </div>
+
+          <!-- เส้นประข้อความความเห็น (พิมพ์ข้อสั่งการลงในบรรทัดได้) -->
+          <div class="my-1">
+            <input type="text" id="in-dir-comment1" class="doc-fill w-full" placeholder="ข้อสั่งการ/ความเห็นเพิ่มเติม (ถ้ามี)">
+          </div>
+          <div class="my-1">
+            <input type="text" id="in-dir-comment2" class="doc-fill w-full" placeholder="">
+          </div>
+
+          <!-- ลายมือชื่อผู้อำนวยการโรงเรียน -->
+          <div class="mt-4 flex flex-col items-center justify-center">
+            <div class="flex items-center justify-center min-h-[50px] relative w-[8.8cm]">
+              <span class="absolute left-2 top-3">(ลงชื่อ)</span>
+              
+              <!-- กล่องแสดงลายเซ็น ผอ. -->
+              <div id="director-signature-display" class="h-14 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('director')" title="คลิกเพื่อลงชื่อผู้อำนวยการ">
+                <span id="director-sign-placeholder" class="text-xs text-amber-700 border border-dashed border-amber-400 bg-amber-50/80 px-3 py-1 rounded-lg no-print flex items-center gap-1 group-hover:bg-amber-100">
+                  <i class="fa-solid fa-stamp"></i> คลิกเพื่อลงชื่อ ผอ.
+                </span>
+                <img id="director-sign-image" class="hidden h-12 w-auto object-contain" src="" alt="ลายมือชื่อผู้อำนวยการ">
+              </div>
+
+              <span class="border-b border-dotted border-black w-48 inline-block absolute bottom-1 right-2 -z-10"></span>
+            </div>
+
+            <div class="mt-1">
+              (<span id="label-dir-name" class="font-medium">นางนัทชพร ตั้งศุภจรูญนุกูล</span>)
+            </div>
+            <div>ตำแหน่ง ผู้อำนวยการโรงเรียนวัดบางปูน</div>
+          </div>
+
+        </div>
+
       </div>
     </div>
+
   </main>
 
   <!-- ======================================================== -->
-  <!-- 3. Modals                                                -->
+  <!-- 4. SIGNATURE MODAL (วาดด้วยมือ หรือ แนบรูปภาพ)          -->
   <!-- ======================================================== -->
-
-  <!-- 3.1 Modal: New Travel Request (สร้างคำขอใหม่) -->
-  <div id="modal-new-request" class="fixed inset-0 z-50 hidden overflow-y-auto no-print">
+  <div id="modal-signature" class="fixed inset-0 z-50 hidden overflow-y-auto no-print">
     <div class="flex items-center justify-center min-h-screen px-4 py-6">
-      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeNewRequestModal()"></div>
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSignatureModal()"></div>
 
-      <div class="relative bg-white rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden z-10 my-8">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-700 to-sky-600 px-6 py-4 text-white flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-file-circle-plus text-xl text-sky-200"></i>
-            <div>
-              <h3 class="font-bold text-lg">แบบฟอร์มขออนุมัติเดินทางไปราชการ</h3>
-              <p class="text-xs text-blue-100">โรงเรียนวัดบางปูน สพป.สุพรรณบุรี เขต 1</p>
-            </div>
-          </div>
-          <button onclick="closeNewRequestModal()" class="text-white/80 hover:text-white text-xl">
+      <div class="relative bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden z-10 p-6 space-y-4">
+        <div class="flex items-center justify-between border-b pb-3">
+          <h3 class="font-bold text-slate-800 text-base" id="sig-modal-title">ลงลายมือชื่อ</h3>
+          <button onclick="closeSignatureModal()" class="text-slate-400 hover:text-slate-600 text-lg">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        <!-- Form Body -->
-        <form id="form-new-request" onsubmit="handleCreateRequest(event)" class="p-6 space-y-6">
-          <!-- Section 1: ข้อมูลผู้ยื่น (Auto-fill) -->
-          <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-            <div class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <i class="fa-solid fa-user-tag"></i> ข้อมูลผู้ขออนุมัติ (ดึงจากระบบอัตโนมัติ)
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div>
-                <label class="block text-slate-500 mb-1">ชื่อ-สกุล ผู้ขอ</label>
-                <input type="text" id="req-fullname" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg p-2 font-medium text-slate-800 cursor-not-allowed">
-              </div>
-              <div>
-                <label class="block text-slate-500 mb-1">ตำแหน่ง</label>
-                <input type="text" id="req-position" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg p-2 font-medium text-slate-800 cursor-not-allowed">
-              </div>
-              <div>
-                <label class="block text-slate-500 mb-1">วันที่เขียนบันทึกข้อความ</label>
-                <input type="date" id="req-write-date" required class="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-800 focus:ring-2 focus:ring-blue-500">
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 2: รายละเอียดการไปราชการ -->
-          <div class="space-y-4">
-            <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fa-solid fa-briefcase"></i> รายละเอียดการเดินทางไปราชการ
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">เรื่องขออนุญาตไปราชการ <span class="text-rose-500">*</span></label>
-              <input type="text" id="req-subject" required placeholder="เช่น ขออนุมัติเดินทางไปราชการเพื่อเข้าร่วมการประชุมเชิงปฏิบัติการการพัฒนาสื่อนวัตกรรม"
-                class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">ตั้งแต่วันที่ <span class="text-rose-500">*</span></label>
-                <input type="date" id="req-start-date" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">ถึงวันที่ <span class="text-rose-500">*</span></label>
-                <input type="date" id="req-end-date" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">สถานที่ไปราชการ <span class="text-rose-500">*</span></label>
-                <input type="text" id="req-location" required placeholder="เช่น โรงแรมสองพันบุรี จ.สุพรรณบุรี" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">รายละเอียด / วัตถุประสงค์ / อ้างถึงหนังสือราชการ <span class="text-rose-500">*</span></label>
-              <textarea id="req-details" rows="3" required placeholder="ตามหนังสือ สพป.สุพรรณบุรี เขต 1 ที่ ศธ 04183/... เรื่อง เชิญเข้าร่วมการอบรม... เพื่อเพิ่มประสิทธิภาพการจัดการเรียนรู้..."
-                class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-            </div>
-          </div>
-
-          <!-- Section 3: การเบิกจ่ายงบประมาณ (Expense Type) -->
-          <div class="border-t border-slate-200 pt-4 space-y-3">
-            <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fa-solid fa-coins"></i> การขอเบิกค่าใช้จ่ายในการเดินทางไปราชการ
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_expense_type" value="none" checked onchange="toggleExpenseSubOptions()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">ไม่ขอเบิกค่าใช้จ่าย</span>
-              </label>
-
-              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_expense_type" value="full" onchange="toggleExpenseSubOptions()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">ขอเบิกเต็มจำนวน</span>
-              </label>
-
-              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_expense_type" value="partial" onchange="toggleExpenseSubOptions()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">ขอเบิกบางส่วน</span>
-              </label>
-            </div>
-
-            <!-- Sub items for partial/full expense -->
-            <div id="expense-sub-options" class="hidden bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 text-xs">
-              <span class="text-slate-600 font-semibold block mb-1">ระบุรายการที่ขอเบิก:</span>
-              <div class="flex flex-wrap gap-4">
-                <label class="flex items-center gap-1.5 cursor-pointer">
-                  <input type="checkbox" id="exp-allowance" class="rounded text-blue-600 focus:ring-blue-500">
-                  <span>ค่าเบี้ยเลี้ยง</span>
-                </label>
-                <label class="flex items-center gap-1.5 cursor-pointer">
-                  <input type="checkbox" id="exp-transport" class="rounded text-blue-600 focus:ring-blue-500">
-                  <span>ค่าพาหนะ / ค่าน้ำมันเชื้อเพลิง</span>
-                </label>
-                <label class="flex items-center gap-1.5 cursor-pointer">
-                  <input type="checkbox" id="exp-accommodation" class="rounded text-blue-600 focus:ring-blue-500">
-                  <span>ค่าที่พัก</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 4: ยานพาหนะที่ใช้ในการเดินทาง -->
-          <div class="border-t border-slate-200 pt-4 space-y-3">
-            <div class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fa-solid fa-car-side"></i> ยานพาหนะที่ใช้ในการเดินทาง
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_travel_method" value="gov_car" checked onchange="toggleVehiclePlate()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">รถยนต์ส่วนกลาง</span>
-              </label>
-
-              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_travel_method" value="own_car" onchange="toggleVehiclePlate()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">รถยนต์ส่วนบุคคล</span>
-              </label>
-
-              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_travel_method" value="bike" onchange="toggleVehiclePlate()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">รถจักรยานยนต์</span>
-              </label>
-
-              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
-                <input type="radio" name="req_travel_method" value="public" onchange="toggleVehiclePlate()" class="text-blue-600 focus:ring-blue-500">
-                <span class="text-xs font-medium text-slate-800">รถสาธารณะ/อื่นๆ</span>
-              </label>
-            </div>
-
-            <div id="vehicle-plate-container" class="hidden">
-              <label class="block text-xs font-medium text-slate-700 mb-1">หมายเลขทะเบียนรถ <span class="text-rose-500">*</span></label>
-              <input type="text" id="req-vehicle-plate" placeholder="เช่น กข 1234 สุพรรณบุรี" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
-            </div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="border-t border-slate-200 pt-4 flex items-center justify-end gap-3">
-            <button type="button" onclick="closeNewRequestModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm hover:bg-slate-100 transition">
-              ยกเลิก
-            </button>
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow-md shadow-blue-500/25 transition flex items-center gap-2">
-              <i class="fa-solid fa-paper-plane"></i>
-              <span>ยื่นคำขออนุมัติ</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3.2 Modal: View Detail & Director Approval (ตรวจสอบและอนุมัติ) -->
-  <div id="modal-review-request" class="fixed inset-0 z-50 hidden overflow-y-auto no-print">
-    <div class="flex items-center justify-center min-h-screen px-4 py-6">
-      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeReviewModal()"></div>
-
-      <div class="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden z-10 my-8">
-        <!-- Header -->
-        <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-file-signature text-amber-400 text-xl"></i>
-            <div>
-              <h3 class="font-bold text-lg">รายละเอียดคำขอไปราชการ</h3>
-              <p class="text-xs text-slate-300" id="review-req-id">รหัส: REQ-xxxx</p>
-            </div>
-          </div>
-          <button onclick="closeReviewModal()" class="text-white/80 hover:text-white text-xl">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+        <!-- Mode Tabs -->
+        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+          <button type="button" onclick="setSignTab('draw')" id="btn-tab-sig-draw" class="flex-1 py-1.5 rounded-lg bg-white shadow-sm text-blue-700">วาดลายเซ็นสด</button>
+          <button type="button" onclick="setSignTab('upload')" id="btn-tab-sig-upload" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">แนบไฟล์รูปภาพ</button>
         </div>
 
-        <!-- Detail Content -->
-        <div class="p-6 space-y-5 text-sm">
-          <!-- Request Header Info -->
-          <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
-            <div>
-              <span class="text-slate-500 block">ผู้ขออนุมัติ:</span>
-              <span class="font-bold text-slate-800 text-sm" id="rev-fullname">-</span>
-              <span class="text-slate-500 block" id="rev-position">-</span>
-            </div>
-            <div>
-              <span class="text-slate-500 block">วันที่เขียนบันทึก:</span>
-              <span class="font-bold text-slate-800" id="rev-write-date">-</span>
-              <div class="mt-1">
-                <span class="text-slate-500">สถานะปัจจุบัน:</span>
-                <span id="rev-status-badge" class="ml-1 font-semibold"></span>
-              </div>
-            </div>
+        <!-- Draw Mode Canvas -->
+        <div id="sig-box-draw" class="space-y-2">
+          <div class="border-2 border-dashed border-slate-300 rounded-xl relative overflow-hidden bg-slate-50">
+            <canvas id="active-sig-canvas" width="400" height="150" class="w-full touch-none cursor-crosshair"></canvas>
+            <button type="button" onclick="clearActiveCanvas()" class="absolute top-2 right-2 px-2.5 py-1 bg-slate-200/90 hover:bg-slate-300 text-slate-700 text-xs rounded-lg shadow-sm">
+              <i class="fa-solid fa-eraser mr-1"></i>ล้าง
+            </button>
           </div>
+          <p class="text-[11px] text-slate-400 text-center">* ใช้นิ้วมือบนหน้าจอสัมผัส หรือลากเมาส์เพื่อเซ็นชื่อ</p>
+        </div>
 
-          <!-- Subject & Details -->
-          <div>
-            <h4 class="font-bold text-slate-800 text-base" id="rev-subject">-</h4>
-            <div class="mt-2 text-slate-600 bg-white p-3 rounded-lg border border-slate-100 text-xs leading-relaxed" id="rev-details">
-              -
-            </div>
+        <!-- Upload Mode -->
+        <div id="sig-box-upload" class="hidden space-y-3">
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2 block"></i>
+            <label class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-medium cursor-pointer shadow-sm inline-block">
+              <i class="fa-solid fa-image mr-1"></i> เลือกไฟล์รูปภาพลายเซ็น
+              <input type="file" accept="image/*" class="hidden" onchange="handleSignatureUpload(event)">
+            </label>
+            <p class="text-[11px] text-slate-400 mt-2">รองรับไฟล์ PNG, JPG (พื้นหลังโปร่งใสจะสวยงามที่สุด)</p>
           </div>
-
-          <!-- Time & Place -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div class="p-3 rounded-xl bg-blue-50/60 border border-blue-100">
-              <span class="text-blue-800 font-semibold block mb-0.5"><i class="fa-solid fa-calendar-day mr-1"></i>ช่วงเวลาไปราชการ</span>
-              <span class="text-slate-700" id="rev-dates">-</span>
-            </div>
-            <div class="p-3 rounded-xl bg-blue-50/60 border border-blue-100">
-              <span class="text-blue-800 font-semibold block mb-0.5"><i class="fa-solid fa-location-dot mr-1"></i>สถานที่ไปราชการ</span>
-              <span class="text-slate-700" id="rev-location">-</span>
-            </div>
+          <div id="sig-upload-preview-box" class="hidden text-center p-2 border rounded-xl bg-white">
+            <img id="sig-upload-img" src="" alt="พรีวิว" class="h-16 mx-auto object-contain">
           </div>
+        </div>
 
-          <!-- Expense & Vehicle -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 font-semibold block mb-0.5"><i class="fa-solid fa-coins mr-1 text-amber-500"></i>การเบิกค่าใช้จ่าย</span>
-              <span class="text-slate-800 font-medium" id="rev-expense">-</span>
-            </div>
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 font-semibold block mb-0.5"><i class="fa-solid fa-car mr-1 text-blue-500"></i>ยานพาหนะเดินทาง</span>
-              <span class="text-slate-800 font-medium" id="rev-travel">-</span>
-            </div>
-          </div>
-
-          <!-- Director Decision Section (จะแสดงฟอร์มอนุมัติหากเป็นผอ. และสถานะยังเป็น pending) -->
-          <div id="director-action-panel" class="border-t border-slate-200 pt-4 space-y-3">
-            <div class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fa-solid fa-stamp text-blue-600"></i> บันทึกข้อสั่งการและความเห็นผู้อำนวยการ
-            </div>
-
-            <div>
-              <label class="block text-xs text-slate-600 mb-1">ความเห็นผู้อำนวยการ (Director's Comment):</label>
-              <textarea id="director-comment-input" rows="2" placeholder="เช่น อนุมัติให้ไปราชการตามที่เสนอ และมอบหมายครูเวรปฏิบัติหน้าที่แทน"
-                class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
-            </div>
-
-            <div class="flex items-center justify-end gap-3 pt-2">
-              <button onclick="handleDirectorDecision('rejected')" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-xmark"></i>
-                <span>ไม่อนุมัติ</span>
-              </button>
-              <button onclick="handleDirectorDecision('approved')" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/25 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-check"></i>
-                <span>อนุมัติคำขอ (ลงลายมือชื่อ E-Signature)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Approved Information display (ถ้าอนุมัติแล้วจะแสดงผลการอนุมัติ) -->
-          <div id="director-result-panel" class="hidden border-t border-slate-200 pt-4 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 space-y-2">
-            <div class="flex items-center gap-2 text-emerald-800 font-bold text-xs">
-              <i class="fa-solid fa-square-check text-emerald-600"></i> ข้อมูลผลการพิจารณา
-            </div>
-            <div class="text-xs text-slate-700">
-              ความเห็นผู้อำนวยการ: <span id="rev-approved-comment" class="font-medium">-</span>
-            </div>
-            <div class="text-xs text-slate-500">
-              วันที่และเวลาอนุมัติ: <span id="rev-approved-at">-</span>
-            </div>
-            <!-- ปุ่มพิมพ์ในกรณีดูใน Modal -->
-            <div class="pt-2">
-              <button onclick="printApprovedRequestFromModal()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-print"></i> พิมพ์เอกสารบันทึกข้อความ (A4)
-              </button>
-            </div>
-          </div>
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-2 pt-2 border-t">
+          <button type="button" onclick="closeSignatureModal()" class="px-4 py-2 rounded-xl text-xs text-slate-600 hover:bg-slate-100">ยกเลิก</button>
+          <button type="button" onclick="confirmSignature()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow">ใช้ลายเซ็นนี้</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Notification Toast -->
-  <div id="notification-toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 no-print flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm text-white font-medium">
+  <div id="notification-toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 no-print flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl text-sm text-white font-medium">
     <span id="toast-icon"></span>
-    <span id="toast-message">ข้อความแจ้งเตือน</span>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- 4. OFFICIAL A4 PRINTABLE DOCUMENT (แบบฟอร์มบันทึกข้อความราชการมาตรฐาน) -->
-  <!-- ========================================================================= -->
-  <div id="print-paper" class="hidden max-w-[210mm] mx-auto bg-white p-8 text-black text-[16pt] leading-[1.25] font-sarabun">
-    
-    <!-- 4.1 หัวหนังสือราชการ: ตราครุฑ และ บันทึกข้อความ -->
-    <div class="relative mb-4">
-      <!-- ตราครุฑทางราชการ (SVG มาตรฐานความสูง 1.5 - 3 ซม.) -->
-      <div class="absolute left-0 top-0 w-[2.8cm]">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-24 h-24">
-          <!-- ตราครุฑ vectorized สัญลักษณ์ราชการไทย -->
-          <path fill="#000" d="M199.5 25c-3.2 0-6.1 1.9-7.3 4.8-5.3 12.9-15.8 30.7-32.2 46.1-9.8 9.2-22.1 16.9-36.9 22.8-4.5 1.8-6.7 6.9-4.9 11.4 1.8 4.5 6.9 6.7 11.4 4.9 15.3-6.1 28.5-14.3 39.3-24.1 3.2-2.9 6.2-5.9 9-9 1.1 10.4 4.6 27.2 13.5 45.4-8.3 1.9-17 3.5-25.9 4.8-19.5 2.8-41.2 3.8-62.7 3-5.2-.2-9.2 3.8-9.4 9-.2 5.2 3.8 9.2 9 9.4 20.3.8 40.8-.2 59.4-2.7 7.7-1 15.2-2.4 22.5-4 4.1 10.9 9.8 21.8 17.1 31.9-24.3 8.3-51.5 13.1-78.5 14.2-5.2.2-9.2 4.6-9 9.8.2 5.2 4.6 9.2 9.8 9 29.8-1.2 59.6-6.6 86.2-15.8 4.5 5.6 9.4 10.8 14.7 15.6-32.8 18.5-70.1 27.5-107.8 26.6-5.2-.1-9.4 4-9.5 9.2-.1 5.2 4 9.4 9.2 9.5 41.5 1 82.5-8.9 118.6-29.3 6.9 5.3 14.3 9.8 22.1 13.5-19.4 21.7-44.5 37.8-72.2 47.1-4.9 1.6-7.6 6.9-6 11.8 1.6 4.9 6.9 7.6 11.8 6 30.6-10.2 58.4-28 79.9-52 3.8-.4 7.6-.9 11.4-1.6 4.1.8 8.1 1.3 12.2 1.8 21.5 24 49.3 41.8 79.9 52 4.9 1.6 10.2-1.1 11.8-6 1.6-4.9-1.1-10.2-6-11.8-27.7-9.3-52.8-25.4-72.2-47.1 7.8-3.7 15.2-8.2 22.1-13.5 36.1 20.4 77.1 30.3 118.6 29.3 5.2-.1 9.3-4.3 9.2-9.5-.1-5.2-4.3-9.3-9.5-9.2-37.7.9-75-8.1-107.8-26.6 5.3-4.8 10.2-10 14.7-15.6 26.6 9.2 56.4 14.6 86.2 15.8 5.2.2 9.6-3.8 9.8-9 .2-5.2-3.8-9.6-9-9.8-27-1.1-54.2-5.9-78.5-14.2 7.3-10.1 13-21 17.1-31.9 7.3 1.6 14.8 3 22.5 4 18.6 2.5 39.1 3.5 59.4 2.7 5.2-.2 9.2-4.2 9-9.4-.2-5.2-4.2-9.2-9.4-9-21.5.8-43.2-.2-62.7-3-8.9-1.3-17.6-2.9-25.9-4.8 8.9-18.2 12.4-35 13.5-45.4 2.8 3.1 5.8 6.1 9 9 10.8 9.8 24 18 39.3 24.1 4.5 1.8 9.6-.4 11.4-4.9 1.8-4.5-.4-9.6-4.9-11.4-14.8-5.9-27.1-13.6-36.9-22.8-16.4-15.4-26.9-33.2-32.2-46.1-1.2-2.9-4.1-4.8-7.3-4.8z"/>
-        </svg>
-      </div>
-
-      <!-- ข้อความ "บันทึกข้อความ" ขนาด 24pt ตัวหนา อยู่กึ่งกลาง -->
-      <div class="text-center pt-3 pb-4">
-        <h1 class="text-[26pt] font-bold tracking-normal inline-block">บันทึกข้อความ</h1>
-      </div>
-    </div>
-
-    <!-- 4.2 ข้อมูลส่วนราชการ -->
-    <div class="space-y-1 mt-2 text-[16pt]">
-      <div class="flex items-baseline">
-        <span class="font-bold w-[3.2cm] shrink-0">ส่วนราชการ</span>
-        <span class="border-b border-dotted border-black flex-grow pb-0.5">
-          โรงเรียนวัดบางปูน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาสุพรรณบุรี เขต ๑ โทร. ๐๓๕-๕๒๑๒๓๔
-        </span>
-      </div>
-
-      <div class="flex items-baseline justify-between gap-4">
-        <div class="flex items-baseline w-1/2">
-          <span class="font-bold w-[1.2cm] shrink-0">ที่</span>
-          <span id="print-doc-number" class="border-b border-dotted border-black flex-grow pb-0.5">วป ๐๑/๒๕๖๙</span>
-        </div>
-        <div class="flex items-baseline w-1/2">
-          <span class="font-bold w-[1.6cm] shrink-0">วันที่</span>
-          <span id="print-write-date" class="border-b border-dotted border-black flex-grow pb-0.5">-</span>
-        </div>
-      </div>
-
-      <div class="flex items-baseline">
-        <span class="font-bold w-[1.6cm] shrink-0">เรื่อง</span>
-        <span id="print-subject" class="font-bold border-b border-dotted border-black flex-grow pb-0.5">-</span>
-      </div>
-
-      <div class="flex items-baseline pt-1">
-        <span class="font-bold w-[1.6cm] shrink-0">เรียน</span>
-        <span>ผู้อำนวยการโรงเรียนวัดบางปูน</span>
-      </div>
-    </div>
-
-    <!-- 4.3 เนื้อความบันทึกข้อความ (จัดวรรคตอนและย่อหน้าตามแบบฟอร์มราชการ) -->
-    <div class="mt-4 space-y-3 text-[16pt] leading-[1.3] text-justify">
-      
-      <!-- ย่อหน้าที่ 1: ความเป็นมาและการขอไปราชการ -->
-      <p class="indent-[2.5cm]">
-        ด้วย ข้าพเจ้า <span id="print-fullname" class="font-bold">-</span> ตำแหน่ง <span id="print-position">-</span> 
-        โรงเรียนวัดบางปูน มีความประสงค์ขออนุมัติเดินทางไปราชการ เพื่อ <span id="print-purpose">-</span>
-        ณ <span id="print-location" class="font-bold">-</span> 
-        ตั้งแต่วันที่ <span id="print-start-date" class="font-bold">-</span> 
-        ถึงวันที่ <span id="print-end-date" class="font-bold">-</span>
-      </p>
-
-      <!-- ย่อหน้าที่ 2: รายละเอียดและอ้างถึงหนังสือ -->
-      <p class="indent-[2.5cm]">
-        ในการนี้ การเดินทางไปราชการดังกล่าวเป็นประโยชน์ต่อการจัดการเรียนการสอนและการพัฒนาคุณภาพการศึกษาของสถานศึกษา ดังมีรายละเอียดปรากฏตามเอกสารที่แนบมาพร้อมนี้: <span id="print-details">-</span>
-      </p>
-
-      <!-- ย่อหน้าที่ 3: การขออนุมัติเบิกจ่ายงบประมาณ -->
-      <div class="mt-2">
-        <p class="indent-[2.5cm]">
-          การเดินทางไปปฏิบัติราชการครั้งนี้ ข้าพเจ้ามีความประสงค์เกี่ยวกับการเบิกจ่ายค่าใช้จ่าย ดังนี้
-        </p>
-        <div class="ml-[2.5cm] space-y-1 mt-1 text-[15pt]">
-          <div class="flex items-center gap-2">
-            <span id="print-box-exp-none" class="doc-checkbox"></span>
-            <span>ไม่ขอเบิกค่าใช้จ่ายในการเดินทางไปราชการในครั้งนี้</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="print-box-exp-full" class="doc-checkbox"></span>
-            <span>ขอเบิกค่าใช้จ่ายในการเดินทางไปราชการเต็มจำนวน ตามระเบียบของทางราชการ</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="print-box-exp-partial" class="doc-checkbox"></span>
-            <span>ขอเบิกค่าใช้จ่ายในการเดินทางไปราชการบางส่วน ได้แก่:</span>
-          </div>
-          <div class="ml-6 space-y-0.5 text-[14.5pt]">
-            <div class="flex items-center gap-2">
-              <span id="print-box-exp-sub-allowance" class="doc-checkbox"></span>
-              <span>ค่าเบี้ยเลี้ยง</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span id="print-box-exp-sub-transport" class="doc-checkbox"></span>
-              <span>ค่าพาหนะ / ค่าน้ำมันเชื้อเพลิง</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span id="print-box-exp-sub-accommodation" class="doc-checkbox"></span>
-              <span>ค่าที่พัก</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ย่อหน้าที่ 4: ยานพาหนะเดินทาง -->
-      <div class="mt-2">
-        <p class="indent-[2.5cm]">
-          โดยขออนุมัติใช้ยานพาหนะในการเดินทาง ดังนี้
-        </p>
-        <div class="ml-[2.5cm] space-y-1 mt-1 text-[15pt]">
-          <div class="flex items-center gap-2">
-            <span id="print-box-travel-gov" class="doc-checkbox"></span>
-            <span>รถยนต์ส่วนกลางของสถานศึกษา</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="print-box-travel-car" class="doc-checkbox"></span>
-            <span>รถยนต์ส่วนบุคคล หมายเลขทะเบียน <span id="print-plate-car" class="underline underline-offset-2">.......................................</span></span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="print-box-travel-bike" class="doc-checkbox"></span>
-            <span>รถจักรยานยนต์ส่วนบุคคล หมายเลขทะเบียน <span id="print-plate-bike" class="underline underline-offset-2">.......................................</span></span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span id="print-box-travel-public" class="doc-checkbox"></span>
-            <span>รถโดยสารประจำทาง หรือยานพาหนะสาธารณะ</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ย่อหน้าปิดท้าย -->
-      <p class="indent-[2.5cm] pt-2">
-        จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ
-      </p>
-    </div>
-
-    <!-- 4.4 ลายมือชื่อผู้ขออนุมัติ (ชิดขวา) -->
-    <div class="mt-4 flex justify-end page-break-inside-avoid">
-      <div class="w-[7.5cm] text-center space-y-1">
-        <div>(ลงชื่อ)........................................................ ผู้ขออนุมัติ</div>
-        <div>(<span id="print-sign-fullname" class="font-semibold">-</span>)</div>
-        <div>ตำแหน่ง <span id="print-sign-position">-</span></div>
-      </div>
-    </div>
-
-    <!-- 4.5 ส่วนคำสั่งและการพิจารณาของผู้อำนวยการโรงเรียน (กรอบมาตรฐานท้ายกระดาษ) -->
-    <div class="mt-6 border-t-2 border-black pt-3 page-break-inside-avoid">
-      <div class="font-bold text-[16pt] mb-1">คำสั่ง / การพิจารณาของผู้อำนวยการโรงเรียนวัดบางปูน:</div>
-      
-      <div class="flex items-start justify-between gap-4 mt-2">
-        <!-- ฝั่งซ้าย: เครื่องหมายอนุมัติ และ ความเห็น -->
-        <div class="w-7/12 space-y-2">
-          <div class="flex items-center gap-4 text-[16pt]">
-            <div class="flex items-center gap-1.5">
-              <span id="print-box-director-approved" class="doc-checkbox text-base font-bold"></span>
-              <span class="font-bold">อนุมัติ</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span id="print-box-director-rejected" class="doc-checkbox text-base font-bold"></span>
-              <span class="font-bold">ไม่อนุมัติ</span>
-            </div>
-          </div>
-          <div class="text-[15pt]">
-            <span class="font-semibold">ความเห็น / ข้อสั่งการ:</span>
-            <div id="print-director-comment" class="min-h-[1.5cm] border-b border-dotted border-black pt-0.5 text-slate-800">
-              อนุมัติให้ไปราชการตามที่เสนอ
-            </div>
-          </div>
-        </div>
-
-        <!-- ฝั่งขวา: ตราประทับลายมือชื่ออิเล็กทรอนิกส์ (E-Signature) -->
-        <div class="w-5/12 text-center flex flex-col items-center justify-end">
-          <div class="min-h-[50px] flex items-center justify-center relative">
-            <!-- Digital Signature Stamp Image/SVG -->
-            <div id="print-signature-container">
-              <!-- Rendered via JS -->
-            </div>
-          </div>
-          <div class="text-[15pt] mt-1 space-y-0.5">
-            <div>(<span id="print-director-name">นายวิชัย เก่งการศึกษา</span>)</div>
-            <div>ผู้อำนวยการโรงเรียนวัดบางปูน</div>
-            <div class="text-[14pt]">วันที่ <span id="print-director-date">-</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ปุ่มพิมพ์สำรองเฉพาะกรณีดูใน Print Preview บนหน้าจอ (ไม่แสดงตอนสั่งพิมพ์จริง) -->
-    <div class="no-print mt-8 pt-4 border-t border-slate-300 flex justify-center gap-3">
-      <button onclick="window.print()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow flex items-center gap-2">
-        <i class="fa-solid fa-print"></i> พิมพ์เอกสาร (Print to A4 / PDF)
-      </button>
-      <button onclick="closePrintPreview()" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-medium">
-        ปิดหน้านี้
-      </button>
-    </div>
-
+    <span id="toast-message"></span>
   </div>
 
   <!-- ======================================================== -->
-  <!-- 5. JavaScript Logic & LocalStorage Database              -->
+  <!-- 5. JAVASCRIPT APP LOGIC                                  -->
   <!-- ======================================================== -->
   <script>
-    /**
-     * Database Models:
-     * tb_users: [ { id, username, password, fullname, position, role, signature_url } ]
-     * tb_requests: [ { request_id, user_id, doc_number, subject, write_date, start_date, end_date, location, details, expense_type, expense_details, travel_method, vehicle_plate, status, director_comment, approved_at, created_at } ]
-     */
-
-    // Initial Mock Data Seeds
+    // Initial Database Users (โรงเรียนวัดบางปูน จ.สิงห์บุรี)
     const DEFAULT_USERS = [
       {
         id: 1,
         username: "teacher1",
         password: "1234",
-        fullname: "นายสมชาย ใจดี",
-        position: "ครู ชำนาญการ",
-        role: "teacher",
-        signature_url: ""
+        fullname: "นายวราภรณ์ จูงาม",
+        position: "ครูผู้ช่วย",
+        role: "teacher"
       },
       {
         id: 2,
         username: "teacher2",
         password: "1234",
-        fullname: "นางสาวสายใจ ใฝ่เรียน",
-        position: "ครู คศ.๑",
-        role: "teacher",
-        signature_url: ""
+        fullname: "นายสมชาย ใจดี",
+        position: "ครู ชำนาญการ",
+        role: "teacher"
       },
       {
         id: 3,
         username: "director",
         password: "1234",
-        fullname: "นายวิชัย เก่งการศึกษา",
+        fullname: "นางนัทชพร ตั้งศุภจรูญนุกูล",
         position: "ผู้อำนวยการโรงเรียนวัดบางปูน",
-        role: "director",
-        // E-Signature Stamp (SVG base64 or stylized graphic)
-        signature_url: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='60' viewBox='0 0 180 60'><path d='M10,40 Q40,5 70,35 T130,20 T170,30' fill='none' stroke='%230f3c8a' stroke-width='3' stroke-linecap='round'/><path d='M40,50 Q70,25 110,48' fill='none' stroke='%230f3c8a' stroke-width='2'/><text x='115' y='55' font-family='sans-serif' font-size='10' fill='%230f3c8a' font-weight='bold'>วิชัย เก่งการศึกษา</text></svg>"
+        role: "director"
       }
     ];
 
+    // Initial Default Seed Requests (ตรงตามรูปภาพต้นฉบับ)
     const DEFAULT_REQUESTS = [
       {
         request_id: "REQ-2569-001",
         user_id: 1,
-        doc_number: "วป ๐๑/๒๕๖๙",
-        subject: "ขออนุมัติเดินทางไปราชการเพื่อเข้าร่วมการประชุมเชิงปฏิบัติการจัดทำแผนพัฒนาการศึกษา",
-        write_date: "2026-09-02",
-        start_date: "2026-09-10",
-        end_date: "2026-09-11",
-        location: "โรงแรมสองพันบุรี อำเภอเมือง จังหวัดสุพรรณบุรี",
-        details: "ตามหนังสือ สพป.สุพรรณบุรี เขต 1 ที่ ศธ 04183/ว 112 ลงวันที่ 28 สิงหาคม 2569 เพื่อพัฒนาศักยภาพครูผู้รับผิดชอบงานแผนงานและนโยบาย",
-        expense_type: "partial",
-        expense_details: {
-          allowance: true,
-          transport: true,
-          accommodation: false
-        },
-        travel_method: "own_car",
-        vehicle_plate: "กข 4567 สุพรรณบุรี",
-        status: "approved",
-        director_comment: "อนุมัติให้ไปราชการตามที่เสนอ พร้อมให้รายงานผลการปฏิบัติราชการหลังเสร็จสิ้นภารกิจ",
-        approved_at: "2026-09-03 10:30",
-        created_at: "2026-09-02 08:30"
-      },
-      {
-        request_id: "REQ-2569-002",
-        user_id: 2,
-        doc_number: "วป ๐๒/๒๕๖๙",
-        subject: "ขออนุมัติเดินทางไปราชการนำนักเรียนเข้าร่วมการแข่งขันหุ่นยนต์และปัญญาประดิษฐ์ระดับภาค",
-        write_date: "2026-09-05",
-        start_date: "2026-09-15",
-        end_date: "2026-09-16",
-        location: "มหาวิทยาลัยเกษตรศาสตร์ วิทยาเขตกำแพงแสน จ.นครปฐม",
-        details: "นำนักเรียนชั้น ป.6 ตัวแทนโรงเรียนวัดบางปูน เข้าร่วมการแข่งขันทักษะวิชาการและเทคโนโลยี ตามโครงการส่งเสริมความเป็นเลิศทางวิทยาศาสตร์",
-        expense_type: "full",
-        expense_details: {
-          allowance: true,
-          transport: true,
-          accommodation: true
-        },
-        travel_method: "gov_car",
-        vehicle_plate: "",
-        status: "pending",
-        director_comment: "",
-        approved_at: "",
-        created_at: "2026-09-05 09:15"
-      },
-      {
-        request_id: "REQ-2569-003",
-        user_id: 1,
-        doc_number: "วป ๐๓/๒๕๖๙",
-        subject: "ขออนุมัติเดินทางไปราชการส่งเอกสารรายงานผลสัมฤทธิ์ทางการเรียน ณ สพป.สุพรรณบุรี เขต 1",
-        write_date: "2026-09-06",
-        start_date: "2026-09-08",
-        end_date: "2026-09-08",
-        location: "สำนักงานเขตพื้นที่การศึกษาประถมศึกษาสุพรรณบุรี เขต 1",
-        details: "นำส่งเอกสารทางวิชาการและการประเมินผลการเรียนรู้ประจำปีการศึกษา",
-        expense_type: "none",
-        expense_details: {
-          allowance: false,
-          transport: false,
-          accommodation: false
-        },
-        travel_method: "bike",
-        vehicle_plate: "1กข 899 สุพรรณบุรี",
-        status: "pending",
-        director_comment: "",
-        approved_at: "",
-        created_at: "2026-09-06 14:00"
+        doc_num: "",
+        doc_date: "๒ กรกฎาคม ๒๕๖๙",
+        subject: "ขออนุญาตไปราชการที่โรงเรียนโคกสำโรงวิทยา จังหวัดลพบุรี",
+        fullname: "นายวราภรณ์ จูงาม",
+        position: "ครูผู้ช่วย",
+        purpose: "วิทยากรให้ความรู้ในการอบรมเชิงปฏิบัติการนักเรียนแกนนำโครงการโรงเรียนคุณธรรม สพฐ.",
+        location: "ห้องศูนย์ประชุมและกิจกรรม โรงเรียนโคกสำโรงวิทยา",
+        ref_doc: "ศธ ๐๔๓๓๓.๐๗/๓๓๔ ลว. ๑๐ มิถุนายน ๒๕๖๘",
+        day_name: "พุธ",
+        day_num: "๘",
+        month_name: "กรกฎาคม",
+        year_num: "๒๕๖๘",
+        time_start: "๐๘.๐๐",
+        time_end: "๑๖.๓๐ น.",
+        expense_choice: "none",
+        sub_expenses: { transport: false, fuel: false, allowance: false, hotel: false },
+        vehicle_checked: true,
+        vehicle_type: "รถจักรยานยนต์ส่วนตัว",
+        vehicle_plate: "๑กฉ ๙๕๗๘ สิงห์บุรี",
+        other_checked: false,
+        other_text: "",
+        teacher_sign: "",
+        director_decision: "approved",
+        director_comment1: "อนุมัติให้ไปราชการตามที่เสนอ",
+        director_comment2: "",
+        director_sign: "",
+        status: "approved", // pending / approved / rejected
+        created_at: "2026-07-02 08:30"
       }
     ];
 
-    // State Variables
+    // App State
     let currentUser = null;
-    let directorFilter = 'pending';
-    let currentViewingRequestId = null;
+    let currentRequestId = "REQ-2569-001";
+    let activeSigRole = "teacher"; // 'teacher' or 'director'
+    let tempUploadData = "";
 
-    // Initialize Application
+    // Signature Canvas State
+    let sigCanvas, sigCtx, isDrawing = false, hasDrawn = false;
+
     document.addEventListener("DOMContentLoaded", () => {
       initDatabase();
+      initSigCanvas();
       checkAuthSession();
+      loadRequestIntoDocument("REQ-2569-001");
     });
 
-    // Database Initialization
     function initDatabase() {
       if (!localStorage.getItem("tb_users")) {
         localStorage.setItem("tb_users", JSON.stringify(DEFAULT_USERS));
@@ -1042,730 +714,639 @@
     }
 
     function resetToDefaultData() {
-      if (confirm("คุณต้องการรีเซ็ตข้อมูลระบบกลับสู่ค่าเริ่มต้นทั้งหมดใช่หรือไม่?")) {
+      if (confirm("รีเซ็ตข้อมูลตัวอย่างกลับสู่ค่าเริ่มต้นทั้งหมดใช่หรือไม่?")) {
         localStorage.setItem("tb_users", JSON.stringify(DEFAULT_USERS));
         localStorage.setItem("tb_requests", JSON.stringify(DEFAULT_REQUESTS));
-        showToast("รีเซ็ตข้อมูลระบบเรียบร้อยแล้ว", "success");
-        renderCurrentView();
+        showToast("รีเซ็ตข้อมูลเรียบร้อยแล้ว", "success");
+        loadRequestIntoDocument("REQ-2569-001");
+        renderCurrentSession();
       }
     }
 
-    // Helper functions for DB access
-    function getUsers() {
-      return JSON.parse(localStorage.getItem("tb_users") || "[]");
-    }
+    function getUsers() { return JSON.parse(localStorage.getItem("tb_users") || "[]"); }
+    function getRequests() { return JSON.parse(localStorage.getItem("tb_requests") || "[]"); }
+    function saveRequests(r) { localStorage.setItem("tb_requests", JSON.stringify(r)); }
 
-    function getRequests() {
-      return JSON.parse(localStorage.getItem("tb_requests") || "[]");
-    }
-
-    function saveRequests(requests) {
-      localStorage.setItem("tb_requests", JSON.stringify(requests));
-    }
-
-    // Authentication
+    // Authentication Session
     function checkAuthSession() {
-      const savedUser = sessionStorage.getItem("auth_user");
-      if (savedUser) {
-        currentUser = JSON.parse(savedUser);
+      const saved = sessionStorage.getItem("auth_user");
+      if (saved) {
+        currentUser = JSON.parse(saved);
       } else {
-        // Default login as teacher1 for quick demonstration
         currentUser = getUsers().find(u => u.username === "teacher1");
         sessionStorage.setItem("auth_user", JSON.stringify(currentUser));
       }
-      renderCurrentView();
+      renderCurrentSession();
     }
 
     function switchUser(username) {
-      const users = getUsers();
-      const user = users.find(u => u.username === username);
+      const user = getUsers().find(u => u.username === username);
       if (user) {
         currentUser = user;
         sessionStorage.setItem("auth_user", JSON.stringify(user));
         showToast(`สลับใช้งานเป็น: ${user.fullname} (${user.role === 'director' ? 'ผู้อำนวยการ' : 'ครู'})`, "info");
-        closeAllModals();
-        closePrintPreview();
-        renderCurrentView();
+        renderCurrentSession();
       }
     }
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const username = document.getElementById("login-username").value.trim();
-      const password = document.getElementById("login-password").value.trim();
+    function renderCurrentSession() {
+      if (!currentUser) return;
+      
+      const badge = document.getElementById("nav-user-badge");
+      const isDirector = currentUser.role === 'director';
 
-      const user = getUsers().find(u => u.username === username && u.password === password);
-      if (user) {
-        currentUser = user;
-        sessionStorage.setItem("auth_user", JSON.stringify(user));
-        showToast(`ยินดีต้อนรับ ${user.fullname}`, "success");
-        renderCurrentView();
-      } else {
-        showToast("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "error");
-      }
-    }
-
-    function handleLogout() {
-      sessionStorage.removeItem("auth_user");
-      currentUser = null;
-      renderCurrentView();
-      showToast("ออกจากระบบเรียบร้อยแล้ว", "info");
-    }
-
-    // View Rendering Controller
-    function renderCurrentView() {
-      const loginView = document.getElementById("login-view");
-      const teacherView = document.getElementById("teacher-view");
-      const directorView = document.getElementById("director-view");
-      const navUserSection = document.getElementById("nav-user-section");
-
-      if (!currentUser) {
-        loginView.classList.remove("hidden");
-        teacherView.classList.add("hidden");
-        directorView.classList.add("hidden");
-        navUserSection.innerHTML = `
-          <button onclick="switchUser('teacher1')" class="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg font-medium hover:bg-blue-100">
-            <i class="fa-solid fa-user-lock mr-1"></i> เข้าสู่ระบบทดสอบ
-          </button>
-        `;
-        return;
-      }
-
-      loginView.classList.add("hidden");
-
-      // Render Top Nav User Info
-      const roleBadge = currentUser.role === 'director' 
-        ? `<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded-md border border-amber-200">ผู้อำนวยการ</span>`
-        : `<span class="bg-sky-100 text-sky-800 text-[11px] font-bold px-2 py-0.5 rounded-md border border-sky-200">ครูผู้ขอ</span>`;
-
-      navUserSection.innerHTML = `
-        <div class="flex items-center gap-3">
-          <div class="text-right hidden sm:block">
-            <div class="text-xs font-bold text-slate-800 flex items-center justify-end gap-1.5">
-              <span>${currentUser.fullname}</span>
-              ${roleBadge}
-            </div>
-            <div class="text-[11px] text-slate-500">${currentUser.position}</div>
-          </div>
-          <div class="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold border border-slate-300">
-            ${currentUser.role === 'director' ? '<i class="fa-solid fa-user-tie text-amber-600"></i>' : '<i class="fa-solid fa-user text-blue-600"></i>'}
-          </div>
-          <button onclick="handleLogout()" title="ออกจากระบบ" class="text-slate-400 hover:text-rose-600 p-1.5 transition">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          </button>
+      badge.innerHTML = `
+        <div class="text-right hidden sm:block">
+          <div class="text-xs font-bold text-slate-800">${currentUser.fullname}</div>
+          <div class="text-[11px] ${isDirector ? 'text-amber-700 font-semibold' : 'text-slate-500'}">${currentUser.position}</div>
+        </div>
+        <div class="w-8 h-8 rounded-full ${isDirector ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'} flex items-center justify-center font-bold text-sm">
+          ${isDirector ? '<i class="fa-solid fa-user-tie"></i>' : '<i class="fa-solid fa-user"></i>'}
         </div>
       `;
 
-      // Branch to specific view
-      if (currentUser.role === 'director') {
-        teacherView.classList.add("hidden");
-        directorView.classList.remove("hidden");
-        renderDirectorDashboard();
+      // ปรับการแสดงปุ่ม Director Quick Action บนแถบเครื่องมือ
+      const dirActions = document.getElementById("director-quick-actions");
+      const teacherSaveBtn = document.getElementById("btn-save-request");
+
+      if (isDirector) {
+        dirActions.classList.remove("hidden");
+        teacherSaveBtn.classList.add("hidden");
       } else {
-        directorView.classList.add("hidden");
-        teacherView.classList.remove("hidden");
-        renderTeacherDashboard();
+        dirActions.classList.add("hidden");
+        teacherSaveBtn.classList.remove("hidden");
+      }
+
+      updatePendingBadge();
+    }
+
+    function updatePendingBadge() {
+      const pendingCount = getRequests().filter(r => r.status === 'pending').length;
+      const badge = document.getElementById("nav-pending-badge");
+      if (pendingCount > 0) {
+        badge.textContent = pendingCount;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
       }
     }
 
-    // ==========================================
-    // TEACHER DASHBOARD LOGIC
-    // ==========================================
-    function renderTeacherDashboard() {
-      document.getElementById("teacher-welcome-name").textContent = currentUser.fullname;
-      
-      const allRequests = getRequests();
-      const myRequests = allRequests.filter(r => r.user_id === currentUser.id);
+    // View Navigation (Form vs History)
+    function setViewMode(mode) {
+      const formView = document.getElementById("form-view");
+      const historyView = document.getElementById("history-view");
+      const tabForm = document.getElementById("tab-btn-form");
+      const tabHistory = document.getElementById("tab-btn-history");
 
-      // Metrics
-      const total = myRequests.length;
-      const pending = myRequests.filter(r => r.status === 'pending').length;
-      const approved = myRequests.filter(r => r.status === 'approved').length;
-      const rejected = myRequests.filter(r => r.status === 'rejected').length;
-
-      document.getElementById("metric-teacher-total").textContent = total;
-      document.getElementById("metric-teacher-pending").textContent = pending;
-      document.getElementById("metric-teacher-approved").textContent = approved;
-      document.getElementById("metric-teacher-rejected").textContent = rejected;
-
-      renderTeacherRequests();
+      if (mode === 'form') {
+        formView.classList.remove("hidden");
+        historyView.classList.add("hidden");
+        tabForm.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 flex items-center gap-1.5 transition";
+        tabHistory.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition";
+      } else {
+        formView.classList.add("hidden");
+        historyView.classList.remove("hidden");
+        tabHistory.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 flex items-center gap-1.5 transition";
+        tabForm.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition";
+        renderHistoryTable();
+      }
     }
 
-    function renderTeacherRequests() {
-      const tbody = document.getElementById("teacher-requests-tbody");
-      const searchQuery = (document.getElementById("search-teacher-requests")?.value || "").toLowerCase();
-      
-      const allRequests = getRequests();
-      let myRequests = allRequests.filter(r => r.user_id === currentUser.id);
+    // History Table Renderer
+    function renderHistoryTable() {
+      const tbody = document.getElementById("history-tbody");
+      const reqs = getRequests();
 
-      if (searchQuery) {
-        myRequests = myRequests.filter(r => 
-          r.subject.toLowerCase().includes(searchQuery) ||
-          r.location.toLowerCase().includes(searchQuery) ||
-          r.request_id.toLowerCase().includes(searchQuery)
-        );
-      }
-
-      if (myRequests.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" class="py-8 text-center text-slate-400">
-              <i class="fa-regular fa-folder-open text-3xl mb-2 block"></i>
-              ไม่พบประวัติคำขอไปราชการ
-            </td>
-          </tr>
-        `;
+      if (reqs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">ไม่พบประวัติคำขอ</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = myRequests.map(req => {
-        // Status badge
+      tbody.innerHTML = reqs.map(r => {
         let statusBadge = "";
-        if (req.status === 'approved') {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-            <i class="fa-solid fa-circle-check text-[10px]"></i> อนุมัติแล้ว
-          </span>`;
-        } else if (req.status === 'rejected') {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
-            <i class="fa-solid fa-circle-xmark text-[10px]"></i> ไม่อนุมัติ
-          </span>`;
+        if (r.status === 'approved') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">อนุมัติแล้ว</span>`;
+        } else if (r.status === 'rejected') {
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">ไม่อนุมัติ</span>`;
         } else {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-            <i class="fa-solid fa-clock text-[10px]"></i> รอพิจารณา
-          </span>`;
+          statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">รอการพิจารณา</span>`;
         }
 
-        // Expense summary badge
-        let expenseText = "ไม่ขอเบิก";
-        if (req.expense_type === 'full') expenseText = "ขอเบิกเต็มจำนวน";
-        if (req.expense_type === 'partial') expenseText = "ขอเบิกบางส่วน";
-
-        // Action buttons
-        const printBtn = req.status === 'approved' 
-          ? `<button onclick="preparePrint('${req.request_id}')" title="พิมพ์บันทึกข้อความราชการ A4" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition font-medium text-xs flex items-center gap-1">
-              <i class="fa-solid fa-print"></i> พิมพ์
-            </button>`
-          : `<span class="text-slate-300 text-xs">-</span>`;
-
         return `
-          <tr class="hover:bg-slate-50/80 transition">
-            <td class="py-3 px-4 font-medium text-slate-900">${req.request_id}</td>
-            <td class="py-3 px-4 max-w-xs">
-              <div class="font-medium text-slate-800 truncate" title="${req.subject}">${req.subject}</div>
-              <div class="text-[11px] text-slate-400">ยื่นเมื่อ: ${req.write_date}</div>
-            </td>
-            <td class="py-3 px-4 text-xs whitespace-nowrap">${formatDateThai(req.start_date)} - ${formatDateThai(req.end_date)}</td>
-            <td class="py-3 px-4 text-xs max-w-[150px] truncate" title="${req.location}">${req.location}</td>
-            <td class="py-3 px-4 text-xs text-slate-600">${expenseText}</td>
-            <td class="py-3 px-4 text-center whitespace-nowrap">${statusBadge}</td>
-            <td class="py-3 px-4 text-right whitespace-nowrap space-x-1">
-              <button onclick="openReviewModal('${req.request_id}')" title="ดูรายละเอียด" class="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition text-xs">
-                <i class="fa-solid fa-eye"></i> ดูข้อมูล
-              </button>
-              ${printBtn}
+          <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="loadRequestIntoDocument('${r.request_id}'); setViewMode('form');">
+            <td class="py-3 px-4 font-bold text-slate-800">${r.request_id}</td>
+            <td class="py-3 px-4"><div class="font-medium text-slate-800">${r.fullname}</div><div class="text-xs text-slate-400">${r.position}</div></td>
+            <td class="py-3 px-4 max-w-xs truncate" title="${r.subject}">${r.subject}</td>
+            <td class="py-3 px-4 text-xs whitespace-nowrap">${r.doc_date}</td>
+            <td class="py-3 px-4 text-center">${statusBadge}</td>
+            <td class="py-3 px-4 text-right">
+              <button class="px-3 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-medium">เปิดเอกสาร</button>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    // Modal Create Request
-    function openNewRequestModal() {
-      if (!currentUser) return;
-      document.getElementById("req-fullname").value = currentUser.fullname;
-      document.getElementById("req-position").value = currentUser.position;
-      
-      // Default to today
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("req-write-date").value = today;
-      document.getElementById("req-start-date").value = today;
-      document.getElementById("req-end-date").value = today;
-
-      // Reset form fields
-      document.getElementById("form-new-request").reset();
-      document.getElementById("req-fullname").value = currentUser.fullname;
-      document.getElementById("req-position").value = currentUser.position;
-      document.getElementById("req-write-date").value = today;
-      document.getElementById("req-start-date").value = today;
-      document.getElementById("req-end-date").value = today;
-
-      toggleExpenseSubOptions();
-      toggleVehiclePlate();
-
-      document.getElementById("modal-new-request").classList.remove("hidden");
-    }
-
-    function closeNewRequestModal() {
-      document.getElementById("modal-new-request").classList.add("hidden");
-    }
-
-    function toggleExpenseSubOptions() {
-      const expenseType = document.querySelector('input[name="req_expense_type"]:checked')?.value;
-      const subContainer = document.getElementById("expense-sub-options");
-      if (expenseType === 'partial' || expenseType === 'full') {
-        subContainer.classList.remove("hidden");
-      } else {
-        subContainer.classList.add("hidden");
-      }
-    }
-
-    function toggleVehiclePlate() {
-      const method = document.querySelector('input[name="req_travel_method"]:checked')?.value;
-      const plateContainer = document.getElementById("vehicle-plate-container");
-      if (method === 'own_car' || method === 'bike') {
-        plateContainer.classList.remove("hidden");
-      } else {
-        plateContainer.classList.add("hidden");
-      }
-    }
-
-    function handleCreateRequest(e) {
-      e.preventDefault();
-      
-      const write_date = document.getElementById("req-write-date").value;
-      const subject = document.getElementById("req-subject").value.trim();
-      const start_date = document.getElementById("req-start-date").value;
-      const end_date = document.getElementById("req-end-date").value;
-      const location = document.getElementById("req-location").value.trim();
-      const details = document.getElementById("req-details").value.trim();
-      const expense_type = document.querySelector('input[name="req_expense_type"]:checked').value;
-      const travel_method = document.querySelector('input[name="req_travel_method"]:checked').value;
-      const vehicle_plate = document.getElementById("req-vehicle-plate")?.value.trim() || "";
-
-      if ((travel_method === 'own_car' || travel_method === 'bike') && !vehicle_plate) {
-        showToast("กรุณาระบุหมายเลขทะเบียนรถ", "error");
-        return;
-      }
-
-      const expense_details = {
-        allowance: document.getElementById("exp-allowance")?.checked || false,
-        transport: document.getElementById("exp-transport")?.checked || false,
-        accommodation: document.getElementById("exp-accommodation")?.checked || false
-      };
-
-      const requests = getRequests();
-      const nextIdNum = requests.length + 1;
-      const newRequestId = `REQ-2569-${String(nextIdNum).padStart(3, '0')}`;
-      const docNum = `วป ${toThaiDigits(nextIdNum)}/๒๕๖๙`;
-
-      const now = new Date();
-      const nowStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-      const newRequest = {
-        request_id: newRequestId,
-        user_id: currentUser.id,
-        doc_number: docNum,
-        subject,
-        write_date,
-        start_date,
-        end_date,
-        location,
-        details,
-        expense_type,
-        expense_details,
-        travel_method,
-        vehicle_plate,
-        status: "pending",
-        director_comment: "",
-        approved_at: "",
-        created_at: nowStr
-      };
-
-      requests.unshift(newRequest);
-      saveRequests(requests);
-
-      closeNewRequestModal();
-      showToast("ยื่นคำขอไปราชการเรียบร้อยแล้ว รอการอนุมัติจากผู้อำนวยการ", "success");
-      renderCurrentView();
-    }
-
-    // ==========================================
-    // DIRECTOR DASHBOARD LOGIC
-    // ==========================================
-    function renderDirectorDashboard() {
-      document.getElementById("director-welcome-name").textContent = currentUser.fullname;
-
-      const allRequests = getRequests();
-      const pendingRequests = allRequests.filter(r => r.status === 'pending');
-
-      document.getElementById("director-pending-badge").textContent = pendingRequests.length;
-      document.getElementById("director-tab-pending-count").textContent = pendingRequests.length;
-      document.getElementById("director-tab-all-count").textContent = allRequests.length;
-
-      const btnPending = document.getElementById("filter-btn-pending");
-      const btnAll = document.getElementById("filter-btn-all");
-
-      if (directorFilter === 'pending') {
-        btnPending.className = "tab-active py-2 px-3 flex items-center gap-2 transition";
-        btnAll.className = "py-2 px-3 text-slate-500 hover:text-slate-800 flex items-center gap-2 transition";
-      } else {
-        btnAll.className = "tab-active py-2 px-3 flex items-center gap-2 transition";
-        btnPending.className = "py-2 px-3 text-slate-500 hover:text-slate-800 flex items-center gap-2 transition";
-      }
-
-      renderDirectorRequests();
-    }
-
-    function setDirectorFilter(filter) {
-      directorFilter = filter;
-      renderDirectorDashboard();
-    }
-
-    function renderDirectorRequests() {
-      const tbody = document.getElementById("director-requests-tbody");
-      const allRequests = getRequests();
-      const users = getUsers();
-
-      let displayRequests = directorFilter === 'pending'
-        ? allRequests.filter(r => r.status === 'pending')
-        : allRequests;
-
-      if (displayRequests.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" class="py-12 text-center text-slate-400">
-              <i class="fa-solid fa-clipboard-check text-4xl mb-2 text-slate-300 block"></i>
-              ${directorFilter === 'pending' ? 'ไม่มีคำขอที่รอการพิจารณาในขณะนี้' : 'ยังไม่มีประวัติคำขอ'}
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = displayRequests.map(req => {
-        const requester = users.find(u => u.id === req.user_id) || { fullname: "ไม่ระบุ", position: "-" };
-
-        let statusBadge = "";
-        if (req.status === 'approved') {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-            <i class="fa-solid fa-check text-[10px]"></i> อนุมัติแล้ว
-          </span>`;
-        } else if (req.status === 'rejected') {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800 border border-rose-200">
-            <i class="fa-solid fa-xmark text-[10px]"></i> ไม่อนุมัติ
-          </span>`;
-        } else {
-          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
-            <i class="fa-solid fa-clock text-[10px]"></i> รอการพิจารณา
-          </span>`;
-        }
-
-        let expenseText = "ไม่ขอเบิก";
-        if (req.expense_type === 'full') expenseText = "เบิกเต็ม";
-        if (req.expense_type === 'partial') expenseText = "เบิกบางส่วน";
-
-        return `
-          <tr class="hover:bg-slate-50/80 transition">
-            <td class="py-3 px-4">
-              <div class="font-bold text-slate-900">${req.request_id}</div>
-              <div class="text-[11px] text-slate-400">${formatDateThai(req.write_date)}</div>
-            </td>
-            <td class="py-3 px-4">
-              <div class="font-semibold text-slate-800">${requester.fullname}</div>
-              <div class="text-[11px] text-slate-500">${requester.position}</div>
-            </td>
-            <td class="py-3 px-4 max-w-xs">
-              <div class="font-medium text-slate-800 truncate" title="${req.subject}">${req.subject}</div>
-            </td>
-            <td class="py-3 px-4 text-xs whitespace-nowrap">
-              <div>${formatDateThai(req.start_date)}</div>
-              <div class="text-[11px] text-slate-400 max-w-[120px] truncate">${req.location}</div>
-            </td>
-            <td class="py-3 px-4 text-xs">
-              <div>งบ: <span class="font-medium text-slate-700">${expenseText}</span></div>
-              <div class="text-[11px] text-slate-400">${getTravelMethodName(req.travel_method)}</div>
-            </td>
-            <td class="py-3 px-4 text-center whitespace-nowrap">${statusBadge}</td>
-            <td class="py-3 px-4 text-right whitespace-nowrap">
-              ${req.status === 'pending'
-                ? `<button onclick="openReviewModal('${req.request_id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium shadow-sm transition flex items-center gap-1 ml-auto">
-                    <i class="fa-solid fa-stamp"></i> พิจารณา
-                  </button>`
-                : `<button onclick="openReviewModal('${req.request_id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition flex items-center gap-1 ml-auto">
-                    <i class="fa-solid fa-eye"></i> ดูข้อมูล
-                  </button>`
-              }
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // ==========================================
-    // MODAL REVIEW & APPROVAL
-    // ==========================================
-    function openReviewModal(requestId) {
-      currentViewingRequestId = requestId;
-      const allRequests = getRequests();
-      const users = getUsers();
-
-      const req = allRequests.find(r => r.request_id === requestId);
+    // ========================================================
+    // DOCUMENT DATA BINDING (โหลดข้อมูลใส่ในหนังสือราชการ)
+    // ========================================================
+    function loadRequestIntoDocument(reqId) {
+      currentRequestId = reqId;
+      const req = getRequests().find(r => r.request_id === reqId);
       if (!req) return;
 
-      const requester = users.find(u => u.id === req.user_id) || { fullname: "ไม่ระบุ", position: "-" };
+      document.getElementById("in-doc-num").value = req.doc_num || "";
+      document.getElementById("in-doc-date").value = req.doc_date || "";
+      document.getElementById("in-doc-subject").value = req.subject || "";
 
-      document.getElementById("review-req-id").textContent = `รหัสคำขอ: ${req.request_id} | เลขที่ ${req.doc_number}`;
-      document.getElementById("rev-fullname").textContent = requester.fullname;
-      document.getElementById("rev-position").textContent = requester.position;
-      document.getElementById("rev-write-date").textContent = formatDateThai(req.write_date);
-      document.getElementById("rev-subject").textContent = req.subject;
-      document.getElementById("rev-details").textContent = req.details;
-      document.getElementById("rev-dates").textContent = `${formatDateThai(req.start_date)} ถึง ${formatDateThai(req.end_date)}`;
-      document.getElementById("rev-location").textContent = req.location;
+      document.getElementById("in-fullname").value = req.fullname || "";
+      document.getElementById("in-position").value = req.position || "";
+      document.getElementById("in-purpose").value = req.purpose || "";
+      document.getElementById("in-location").value = req.location || "";
+      document.getElementById("in-ref-doc").value = req.ref_doc || "";
 
-      // Status Badge
-      const statusBadge = document.getElementById("rev-status-badge");
+      document.getElementById("in-day-name").value = req.day_name || "";
+      document.getElementById("in-day-num").value = req.day_num || "";
+      document.getElementById("in-month-name").value = req.month_name || "";
+      document.getElementById("in-year-num").value = req.year_num || "";
+      document.getElementById("in-time-start").value = req.time_start || "๐๘.๐๐";
+      document.getElementById("in-time-end").value = req.time_end || "๑๖.๓๐ น.";
+
+      // Expenses choices
+      setExpenseChoiceUI(req.expense_choice);
+      document.getElementById("sub-chk-transport").textContent = req.sub_expenses?.transport ? '[✓]' : '[ ]';
+      document.getElementById("sub-chk-fuel").textContent = req.sub_expenses?.fuel ? '[✓]' : '[ ]';
+      document.getElementById("sub-chk-allowance").textContent = req.sub_expenses?.allowance ? '[✓]' : '[ ]';
+      document.getElementById("sub-chk-hotel").textContent = req.sub_expenses?.hotel ? '[✓]' : '[ ]';
+
+      // Vehicle
+      document.getElementById("chk-vehicle").textContent = req.vehicle_checked ? '[✓]' : '[ ]';
+      document.getElementById("in-vehicle-type").value = req.vehicle_type || "รถจักรยานยนต์ส่วนตัว";
+      document.getElementById("in-vehicle-plate").value = req.vehicle_plate || "";
+
+      // Other
+      document.getElementById("chk-other").textContent = req.other_checked ? '[✓]' : '[ ]';
+      document.getElementById("in-other-text").value = req.other_text || "";
+
+      // Signature values
+      document.getElementById("in-sign-name").value = req.fullname || "";
+      document.getElementById("in-sign-position").value = req.position || "";
+
+      renderSignatureImage('teacher', req.teacher_sign);
+      renderSignatureImage('director', req.director_sign);
+
+      // Director section
+      setDirectorDecisionUI(req.director_decision || 'approved');
+      document.getElementById("in-dir-comment1").value = req.director_comment1 || "";
+      document.getElementById("in-dir-comment2").value = req.director_comment2 || "";
+
+      // Status Bar update
+      updateDocumentStatusBar(req);
+    }
+
+    function createNewBlankDocument() {
+      currentRequestId = null;
+      document.getElementById("in-doc-num").value = "";
+      
+      const now = new Date();
+      const thaiMonths = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+      const thaiDays = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+      
+      document.getElementById("in-doc-date").value = `${toThaiDigits(now.getDate())} ${thaiMonths[now.getMonth()]} ${toThaiDigits(now.getFullYear()+543)}`;
+      document.getElementById("in-doc-subject").value = "ขออนุญาตไปราชการที่...";
+
+      // Auto-fill from current user
+      document.getElementById("in-fullname").value = currentUser.fullname;
+      document.getElementById("in-position").value = currentUser.position;
+      document.getElementById("in-sign-name").value = currentUser.fullname;
+      document.getElementById("in-sign-position").value = currentUser.position;
+
+      document.getElementById("in-purpose").value = "";
+      document.getElementById("in-location").value = "";
+      document.getElementById("in-ref-doc").value = "";
+
+      document.getElementById("in-day-name").value = thaiDays[now.getDay()];
+      document.getElementById("in-day-num").value = toThaiDigits(now.getDate());
+      document.getElementById("in-month-name").value = thaiMonths[now.getMonth()];
+      document.getElementById("in-year-num").value = toThaiDigits(now.getFullYear()+543);
+      document.getElementById("in-time-start").value = "๐๘.๐๐";
+      document.getElementById("in-time-end").value = "๑๖.๓๐ น.";
+
+      setExpenseChoiceUI('none');
+      document.getElementById("sub-chk-transport").textContent = '[ ]';
+      document.getElementById("sub-chk-fuel").textContent = '[ ]';
+      document.getElementById("sub-chk-allowance").textContent = '[ ]';
+      document.getElementById("sub-chk-hotel").textContent = '[ ]';
+
+      document.getElementById("chk-vehicle").textContent = '[✓]';
+      document.getElementById("in-vehicle-type").value = "รถจักรยานยนต์ส่วนตัว";
+      document.getElementById("in-vehicle-plate").value = "";
+
+      document.getElementById("chk-other").textContent = '[ ]';
+      document.getElementById("in-other-text").value = "";
+
+      renderSignatureImage('teacher', "");
+      renderSignatureImage('director', "");
+
+      setDirectorDecisionUI('approved');
+      document.getElementById("in-dir-comment1").value = "";
+      document.getElementById("in-dir-comment2").value = "";
+
+      document.getElementById("bar-doc-title").textContent = "สร้างคำขอใหม่ (กรอกข้อมูลในหนังสือราชการ)";
+      document.getElementById("bar-status-badge").classList.add("hidden");
+    }
+
+    function updateDocumentStatusBar(req) {
+      document.getElementById("bar-doc-title").textContent = `คำขอ: ${req.request_id}`;
+      const badge = document.getElementById("bar-status-badge");
+      badge.classList.remove("hidden");
+
       if (req.status === 'approved') {
-        statusBadge.className = "text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded text-xs";
-        statusBadge.textContent = "อนุมัติแล้ว";
+        badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
+        badge.textContent = "อนุมัติแล้ว";
       } else if (req.status === 'rejected') {
-        statusBadge.className = "text-rose-700 bg-rose-100 px-2 py-0.5 rounded text-xs";
-        statusBadge.textContent = "ไม่อนุมัติ";
+        badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-100 text-rose-800 border border-rose-200";
+        badge.textContent = "ไม่อนุมัติ";
       } else {
-        statusBadge.className = "text-amber-700 bg-amber-100 px-2 py-0.5 rounded text-xs";
-        statusBadge.textContent = "รอพิจารณา";
+        badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-200";
+        badge.textContent = "รอการพิจารณา";
       }
+    }
 
-      // Expense text
-      let expDesc = "ไม่ขอเบิกค่าใช้จ่ายในการเดินทาง";
-      if (req.expense_type === 'full') expDesc = "ขอเบิกเต็มจำนวน";
-      if (req.expense_type === 'partial') {
-        const sub = [];
-        if (req.expense_details?.allowance) sub.push("ค่าเบี้ยเลี้ยง");
-        if (req.expense_details?.transport) sub.push("ค่าพาหนะ/น้ำมัน");
-        if (req.expense_details?.accommodation) sub.push("ค่าที่พัก");
-        expDesc = `ขอเบิกบางส่วน (${sub.join(", ") || "ไม่ระบุย่อย"})`;
-      }
-      document.getElementById("rev-expense").textContent = expDesc;
+    // ========================================================
+    // INTERACTIVE CHECKBOXES & TOGGLES
+    // ========================================================
+    let currentExpenseChoice = 'none';
 
-      // Travel method
-      let travelDesc = getTravelMethodName(req.travel_method);
-      if (req.vehicle_plate) {
-        travelDesc += ` (ทะเบียน: ${req.vehicle_plate})`;
-      }
-      document.getElementById("rev-travel").textContent = travelDesc;
+    function toggleExpenseChoice(choice) {
+      currentExpenseChoice = choice;
+      setExpenseChoiceUI(choice);
+    }
 
-      // Director Action Panel vs Result Panel
-      const actionPanel = document.getElementById("director-action-panel");
-      const resultPanel = document.getElementById("director-result-panel");
+    function setExpenseChoiceUI(choice) {
+      document.getElementById("chk-none").textContent = choice === 'none' ? '[✓]' : '[ ]';
+      document.getElementById("chk-none").className = `interactive-chk ${choice === 'none' ? 'text-blue-600 font-bold' : ''}`;
 
-      if (currentUser?.role === 'director' && req.status === 'pending') {
-        actionPanel.classList.remove("hidden");
-        resultPanel.classList.add("hidden");
-        document.getElementById("director-comment-input").value = "อนุมัติให้ไปราชการตามที่เสนอ";
-      } else {
-        actionPanel.classList.add("hidden");
-        if (req.status === 'approved' || req.status === 'rejected') {
-          resultPanel.classList.remove("hidden");
-          document.getElementById("rev-approved-comment").textContent = req.director_comment || "-";
-          document.getElementById("rev-approved-at").textContent = req.approved_at || "-";
-        } else {
-          resultPanel.classList.add("hidden");
+      document.getElementById("chk-full").textContent = choice === 'full' ? '[✓]' : '[ ]';
+      document.getElementById("chk-full").className = `interactive-chk ${choice === 'full' ? 'text-blue-600 font-bold' : ''}`;
+
+      document.getElementById("chk-partial").textContent = choice === 'partial' ? '[✓]' : '[ ]';
+      document.getElementById("chk-partial").className = `interactive-chk ${choice === 'partial' ? 'text-blue-600 font-bold' : ''}`;
+    }
+
+    function toggleSubExpense(key) {
+      toggleExpenseChoice('partial');
+      const el = document.getElementById(`sub-chk-${key}`);
+      el.textContent = el.textContent.includes('✓') ? '[ ]' : '[✓]';
+    }
+
+    function toggleVehicleChoice() {
+      const el = document.getElementById("chk-vehicle");
+      el.textContent = el.textContent.includes('✓') ? '[ ]' : '[✓]';
+    }
+
+    function toggleOtherChoice() {
+      const el = document.getElementById("chk-other");
+      el.textContent = el.textContent.includes('✓') ? '[ ]' : '[✓]';
+    }
+
+    function toggleDirectorDecision(decision) {
+      setDirectorDecisionUI(decision);
+    }
+
+    function setDirectorDecisionUI(decision) {
+      document.getElementById("chk-dir-approved").textContent = decision === 'approved' ? '[✓]' : '[ ]';
+      document.getElementById("chk-dir-approved").className = `interactive-chk ${decision === 'approved' ? 'text-blue-600 font-bold' : ''}`;
+
+      document.getElementById("chk-dir-rejected").textContent = decision === 'rejected' ? '[✓]' : '[ ]';
+      document.getElementById("chk-dir-rejected").className = `interactive-chk ${decision === 'rejected' ? 'text-rose-600 font-bold' : ''}`;
+    }
+
+    // ========================================================
+    // SIGNATURE PAD & MODAL CONTROLLER
+    // ========================================================
+    function initSigCanvas() {
+      sigCanvas = document.getElementById("active-sig-canvas");
+      sigCtx = sigCanvas.getContext("2d");
+      sigCtx.lineWidth = 2.8;
+      sigCtx.lineCap = "round";
+      sigCtx.strokeStyle = "#082f49"; // น้ำเงินเข้มลายเซ็นจริง
+
+      function getPos(e) {
+        const rect = sigCanvas.getBoundingClientRect();
+        const scaleX = sigCanvas.width / rect.width;
+        const scaleY = sigCanvas.height / rect.height;
+        let clientX = e.clientX, clientY = e.clientY;
+        if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
         }
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
       }
 
-      document.getElementById("modal-review-request").classList.remove("hidden");
+      function start(e) {
+        e.preventDefault();
+        isDrawing = true;
+        hasDrawn = true;
+        const pos = getPos(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(pos.x, pos.y);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        sigCtx.lineTo(pos.x, pos.y);
+        sigCtx.stroke();
+      }
+
+      function end() {
+        if (!isDrawing) return;
+        isDrawing = false;
+      }
+
+      sigCanvas.addEventListener("mousedown", start);
+      sigCanvas.addEventListener("mousemove", draw);
+      sigCanvas.addEventListener("mouseup", end);
+      sigCanvas.addEventListener("mouseleave", end);
+
+      sigCanvas.addEventListener("touchstart", start, { passive: false });
+      sigCanvas.addEventListener("touchmove", draw, { passive: false });
+      sigCanvas.addEventListener("touchend", end);
     }
 
-    function closeReviewModal() {
-      document.getElementById("modal-review-request").classList.add("hidden");
-      currentViewingRequestId = null;
+    function openSignatureModal(role) {
+      activeSigRole = role;
+      document.getElementById("sig-modal-title").textContent = role === 'teacher' ? "ลงลายมือชื่อผู้ขออนุมัติ" : "ลงลายมือชื่อผู้อำนวยการโรงเรียน";
+      clearActiveCanvas();
+      tempUploadData = "";
+      document.getElementById("sig-upload-preview-box").classList.add("hidden");
+      setSignTab('draw');
+      document.getElementById("modal-signature").classList.remove("hidden");
     }
 
-    function handleDirectorDecision(decision) {
-      if (!currentViewingRequestId) return;
-      const comment = document.getElementById("director-comment-input").value.trim() || (decision === 'approved' ? 'อนุมัติให้ไปราชการตามที่เสนอ' : 'ไม่อนุมัติ');
+    function closeSignatureModal() {
+      document.getElementById("modal-signature").classList.add("hidden");
+    }
 
-      const requests = getRequests();
-      const idx = requests.findIndex(r => r.request_id === currentViewingRequestId);
+    function setSignTab(tab) {
+      const drawBox = document.getElementById("sig-box-draw");
+      const uploadBox = document.getElementById("sig-box-upload");
+      const btnDraw = document.getElementById("btn-tab-sig-draw");
+      const btnUpload = document.getElementById("btn-tab-sig-upload");
+
+      if (tab === 'draw') {
+        drawBox.classList.remove("hidden");
+        uploadBox.classList.add("hidden");
+        btnDraw.className = "flex-1 py-1.5 rounded-lg bg-white shadow-sm text-blue-700";
+        btnUpload.className = "flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900";
+      } else {
+        drawBox.classList.add("hidden");
+        uploadBox.classList.remove("hidden");
+        btnUpload.className = "flex-1 py-1.5 rounded-lg bg-white shadow-sm text-blue-700";
+        btnDraw.className = "flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900";
+      }
+    }
+
+    function clearActiveCanvas() {
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+      hasDrawn = false;
+    }
+
+    function handleSignatureUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        tempUploadData = evt.target.result;
+        document.getElementById("sig-upload-img").src = tempUploadData;
+        document.getElementById("sig-upload-preview-box").classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function confirmSignature() {
+      let finalSign = "";
+      if (tempUploadData) {
+        finalSign = tempUploadData;
+      } else if (hasDrawn) {
+        finalSign = sigCanvas.toDataURL();
+      }
+
+      if (!finalSign) {
+        showToast("กรุณาวาดลายเซ็นหรือแนบไฟล์รูปภาพก่อนกดยืนยัน", "error");
+        return;
+      }
+
+      renderSignatureImage(activeSigRole, finalSign);
+      closeSignatureModal();
+      showToast("บันทึกลายมือชื่อลงในเอกสารแล้ว", "success");
+    }
+
+    function renderSignatureImage(role, dataUrl) {
+      const img = document.getElementById(`${role}-sign-image`);
+      const placeholder = document.getElementById(`${role}-sign-placeholder`);
+
+      if (dataUrl) {
+        img.src = dataUrl;
+        img.classList.remove("hidden");
+        placeholder.classList.add("hidden");
+        img.dataset.signature = dataUrl;
+      } else {
+        img.src = "";
+        img.classList.add("hidden");
+        placeholder.classList.remove("hidden");
+        img.dataset.signature = "";
+      }
+    }
+
+    // ========================================================
+    // SAVE & APPROVE ACTIONS
+    // ========================================================
+    function collectCurrentDocumentData() {
+      const reqs = getRequests();
+      const nextNum = reqs.length + 1;
+      const reqId = currentRequestId || `REQ-2569-${String(nextNum).padStart(3, '0')}`;
+
+      return {
+        request_id: reqId,
+        user_id: currentUser.id,
+        doc_num: document.getElementById("in-doc-num").value.trim(),
+        doc_date: document.getElementById("in-doc-date").value.trim(),
+        subject: document.getElementById("in-doc-subject").value.trim(),
+        fullname: document.getElementById("in-fullname").value.trim(),
+        position: document.getElementById("in-position").value.trim(),
+        purpose: document.getElementById("in-purpose").value.trim(),
+        location: document.getElementById("in-location").value.trim(),
+        ref_doc: document.getElementById("in-ref-doc").value.trim(),
+        day_name: document.getElementById("in-day-name").value.trim(),
+        day_num: document.getElementById("in-day-num").value.trim(),
+        month_name: document.getElementById("in-month-name").value.trim(),
+        year_num: document.getElementById("in-year-num").value.trim(),
+        time_start: document.getElementById("in-time-start").value.trim(),
+        time_end: document.getElementById("in-time-end").value.trim(),
+        expense_choice: currentExpenseChoice,
+        sub_expenses: {
+          transport: document.getElementById("sub-chk-transport").textContent.includes('✓'),
+          fuel: document.getElementById("sub-chk-fuel").textContent.includes('✓'),
+          allowance: document.getElementById("sub-chk-allowance").textContent.includes('✓'),
+          hotel: document.getElementById("sub-chk-hotel").textContent.includes('✓')
+        },
+        vehicle_checked: document.getElementById("chk-vehicle").textContent.includes('✓'),
+        vehicle_type: document.getElementById("in-vehicle-type").value,
+        vehicle_plate: document.getElementById("in-vehicle-plate").value.trim(),
+        other_checked: document.getElementById("chk-other").textContent.includes('✓'),
+        other_text: document.getElementById("in-other-text").value.trim(),
+        teacher_sign: document.getElementById("teacher-sign-image").dataset.signature || "",
+        director_decision: document.getElementById("chk-dir-approved").textContent.includes('✓') ? 'approved' : 'rejected',
+        director_comment1: document.getElementById("in-dir-comment1").value.trim(),
+        director_comment2: document.getElementById("in-dir-comment2").value.trim(),
+        director_sign: document.getElementById("director-sign-image").dataset.signature || "",
+        status: "pending",
+        created_at: new Date().toISOString()
+      };
+    }
+
+    function handleSaveRequest() {
+      const data = collectCurrentDocumentData();
+      const reqs = getRequests();
+      const existingIndex = reqs.findIndex(r => r.request_id === data.request_id);
+
+      if (existingIndex >= 0) {
+        data.status = reqs[existingIndex].status; // maintain status
+        data.director_sign = reqs[existingIndex].director_sign;
+        reqs[existingIndex] = data;
+      } else {
+        reqs.unshift(data);
+        currentRequestId = data.request_id;
+      }
+
+      saveRequests(reqs);
+      updateDocumentStatusBar(data);
+      updatePendingBadge();
+      showToast("บันทึกข้อมูลหนังสือราชการเรียบร้อยแล้ว", "success");
+    }
+
+    function handleDirectorSignAndApprove(decision) {
+      if (!currentRequestId) {
+        showToast("กรุณาเลือกคำขอที่ต้องการอนุมัติ", "error");
+        return;
+      }
+
+      const reqs = getRequests();
+      const idx = reqs.findIndex(r => r.request_id === currentRequestId);
       if (idx === -1) return;
 
-      const now = new Date();
-      const approvedAtStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      reqs[idx].status = decision;
+      reqs[idx].director_decision = decision;
+      reqs[idx].director_comment1 = document.getElementById("in-dir-comment1").value.trim() || (decision === 'approved' ? 'อนุมัติให้ไปราชการตามที่เสนอ' : 'ไม่อนุมัติ');
+      reqs[idx].director_comment2 = document.getElementById("in-dir-comment2").value.trim();
+      reqs[idx].director_sign = document.getElementById("director-sign-image").dataset.signature || "";
 
-      requests[idx].status = decision;
-      requests[idx].director_comment = comment;
-      requests[idx].approved_at = approvedAtStr;
+      saveRequests(reqs);
+      loadRequestIntoDocument(currentRequestId);
+      updatePendingBadge();
 
-      saveRequests(requests);
-      closeReviewModal();
-
-      if (decision === 'approved') {
-        showToast("อนุมัติคำขอไปราชการ พร้อมประทับตราลายมือชื่อเรียบร้อย", "success");
-      } else {
-        showToast("บันทึกคำสั่งไม่อนุมัติคำขอเรียบร้อยแล้ว", "info");
-      }
-
-      renderCurrentView();
+      showToast(decision === 'approved' ? "ผู้อำนวยการลงนามอนุมัติเรียบร้อยแล้ว" : "บันทึกคำสั่งไม่อนุมัติแล้ว", "success");
     }
 
-    function printApprovedRequestFromModal() {
-      if (!currentViewingRequestId) return;
-      closeReviewModal();
-      preparePrint(currentViewingRequestId);
+    // ========================================================
+    // EXPORT PDF & IMAGE
+    // ========================================================
+    async function downloadDocumentImage() {
+      showToast("กำลังสร้างไฟล์รูปภาพความละเอียดสูง...", "info");
+      const element = document.getElementById("official-document-paper");
+
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = imgData;
+        a.download = `บันทึกข้อความ_ขออนุญาตไปราชการ_${document.getElementById("in-fullname").value.trim()}.png`;
+        a.click();
+        showToast("ดาวน์โหลดรูปภาพสำเร็จ!", "success");
+      } catch (err) {
+        console.error(err);
+        showToast("เกิดข้อผิดพลาดในการสร้างรูปภาพ", "error");
+      }
     }
 
-    // =================================================================
-    // PRINT MEDIA ENGINE (จัดข้อมูลลงแบบฟอร์มบันทึกข้อความราชการ A4 เป๊ะ 100%)
-    // =================================================================
-    function preparePrint(requestId) {
-      const requests = getRequests();
-      const users = getUsers();
+    async function downloadDocumentPDF() {
+      showToast("กำลังประมวลผลเอกสาร PDF...", "info");
+      const element = document.getElementById("official-document-paper");
 
-      const req = requests.find(r => r.request_id === requestId);
-      if (!req) return;
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff"
+        });
 
-      const requester = users.find(u => u.id === req.user_id) || { fullname: "-", position: "-" };
-      const director = users.find(u => u.role === "director") || { fullname: "นายวิชัย เก่งการศึกษา", position: "ผู้อำนวยการโรงเรียนวัดบางปูน" };
+        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
 
-      // Fill Header
-      document.getElementById("print-doc-number").textContent = req.doc_number;
-      document.getElementById("print-write-date").textContent = formatDateThaiLong(req.write_date);
-      document.getElementById("print-subject").textContent = req.subject;
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      // Fill Body
-      document.getElementById("print-fullname").textContent = requester.fullname;
-      document.getElementById("print-position").textContent = requester.position;
-      document.getElementById("print-purpose").textContent = req.subject.replace(/^ขออนุมัติเดินทางไปราชการเพื่อ/, "");
-      document.getElementById("print-location").textContent = req.location;
-      document.getElementById("print-start-date").textContent = formatDateThaiLong(req.start_date);
-      document.getElementById("print-end-date").textContent = formatDateThaiLong(req.end_date);
-      document.getElementById("print-details").textContent = req.details;
-
-      // Fill Checkboxes - Expenses
-      document.getElementById("print-box-exp-none").textContent = req.expense_type === 'none' ? '✓' : '';
-      document.getElementById("print-box-exp-full").textContent = req.expense_type === 'full' ? '✓' : '';
-      document.getElementById("print-box-exp-partial").textContent = req.expense_type === 'partial' ? '✓' : '';
-      
-      document.getElementById("print-box-exp-sub-allowance").textContent = (req.expense_type !== 'none' && req.expense_details?.allowance) ? '✓' : '';
-      document.getElementById("print-box-exp-sub-transport").textContent = (req.expense_type !== 'none' && req.expense_details?.transport) ? '✓' : '';
-      document.getElementById("print-box-exp-sub-accommodation").textContent = (req.expense_type !== 'none' && req.expense_details?.accommodation) ? '✓' : '';
-
-      // Fill Checkboxes - Travel Method
-      document.getElementById("print-box-travel-gov").textContent = req.travel_method === 'gov_car' ? '✓' : '';
-      document.getElementById("print-box-travel-car").textContent = req.travel_method === 'own_car' ? '✓' : '';
-      document.getElementById("print-box-travel-bike").textContent = req.travel_method === 'bike' ? '✓' : '';
-      document.getElementById("print-box-travel-public").textContent = req.travel_method === 'public' ? '✓' : '';
-
-      // Plates
-      if (req.travel_method === 'own_car') {
-        document.getElementById("print-plate-car").textContent = req.vehicle_plate || '.......................................';
-        document.getElementById("print-plate-bike").textContent = '.......................................';
-      } else if (req.travel_method === 'bike') {
-        document.getElementById("print-plate-bike").textContent = req.vehicle_plate || '.......................................';
-        document.getElementById("print-plate-car").textContent = '.......................................';
-      } else {
-        document.getElementById("print-plate-car").textContent = '.......................................';
-        document.getElementById("print-plate-bike").textContent = '.......................................';
-      }
-
-      // Fill Requester Sign
-      document.getElementById("print-sign-fullname").textContent = requester.fullname;
-      document.getElementById("print-sign-position").textContent = requester.position;
-
-      // Fill Director Section
-      document.getElementById("print-box-director-approved").textContent = req.status === 'approved' ? '✓' : '';
-      document.getElementById("print-box-director-rejected").textContent = req.status === 'rejected' ? '✓' : '';
-      document.getElementById("print-director-comment").textContent = req.director_comment || "อนุมัติให้ไปราชการตามที่เสนอ";
-      document.getElementById("print-director-name").textContent = director.fullname;
-
-      const approveDate = req.approved_at ? req.approved_at.split(" ")[0] : req.write_date;
-      document.getElementById("print-director-date").textContent = formatDateThaiLong(approveDate);
-
-      // Render Director E-Signature
-      const signContainer = document.getElementById("print-signature-container");
-      if (req.status === 'approved' && director.signature_url) {
-        signContainer.innerHTML = `<img src="${director.signature_url}" alt="ลายมือชื่ออิเล็กทรอนิกส์" class="h-12 w-auto object-contain mx-auto">`;
-      } else {
-        signContainer.innerHTML = `<div class="h-8"></div>`;
-      }
-
-      // Show Print View on Screen and Trigger Print Dialog
-      document.getElementById("print-paper").classList.remove("hidden");
-      
-      // Auto trigger print dialog with a small delay for DOM render
-      setTimeout(() => {
+        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+        pdf.save(`บันทึกข้อความ_${document.getElementById("in-fullname").value.trim()}.pdf`);
+        showToast("ดาวน์โหลด PDF สำเร็จ!", "success");
+      } catch (err) {
+        console.error(err);
         window.print();
-      }, 300);
-    }
-
-    function closePrintPreview() {
-      document.getElementById("print-paper").classList.add("hidden");
-    }
-
-    function closeAllModals() {
-      closeNewRequestModal();
-      closeReviewModal();
-    }
-
-    // ==========================================
-    // UTILITY FUNCTIONS
-    // ==========================================
-    function getTravelMethodName(method) {
-      switch(method) {
-        case 'gov_car': return 'รถยนต์ส่วนกลาง';
-        case 'own_car': return 'รถยนต์ส่วนบุคคล';
-        case 'bike': return 'รถจักรยานยนต์';
-        case 'public': return 'รถโดยสารสาธารณะ';
-        default: return 'อื่นๆ';
       }
     }
 
-    function toThaiDigits(num) {
-      const thaiDigits = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
-      return String(num).split('').map(c => thaiDigits[c] !== undefined ? thaiDigits[c] : c).join('');
+    // ========================================================
+    // UTILITY HELPERS & GARUDA UPLOADER
+    // ==========================================
+    function handleGarudaCustomUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById("doc-garuda-img").src = evt.target.result;
+        showToast("เปลี่ยนตราครุฑเรียบร้อยแล้ว", "success");
+      };
+      reader.readAsDataURL(file);
     }
 
-    function formatDateThai(dateStr) {
-      if (!dateStr) return "-";
-      const parts = dateStr.split("-");
-      if (parts.length !== 3) return dateStr;
-      const day = parseInt(parts[2], 10);
-      const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-      const month = months[parseInt(parts[1], 10) - 1] || "";
-      const year = parseInt(parts[0], 10) + 543;
-      return `${day} ${month} ${year}`;
+    function toThaiDigits(str) {
+      if (str === undefined || str === null) return "";
+      const thai = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
+      return String(str).split('').map(c => thai[c] !== undefined ? thai[c] : c).join('');
     }
 
-    function formatDateThaiLong(dateStr) {
-      if (!dateStr) return "-";
-      const parts = dateStr.split("-");
-      if (parts.length !== 3) return dateStr;
-      const day = parseInt(parts[2], 10);
-      const months = [
-        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-      ];
-      const month = months[parseInt(parts[1], 10) - 1] || "";
-      const year = parseInt(parts[0], 10) + 543;
-      return `${toThaiDigits(day)} ${month} ${toThaiDigits(year)}`;
-    }
-
-    function showToast(message, type = "info") {
+    function showToast(msg, type = "info") {
       const toast = document.getElementById("notification-toast");
-      const msgSpan = document.getElementById("toast-message");
-      const iconSpan = document.getElementById("toast-icon");
+      const msgEl = document.getElementById("toast-message");
+      const iconEl = document.getElementById("toast-icon");
 
-      let bgClass = "bg-slate-800";
-      let iconHtml = '<i class="fa-solid fa-circle-info"></i>';
+      let bg = "bg-slate-800";
+      let icon = '<i class="fa-solid fa-circle-info"></i>';
 
       if (type === "success") {
-        bgClass = "bg-emerald-600";
-        iconHtml = '<i class="fa-solid fa-circle-check"></i>';
+        bg = "bg-emerald-600";
+        icon = '<i class="fa-solid fa-circle-check"></i>';
       } else if (type === "error") {
-        bgClass = "bg-rose-600";
-        iconHtml = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        bg = "bg-rose-600";
+        icon = '<i class="fa-solid fa-triangle-exclamation"></i>';
       }
 
-      toast.className = `fixed bottom-5 right-5 z-50 transform transition-all duration-300 no-print flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm text-white font-medium ${bgClass}`;
-      iconSpan.innerHTML = iconHtml;
-      msgSpan.textContent = message;
+      toast.className = `fixed bottom-5 right-5 z-50 transform transition-all duration-300 no-print flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl text-sm text-white font-medium ${bg}`;
+      msgEl.textContent = msg;
+      iconEl.innerHTML = icon;
 
       toast.classList.remove("translate-y-20", "opacity-0");
-
-      setTimeout(() => {
-        toast.classList.add("translate-y-20", "opacity-0");
-      }, 3500);
+      setTimeout(() => { toast.classList.add("translate-y-20", "opacity-0"); }, 3500);
     }
   </script>
 </body>
