@@ -154,9 +154,10 @@
     }
 
     /* ปรับแต่งเวลาสั่งพิมพ์กระดาษ A4: จบใน 1 หน้า 100% ลบเส้นประใต้ข้อความ */
+    /* ตั้งค่าหน้ากระดาษ A4: ให้เบราว์เซอร์เว้นขอบ 0 เพื่อให้ #clean-official-paper คุมระยะขอบ 1:1 เป๊ะตามระเบียบสารบรรณ */
     @page {
       size: A4 portrait;
-      margin: 12mm 15mm 10mm 20mm;
+      margin: 0 !important;
     }
 
     @media print {
@@ -165,7 +166,9 @@
         margin: 0 !important;
         padding: 0 !important;
         color: #000000 !important;
-        height: auto !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        overflow: hidden !important;
       }
       .no-print,
       #app-navbar,
@@ -182,24 +185,38 @@
       /* แสดงเฉพาะกล่องพิมพ์สะอาด */
       #print-section {
         display: block !important;
-        width: 100% !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
         margin: 0 !important;
         padding: 0 !important;
+        overflow: hidden !important;
+      }
+
+      #clean-official-paper,
+      #print-section .paper-a4 {
+        box-sizing: border-box !important;
+        width: 210mm !important;
+        max-width: 210mm !important;
+        min-height: 297mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 15mm 20mm 15mm 25mm !important; /* บน 1.5 ซม., ขวา 2.0 ซม., ล่าง 1.5 ซม., ซ้าย 2.5 ซม. */
+        margin: 0 !important;
+        font-size: 16pt !important;
+        line-height: 1.55 !important;
+        box-shadow: none !important;
+        border: none !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-inside: avoid !important;
       }
 
       .paper-a4 {
         box-shadow: none !important;
         border: none !important;
-        width: 100% !important;
-        min-height: auto !important;
-        height: auto !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 16pt !important;
-        line-height: 1.55 !important;
-        page-break-inside: avoid !important;
-        page-break-after: avoid !important;
-        break-inside: avoid !important;
       }
 
       .dotted-input,
@@ -1914,9 +1931,10 @@
       const subject = getVal('in-subject') || 'ขออนุมัติเดินทางไปราชการ';
       const fullname = getVal('in-fullname') || (currentUser ? currentUser.name : '................................................');
       const position = getVal('in-position') || (currentUser ? currentUser.position : '........................');
-      const purpose = getVal('in-purpose') || '....................................................................................................';
-      const location = getVal('in-location') || '........................................................................';
-      const refdoc = getVal('in-refdoc') || '........................................................................';
+      const purpose = getVal('in-purpose') || '................................................';
+      const location = getVal('in-location') || '................................';
+      const rawRefdoc = getVal('in-refdoc');
+      const refdocText = rawRefdoc ? (' ตามหนังสือ ' + rawRefdoc) : '';
 
       // Travel Date Prose Block
       let travelDateText = '';
@@ -1960,7 +1978,7 @@
 
       const cleanDoc = document.createElement('div');
       cleanDoc.id = 'clean-official-paper';
-      cleanDoc.style.cssText = 'width: 210mm; min-height: 297mm; max-width: 210mm; padding: 15mm 20mm 15mm 25mm; background: #ffffff; color: #000000; font-family: "TH Sarabun New", "Sarabun", sans-serif; font-size: 16pt; line-height: 1.6; box-sizing: border-box; position: relative; margin: 0 auto;';
+      cleanDoc.style.cssText = 'box-sizing: border-box; width: 210mm; min-height: 297mm; height: 297mm; max-height: 297mm; max-width: 210mm; padding: 15mm 20mm 15mm 25mm; background: #ffffff; color: #000000; font-family: "TH Sarabun New", "Sarabun", sans-serif; font-size: 16pt; line-height: 1.55; position: relative; margin: 0 auto; overflow: hidden; page-break-inside: avoid; break-inside: avoid;';
 
       cleanDoc.innerHTML = 
         '<!-- ส่วนหัวตราครุฑ 2.2 ซม. -->' +
@@ -2002,7 +2020,7 @@
         '<!-- เนื้อหาบันทึกข้อความ (ย่อหน้าต่อเนื่อง เป็นธรรมชาติ ไวยากรณ์เป๊ะ) -->' +
         '<div style="margin-top: 2.5mm; text-align: justify; line-height: 1.65;">' +
         '  <p style="text-indent: 2.5cm; margin: 0;">' +
-        '    ด้วยข้าพเจ้า ' + fullname + ' ตำแหน่ง ' + position + ' โรงเรียนวัดบางปูน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี มีความประสงค์ขออนุมัติเดินทางไปราชการเพื่อ ' + purpose + ' ณ ' + location + ' ตามหนังสือ ' + refdoc + ' ' + travelDateText +
+        '    ด้วยข้าพเจ้า ' + fullname + ' ตำแหน่ง ' + position + ' โรงเรียนวัดบางปูน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี มีความประสงค์ขออนุมัติเดินทางไปราชการเพื่อ ' + purpose + ' ณ ' + location + refdocText + ' ' + travelDateText +
         '  </p>' +
         '</div>' +
 
@@ -2108,6 +2126,20 @@
       printSec.appendChild(cleanDoc);
       window.print();
     }
+
+    // ตรวจจับเมื่อผู้ใช้สั่งพิมพ์ทั้งจากการกดปุ่ม และกดปุ่มลัด Ctrl+P บนเบราว์เซอร์
+    window.addEventListener('beforeprint', function() {
+      const printSec = document.getElementById('print-section');
+      if (!printSec.hasChildNodes() || printSec.children.length === 0) {
+        printSec.innerHTML = '';
+        printSec.appendChild(generateCleanOfficialDocument());
+      }
+    });
+
+    window.addEventListener('afterprint', function() {
+      const printSec = document.getElementById('print-section');
+      printSec.innerHTML = '';
+    });
 
     function printReportDocument() {
       const printSec = document.getElementById('print-section');
