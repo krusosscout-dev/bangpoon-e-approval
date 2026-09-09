@@ -341,95 +341,71 @@
 <body class="min-h-screen flex flex-col antialiased selection:bg-sky-200">
 
   <!-- ======================================================== -->
-  <!-- 1. หน้าแรกสุดก่อนเข้าระบบ (PORTAL LOGIN SCREEN)           -->
-  <!-- ======================================================== -->
-  <div id="screen-login" class="flex-grow flex items-center justify-center p-4 min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950">
-    <div class="max-w-xl w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 p-8 space-y-7">
+  <!-- 1. หน้าแรกสุดก่อนเข้าระบบ (PORTAL LOGIN SCREEN - 1 SCREEN NO SCROLL) -->
+  <div id="screen-login" class="flex-grow flex items-center justify-center p-3 sm:p-4 min-h-screen max-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950">
+    <div class="max-w-lg w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-6 space-y-4 my-auto">
       
-      <!-- ส่วนหัวโรงเรียน -->
-      <div class="text-center space-y-2">
-        <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-600/30 text-white text-3xl">
+      <!-- ส่วนหัวโรงเรียน (กะทัดรัด สวยงาม คมชัด) -->
+      <div class="text-center space-y-1">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-600/30 text-white text-2xl">
           <i class="fa-solid fa-file-signature"></i>
         </div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">ระบบบริหารจัดการและขออนุมัติไปราชการ</h1>
-        <p class="text-sm font-medium text-sky-700">โรงเรียนวัดบางปูน สำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี</p>
-        <p class="text-xs text-slate-500">ระบบ E-Approval หนังสือราชการตามระเบียบสารบรรณสำนักนายกรัฐมนตรี</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">ระบบบริหารจัดการและขออนุมัติไปราชการ</h1>
+        <p class="text-xs sm:text-sm font-medium text-sky-700">โรงเรียนวัดบางปูน สำนักงานเขตพื้นที่การศึกษาประถมศึกษาสิงห์บุรี</p>
+        <p class="text-[11px] text-slate-500">ระบบ E-Approval หนังสือราชการตามระเบียบสารบรรณสำนักนายกรัฐมนตรี</p>
       </div>
 
-      <!-- สลับเข้าระบบด่วนแยกตาม 3 บทบาท (Role-based Quick Portals) -->
-      <div class="space-y-4">
-        <div class="text-xs font-bold text-slate-600 uppercase tracking-wider text-center">เลือกบทบาทเพื่อเข้าสู่ระบบ (Quick Access)</div>
+      <!-- สลับเข้าระบบด่วนแยกตาม 3 บทบาท (Role-based Quick Portals) จบใน 3 การ์ดหลัก -->
+      <div class="space-y-2.5">
+        <div class="text-[11px] font-bold text-slate-600 uppercase tracking-wider text-center">เลือกบทบาทเพื่อเข้าสู่ระบบ (Quick Access)</div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div class="grid grid-cols-3 gap-2">
           
           <!-- พอร์ทัล 1: แอดมิน -->
-          <button type="button" onclick="quickLogin('u0')" class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-50/70 hover:bg-emerald-100/80 transition text-left group shadow-sm">
-            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm mb-2 shadow">
+          <button type="button" onclick="quickLogin('u0')" class="p-3 rounded-2xl border border-emerald-500/30 bg-emerald-50/70 hover:bg-emerald-100 transition text-center group shadow-sm">
+            <div class="w-8 h-8 mx-auto rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm mb-1.5 shadow">
               <i class="fa-solid fa-user-shield"></i>
             </div>
-            <div class="font-bold text-xs text-emerald-950">ระบบแอดมิน</div>
-            <div class="text-[11px] text-emerald-700 truncate">นายศักดิ์สิทธิ์ (ผู้ดูแลระบบ)</div>
-            <div class="text-[10px] text-emerald-600 mt-1 font-medium">จัดการระบบ & ภาพรวม</div>
+            <div class="font-bold text-xs text-emerald-950">แอดมิน</div>
+            <div class="text-[10px] text-emerald-700 truncate">นายศักดิ์สิทธิ์</div>
+            <div class="text-[9px] text-emerald-600 font-medium">จัดการระบบ</div>
           </button>
 
           <!-- พอร์ทัล 2: ผู้บริหาร -->
-          <button type="button" onclick="quickLogin('u5')" class="p-3.5 rounded-2xl border border-amber-500/30 bg-amber-50/70 hover:bg-amber-100/80 transition text-left group shadow-sm">
-            <div class="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center text-sm mb-2 shadow">
+          <button type="button" onclick="quickLogin('u5')" class="p-3 rounded-2xl border border-amber-500/30 bg-amber-50/70 hover:bg-amber-100 transition text-center group shadow-sm">
+            <div class="w-8 h-8 mx-auto rounded-xl bg-amber-600 text-white flex items-center justify-center text-sm mb-1.5 shadow">
               <i class="fa-solid fa-stamp"></i>
             </div>
-            <div class="font-bold text-xs text-amber-950">ระบบผู้บริหาร</div>
-            <div class="text-[11px] text-amber-800 truncate">ผอ.นัทชพร ตั้งศุภจรูญนุกูล</div>
-            <div class="text-[10px] text-amber-600 mt-1 font-medium">พิจารณา & ลงนามอนุมัติ</div>
+            <div class="font-bold text-xs text-amber-950">ผู้บริหาร</div>
+            <div class="text-[10px] text-amber-800 truncate">ผอ.นัทชพร</div>
+            <div class="text-[9px] text-amber-600 font-medium">ลงนามอนุมัติ</div>
           </button>
 
           <!-- พอร์ทัล 3: ครูผู้สอน -->
-          <button type="button" onclick="quickLogin('u1')" class="p-3.5 rounded-2xl border border-sky-500/30 bg-sky-50/70 hover:bg-sky-100/80 transition text-left group shadow-sm">
-            <div class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center text-sm mb-2 shadow">
+          <button type="button" onclick="quickLogin('u1')" class="p-3 rounded-2xl border border-sky-500/30 bg-sky-50/70 hover:bg-sky-100 transition text-center group shadow-sm">
+            <div class="w-8 h-8 mx-auto rounded-xl bg-sky-600 text-white flex items-center justify-center text-sm mb-1.5 shadow">
               <i class="fa-solid fa-chalkboard-user"></i>
             </div>
-            <div class="font-bold text-xs text-sky-950">ระบบครูผู้สอน</div>
-            <div class="text-[11px] text-sky-800 truncate">นายวราภรณ์ จูงาม</div>
-            <div class="text-[10px] text-sky-600 mt-1 font-medium">เขียนคำขอ & รายงานผล</div>
+            <div class="font-bold text-xs text-sky-950">ครูผู้สอน</div>
+            <div class="text-[10px] text-sky-800 truncate">นายวราภรณ์</div>
+            <div class="text-[9px] text-sky-600 font-medium">เขียนคำขอ</div>
           </button>
 
         </div>
-
-        <!-- รายชื่อครูเพิ่มเติม -->
-        <div class="pt-2">
-          <div class="text-[11px] text-slate-500 mb-1.5 flex items-center justify-between">
-            <span>เข้าใช้งานในฐานะครูท่านอื่น:</span>
-            <span class="text-[10px] text-slate-400">รหัสผ่าน 1234</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 text-xs">
-            <button type="button" onclick="quickLogin('u2')" class="p-2 rounded-xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50 text-slate-700 text-left transition truncate">
-              <div class="font-medium truncate">ครูสมชาย</div>
-              <div class="text-[10px] text-slate-400">ครู ค.ศ.๑</div>
-            </button>
-            <button type="button" onclick="quickLogin('u3')" class="p-2 rounded-xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50 text-slate-700 text-left transition truncate">
-              <div class="font-medium truncate">ครูวิไลลักษณ์</div>
-              <div class="text-[10px] text-slate-400">ครูชำนาญการ</div>
-            </button>
-            <button type="button" onclick="quickLogin('u4')" class="p-2 rounded-xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50 text-slate-700 text-left transition truncate">
-              <div class="font-medium truncate">ครูกัลยา</div>
-              <div class="text-[10px] text-slate-400">ครูอัตราจ้าง</div>
-            </button>
-          </div>
-        </div>
-
       </div>
 
-      <!-- แบบฟอร์มล็อกอินทั่วไป -->
-      <form id="form-login" onsubmit="handleManualLogin(event)" class="space-y-4 pt-3 border-t border-slate-200">
-        <div class="text-xs font-semibold text-slate-700">หรือระบุชื่อผู้ใช้และรหัสผ่าน:</div>
-        <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1">ชื่อผู้ใช้งาน (Username)</label>
-          <input type="text" id="login-username" placeholder="เช่น teacher1, director, admin" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500">
+      <!-- แบบฟอร์มล็อกอินทั่วไป (กะทัดรัด จบในหน้าเดียว) -->
+      <form id="form-login" onsubmit="handleManualLogin(event)" class="space-y-2.5 pt-3 border-t border-slate-200">
+        <div class="text-[11px] font-semibold text-slate-700 text-center">หรือระบุชื่อผู้ใช้และรหัสผ่าน</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <input type="text" id="login-username" placeholder="ชื่อผู้ใช้งาน (เช่น admin, teacher1)" required class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500">
+          </div>
+          <div>
+            <input type="password" id="login-password" placeholder="รหัสผ่าน (ค่าเริ่มต้น 1234)" required class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500">
+          </div>
         </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1">รหัสผ่าน (Password)</label>
-          <input type="password" id="login-password" placeholder="รหัสผ่านเริ่มต้น 1234" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500">
-        </div>
-        <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-sky-600/30 transition flex items-center justify-center gap-2">
+        <button type="submit" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-xl shadow-md shadow-sky-600/30 transition flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-right-to-bracket"></i>
           <span>เข้าสู่ระบบ</span>
         </button>
@@ -438,7 +414,6 @@
     </div>
   </div>
 
-  <!-- ======================================================== -->
   <!-- 2. หน้าหลักหลังเข้าสู่ระบบ (MAIN APPLICATION WITH SIDEBAR) -->
   <!-- ======================================================== -->
   <div id="screen-app" class="hidden min-h-screen flex bg-slate-950 text-slate-100">
@@ -2036,7 +2011,7 @@
           '<td class="py-3 px-4 max-w-[140px] truncate text-slate-400">' + r.location + '</td>' +
           '<td class="py-3 px-4 text-center">' + statusBadge + '</td>' +
           '<td class="py-3 px-4 text-center">' +
-            '<button onclick="openCompletedDocViewer('' + r.id + '')" class="px-2.5 py-1 rounded-xl bg-sky-600/20 hover:bg-sky-600 border border-sky-500/40 text-sky-200 hover:text-white text-[11px] font-medium transition inline-flex items-center gap-1 shadow">' +
+            '<button data-id="' + r.id + '" onclick="openCompletedDocViewer(this.dataset.id)" class="px-2.5 py-1 rounded-xl bg-sky-600/20 hover:bg-sky-600 border border-sky-500/40 text-sky-200 hover:text-white text-[11px] font-medium transition inline-flex items-center gap-1 shadow">' +
               '<i class="fa-solid fa-file-circle-check"></i> ดูเอกสารฉบับเต็ม' +
             '</button>' +
           '</td>' +
@@ -2103,13 +2078,13 @@
         let actionBtns = '<div class="flex items-center justify-center gap-1.5">';
         
         // ปุ่มดูเอกสารฉบับสมบูรณ์ (มีให้กดทุกรายการ)
-        actionBtns += '<button onclick="openCompletedDocViewer('' + r.id + '')" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-sky-600 border border-slate-700 hover:border-sky-500 text-sky-200 hover:text-white text-[11px] font-medium transition inline-flex items-center gap-1 shadow" title="ดูบันทึกข้อความทางการพร้อมลายเซ็น">' +
+        actionBtns += '<button data-id="' + r.id + '" onclick="openCompletedDocViewer(this.dataset.id)" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-sky-600 border border-slate-700 hover:border-sky-500 text-sky-200 hover:text-white text-[11px] font-medium transition inline-flex items-center gap-1 shadow" title="ดูบันทึกข้อความทางการพร้อมลายเซ็น">' +
           '<i class="fa-solid fa-file-circle-check"></i> ดูเอกสาร' +
         '</button>';
 
         // ปุ่มเขียนรายงานผล (ถ้าอนุมัติแล้วและยังไม่รายงานผล)
         if (r.approved && !r.reported && (currentUser.role === 'admin' || r.userId === currentUser.id)) {
-          actionBtns += '<button onclick="openWriteReport('' + r.id + '')" class="px-2.5 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-medium transition inline-flex items-center gap-1 shadow">' +
+          actionBtns += '<button data-id="' + r.id + '" onclick="openWriteReport(this.dataset.id)" class="px-2.5 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-medium transition inline-flex items-center gap-1 shadow">' +
             '<i class="fa-solid fa-pen-nib"></i> รายงานผล' +
           '</button>';
         }
@@ -2150,10 +2125,10 @@
           '<td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-medium">รอพิจารณา</span></td>' +
           '<td class="py-3.5 px-4 text-center">' +
             '<div class="flex items-center justify-center gap-1.5">' +
-              '<button onclick="openCompletedDocViewer('' + r.id + '')" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-200 text-[11px] transition inline-flex items-center gap-1 shadow">' +
+              '<button data-id="' + r.id + '" onclick="openCompletedDocViewer(this.dataset.id)" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-200 text-[11px] transition inline-flex items-center gap-1 shadow">' +
                 '<i class="fa-regular fa-eye"></i> ตรวจสอบ' +
               '</button>' +
-              '<button onclick="approveDirectly('' + r.id + '')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold transition inline-flex items-center gap-1 shadow-lg shadow-emerald-600/30">' +
+              '<button data-id="' + r.id + '" onclick="approveDirectly(this.dataset.id)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold transition inline-flex items-center gap-1 shadow-lg shadow-emerald-600/30">' +
                 '<i class="fa-solid fa-stamp"></i> ลงนามอนุมัติ' +
               '</button>' +
             '</div>' +
@@ -3107,7 +3082,7 @@
           '<td class="py-3 px-4 font-mono text-slate-400">' + u.username + '</td>' +
           '<td class="py-3 px-4">' + rBadge + '</td>' +
           '<td class="py-3 px-4 text-center">' +
-            '<button onclick="quickLogin('' + u.id + '')" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-sky-600 text-sky-200 hover:text-white text-[11px] font-medium transition shadow">' +
+            '<button data-uid="' + u.id + '" onclick="quickLogin(this.dataset.uid)" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-sky-600 text-sky-200 hover:text-white text-[11px] font-medium transition shadow">' +
               '<i class="fa-solid fa-right-to-bracket mr-1"></i> สลับเข้าใช้' +
             '</button>' +
           '</td>' +
