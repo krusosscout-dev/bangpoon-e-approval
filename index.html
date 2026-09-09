@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
   <title>ระบบบริหารจัดการและขออนุมัติไปราชการ (E-Approval) - โรงเรียนวัดบางปูน</title>
   
   <!-- Tailwind CSS CDN -->
@@ -116,7 +117,8 @@
     .paper-a4 {
       width: 210mm;
       min-height: 297mm;
-      padding: 15mm 20mm 15mm 25mm; /* บน 1.5 ซม., ขวา 2.0 ซม., ล่าง 1.5 ซม., ซ้าย 2.5 ซม. */
+      padding: 2.5cm 2.0cm 2.0cm 3.0cm; /* บน 2.5 ซม., ขวา 2.0 ซม., ล่าง 2.0 ซม., ซ้าย 3.0 ซม. ตามระเบียบสารบรรณ */
+      box-sizing: border-box;
       margin: 15px auto;
       background: #ffffff;
       box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.15);
@@ -239,7 +241,7 @@
     /* ตั้งค่าหน้ากระดาษ A4 มาตรฐานราชการ: บน 1.5 ซม., ขวา 2.0 ซม., ล่าง 1.5 ซม., ซ้าย 2.5 ซม. */
     @page {
       size: A4 portrait;
-      margin: 15mm 20mm 15mm 25mm !important;
+      margin: 25mm 20mm 20mm 30mm !important; /* บน 2.5 ซม., ขวา 2.0 ซม., ล่าง 2.0 ซม., ซ้าย 3.0 ซม. */
     }
 
     @media print {
@@ -284,6 +286,7 @@
       }
 
       #clean-official-paper,
+      #clean-official-paper-annex,
       #print-section .paper-a4 {
         box-sizing: border-box !important;
         width: 100% !important;
@@ -733,8 +736,8 @@
                 </div>
                 <div class="flex items-baseline w-[48%] justify-end">
                   <span class="doc-label text-[20pt] font-bold shrink-0">วันที่</span>
-                  <input type="text" id="in-doc-date" placeholder="คลิกเลือกวันที่ หรือพิมพ์เอง" class="dotted-input ml-2 flex-grow text-center font-medium cursor-pointer text-[16pt]" onclick="openDatePickerModal('doc-date')" readonly>
-                  <button type="button" onclick="openDatePickerModal('doc-date')" class="no-print text-slate-400 hover:text-sky-600 text-xs ml-1" title="เลือกวันที่">
+                  <input type="text" id="in-doc-date" placeholder="คลิกเลือกวันที่ หรือพิมพ์เอง" class="dotted-input ml-2 flex-grow text-center font-medium cursor-pointer text-[16pt]" onclick="openDocDatePickerModal('in-doc-date')" readonly>
+                  <button type="button" onclick="openDocDatePickerModal('in-doc-date')" class="no-print text-slate-400 hover:text-sky-600 text-xs ml-1" title="เลือกวันที่">
                     <i class="fa-regular fa-calendar-days text-sm text-sky-600"></i>
                   </button>
                 </div>
@@ -1043,6 +1046,49 @@
         <!-- แท็บ 5: รายงานผลการไปราชการ (REPORT TAB)                 -->
         <!-- ==================================================== -->
         <section id="tab-report" class="hidden max-w-5xl mx-auto space-y-5">
+
+          <!-- การ์ดเลือกคำขอไปราชการเพื่อรายงานผล -->
+          <div class="no-print bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-xl space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm border border-sky-500/30">
+                  <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-white flex items-center gap-2">
+                    <span>เลือกรายการขออนุมัติไปราชการที่ต้องการรายงานผล</span>
+                    <span id="rep-req-status-badge" class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/30">อนุมัติแล้ว</span>
+                  </h4>
+                  <p class="text-[11px] text-slate-400">เลือกลำดับคำขอที่ได้รับการอนุมัติแล้วเพื่อดึงข้อมูลเบื้องต้นมาบันทึกรายงานผลอัตโนมัติ</p>
+                </div>
+              </div>
+              <div class="w-full sm:w-auto flex items-center gap-2">
+                <select id="select-report-request" onchange="onSelectReportRequest(this.value)" class="w-full sm:w-80 bg-slate-800 text-white text-xs font-medium border border-slate-700 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                  <option value="">-- กรุณาเลือกรายการไปราชการ --</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- กล่องสรุปรายละเอียดคำขอที่เลือก -->
+            <div id="rep-selected-summary-box" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 border-t border-slate-800/80 text-xs">
+              <div class="bg-slate-800/60 p-2 rounded-xl border border-slate-700/50 flex flex-col">
+                <span class="text-[10px] text-slate-400">ผู้ขอไปราชการ</span>
+                <span id="summary-req-name" class="font-semibold text-slate-200 truncate">-</span>
+              </div>
+              <div class="bg-slate-800/60 p-2 rounded-xl border border-slate-700/50 flex flex-col">
+                <span class="text-[10px] text-slate-400">วัตถุประสงค์</span>
+                <span id="summary-req-purpose" class="font-semibold text-sky-300 truncate">-</span>
+              </div>
+              <div class="bg-slate-800/60 p-2 rounded-xl border border-slate-700/50 flex flex-col">
+                <span class="text-[10px] text-slate-400">สถานที่ไปราชการ</span>
+                <span id="summary-req-location" class="font-semibold text-slate-200 truncate">-</span>
+              </div>
+              <div class="bg-slate-800/60 p-2 rounded-xl border border-slate-700/50 flex flex-col">
+                <span class="text-[10px] text-slate-400">วันเวลาที่ไปราชการ</span>
+                <span id="summary-req-dates" class="font-semibold text-amber-300 truncate">-</span>
+              </div>
+            </div>
+          </div>
           
           <!-- แถบเครื่องมือรายงานผล -->
           <div class="no-print flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl">
@@ -1059,6 +1105,10 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
+              <button type="button" onclick="previewActiveReportWithAttachments()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 text-xs font-semibold shadow transition flex items-center gap-1.5" title="ดูตัวอย่างรายงานผลและหลักฐานก่อนพิมพ์">
+                <i class="fa-regular fa-eye text-sky-400"></i>
+                <span>ดูตัวอย่างก่อนพิมพ์</span>
+              </button>
               <button type="button" onclick="printActiveReportDocument()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow transition flex items-center gap-1.5">
                 <i class="fa-solid fa-print"></i>
                 <span>พิมพ์รายงาน (พร้อมเอกสารแนบ)</span>
@@ -1071,7 +1121,7 @@
           </div>
 
           <!-- แผ่นกระดาษ A4 สำหรับบันทึกข้อความรายงานผล (ฟอนต์ไทยสารบัญ๙ แท้ 16 พอยต์) -->
-          <div id="official-report-paper" class="paper-a4 bg-white shadow-2xl p-8 border border-slate-200">
+          <div id="official-report-paper" class="paper-a4" style="padding: 2.5cm 2.0cm 2.0cm 3.0cm; box-sizing: border-box;">
             
             <!-- ส่วนหัวตราครุฑ 2.2 ซม. -->
             <div class="relative min-h-[2.2cm] flex items-center justify-center mb-1">
@@ -1097,7 +1147,8 @@
                 </div>
                 <div class="flex items-baseline w-[48%] justify-end">
                   <span class="doc-label text-[20pt] font-bold shrink-0">วันที่</span>
-                  <input type="text" id="rep-doc-date" placeholder="คลิกเลือกวันที่" class="dotted-input ml-2 flex-grow text-center text-[16pt] cursor-pointer" onclick="openReportDatePickerModal()" readonly>
+                  <input type="text" id="rep-doc-date" placeholder="คลิกเลือกวันที่" class="dotted-input ml-2 flex-grow text-center text-[16pt] cursor-pointer" onclick="openDocDatePickerModal('rep-doc-date')" readonly>
+                  <button type="button" onclick="openDocDatePickerModal('rep-doc-date')" class="no-print text-slate-400 hover:text-sky-600 text-xs ml-1" title="เลือกวันที่"><i class="fa-regular fa-calendar-days text-sm text-sky-600"></i></button>
                 </div>
               </div>
               <div class="flex items-baseline">
@@ -1640,6 +1691,67 @@
     </div>
   </div>
 
+  <!-- MODAL: เลือกวันที่เอกสาร / วันที่รายงานผล -->
+  <div id="modal-doc-date-picker" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden space-y-4 p-6">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-base">
+            <i class="fa-regular fa-calendar-days"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-slate-800" id="doc-date-picker-title">เลือกวันที่ออกเอกสาร</h3>
+            <p class="text-[11px] text-slate-500">แปลงเป็นวันที่แบบทางการภาษาไทยและเลขไทยอัตโนมัติ</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeDocDatePickerModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- ปุ่มเลือกด่วน -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-700">เลือกด่วน:</label>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="setQuickDocDate(0)" class="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-medium transition">
+            วันนี้
+          </button>
+          <button type="button" onclick="setQuickDocDate(-1)" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-medium transition">
+            เมื่อวานนี้
+          </button>
+          <button type="button" onclick="setQuickDocDate(-2)" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-medium transition">
+            ๒ วันที่แล้ว
+          </button>
+        </div>
+      </div>
+
+      <!-- ปฏิทินเลือกวันที่ -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-700">เลือกจากปฏิทิน:</label>
+        <input type="date" id="doc-date-native-input" onchange="previewDocDateChoice(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500">
+      </div>
+
+      <!-- ตัวอย่างข้อความที่จะแสดงในเอกสาร -->
+      <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-center space-y-1">
+        <div class="text-[11px] text-slate-500">รูปแบบที่จะปรากฏในบันทึกข้อความ:</div>
+        <div id="doc-date-formatted-preview" class="text-base font-bold text-sky-700 font-['TH_Sarabun_IT๙']">
+          -
+        </div>
+      </div>
+
+      <!-- ปุ่มยืนยัน -->
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeDocDatePickerModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold transition">
+          ยกเลิก
+        </button>
+        <button type="button" onclick="confirmDocDateSelection()" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow transition flex items-center gap-1.5">
+          <i class="fa-solid fa-check"></i>
+          <span>ใช้บันทึกวันที่นี้</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 bg-slate-900 text-white text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 border border-slate-700">
     <i class="fa-solid fa-circle-check text-emerald-400 text-base" id="toast-icon"></i>
@@ -1870,18 +1982,19 @@
       const el = document.getElementById(id);
       if (!el) return '';
       if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-        return el.value.trim();
+        return (el.value || '').trim();
       }
-      return el.innerText.trim();
+      return (el.innerText || el.textContent || '').trim();
     }
 
     function setVal(id, val) {
       const el = document.getElementById(id);
       if (!el) return;
+      const safeVal = (val === null || val === undefined) ? '' : String(val);
       if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-        el.value = val;
+        el.value = safeVal;
       } else {
-        el.innerText = val;
+        el.textContent = safeVal;
       }
     }
 
@@ -2048,6 +2161,7 @@
       } else if (tabId === 'report') {
         topTitle.innerHTML = '<i class="fa-solid fa-square-check text-emerald-400"></i><span>รายงานผลการไปราชการ</span>';
         topDesc.textContent = 'บันทึกสรุปผลการปฏิบัติงานหลังจากเดินทางกลับจากราชการ';
+        populateReportRequestSelector();
       } else if (tabId === 'admin') {
         topTitle.innerHTML = '<i class="fa-solid fa-users-gear text-emerald-400"></i><span>จัดการบุคลากรและระบบ</span>';
         topDesc.textContent = 'เพิ่ม ลบ แก้ไข รายชื่อครู ผู้บริหาร และตั้งค่าระบบ';
@@ -2382,7 +2496,7 @@
     let currentViewingRecord = null;
 
     function openCompletedDocViewer(reqId) {
-      const r = travelRequests.find(function(item) { return item.id === reqId; });
+      const r = travelRequests.find(function(item) { return String(item.id) === String(reqId); });
       if (!r) return;
 
       currentViewingRecord = r;
@@ -3429,68 +3543,286 @@
     let repDirSignSrc = '';
     let repDirDecision = 'noted';
 
-    function openWriteReport(reqId) {
-      const r = travelRequests.find(function(item) { return item.id === reqId; });
+    // ========================================================
+    // REPORT REQUEST SELECTOR & SUMMARY
+    // ========================================================
+    function populateReportRequestSelector() {
+      const sel = document.getElementById('select-report-request');
+      if (!sel) return;
+
+      const isDirectorOrAdmin = currentUser && (currentUser.role === 'director' || currentUser.role === 'admin');
+      const availableReqs = travelRequests.filter(function(r) {
+        if (!r.approved) return false;
+        if (isDirectorOrAdmin) return true;
+        return r.userId === currentUser.id;
+      });
+
+      sel.innerHTML = '';
+
+      if (availableReqs.length === 0) {
+        sel.innerHTML = '<option value="">-- ยังไม่มีคำขอที่ได้รับอนุมัติ --</option>';
+        updateReportSummaryBar(null);
+        return;
+      }
+
+      sel.innerHTML = availableReqs.map(function(r) {
+        const statusText = r.reported ? '✓ รายงานแล้ว' : '⭐ อนุมัติแล้ว (รอรายงาน)';
+        return '<option value="' + r.id + '">' +
+          '[' + (r.docNum || 'ไม่ระบุเลข') + '] ' + (r.purpose || r.subject) + ' (' + (r.travelDateText || r.docDate) + ') ' + statusText +
+        '</option>';
+      }).join('');
+
+      let targetReq = null;
+      if (currentReportingId) {
+        targetReq = availableReqs.find(function(r) { return String(r.id) === String(currentReportingId); });
+      }
+      if (!targetReq) {
+        targetReq = availableReqs.find(function(r) { return !r.reported; }) || availableReqs[0];
+      }
+
+      if (targetReq) {
+        sel.value = targetReq.id;
+        openWriteReport(targetReq.id, false);
+      }
+    }
+
+    function onSelectReportRequest(reqId) {
+      if (!reqId) {
+        updateReportSummaryBar(null);
+        return;
+      }
+      openWriteReport(reqId, false);
+    }
+
+    function updateReportSummaryBar(req) {
+      const nameEl = document.getElementById('summary-req-name');
+      const purEl = document.getElementById('summary-req-purpose');
+      const locEl = document.getElementById('summary-req-location');
+      const datesEl = document.getElementById('summary-req-dates');
+      const badgeEl = document.getElementById('rep-req-status-badge');
+
+      if (!req) {
+        if (nameEl) nameEl.textContent = '-';
+        if (purEl) purEl.textContent = '-';
+        if (locEl) locEl.textContent = '-';
+        if (datesEl) datesEl.textContent = '-';
+        if (badgeEl) {
+          badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] bg-slate-500/20 text-slate-300 font-medium border border-slate-500/30';
+          badgeEl.textContent = 'ไม่มีคำขอที่เลือก';
+        }
+        return;
+      }
+
+      if (nameEl) nameEl.textContent = req.userName + ' (' + req.userPosition + ')';
+      if (purEl) purEl.textContent = req.purpose || req.subject;
+      if (locEl) locEl.textContent = req.location || '-';
+      if (datesEl) datesEl.textContent = req.travelDateText || req.docDate;
+
+      if (badgeEl) {
+        if (req.reported) {
+          badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/20 text-indigo-300 font-medium border border-indigo-500/30';
+          badgeEl.textContent = '✓ รายงานผลแล้ว (สามารถแก้ไขได้)';
+        } else {
+          badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/30';
+          badgeEl.textContent = '⭐ ได้รับอนุมัติแล้ว (พร้อมบันทึกรายงาน)';
+        }
+      }
+    }
+
+    function openWriteReport(reqId, shouldSwitchTab = true) {
+      const r = travelRequests.find(function(item) { return String(item.id) === String(reqId); });
       if (!r) return;
 
       currentReportingId = reqId;
+
+      // Sync selector dropdown
+      const sel = document.getElementById('select-report-request');
+      if (sel && sel.value !== String(reqId)) {
+        sel.value = reqId;
+      }
+      updateReportSummaryBar(r);
+
       setVal('rep-fullname', r.userName);
       setVal('rep-position', r.userPosition);
       setVal('rep-purpose', r.purpose || r.subject);
       setVal('rep-location', r.location);
-      setVal('rep-travel-date', r.travelDateText);
-      setVal('rep-subject', 'รายงานผลการเดินทางไปราชการ' + r.subject.replace('ขออนุมัติเดินทางไปราชการ', ''));
+      setVal('rep-travel-date', r.travelDateText || r.docDate);
+      setVal('rep-subject', 'รายงานผลการปฏิบัติงานไปราชการ' + (r.purpose ? 'เพื่อ' + r.purpose : ''));
       setVal('rep-sign-name', r.userName);
       setVal('rep-sign-pos', r.userPosition);
 
       // Doc Num & Date
       const now = new Date();
-      setVal('rep-doc-num', r.docNum.replace('๑', '๒') || 'ศธ ๐๔๓๓๓.๐๗/...');
       const d = toThaiNumerals(now.getDate());
       const m = thaiMonths[now.getMonth()];
       const y = toThaiNumerals(now.getFullYear() + 543);
       const formattedDate = d + ' ' + m + ' ' + y;
-      setVal('rep-doc-date', formattedDate);
-      setVal('rep-sign-date', formattedDate);
-      setVal('rep-dir-date', formattedDate);
 
       // If already has report data, load it
       if (r.reportData) {
+        setVal('rep-doc-num', r.reportData.docNum || (r.docNum ? r.docNum.replace('๑', '๒') : 'ศธ ๐๔๓๓๓.๐๗/...'));
+        setVal('rep-doc-date', r.reportData.docDate || formattedDate);
+        setVal('rep-sign-date', r.reportData.teacherSignDate || r.reportData.docDate || formattedDate);
+        setVal('rep-dir-date', r.reportData.dirSignDate || formattedDate);
         setVal('rep-summary', r.reportData.summary || '');
         setVal('rep-benefit', r.reportData.benefit || '');
         setVal('rep-obstacle', r.reportData.obstacle || '');
-        currentReportAttachments = r.reportData.attachments ? JSON.parse(JSON.stringify(r.reportData.attachments)) : [];
-        if (r.reportData.teacherSigned && r.reportData.teacherSignSrc) {
-          repTeacherSigned = true;
-          repTeacherSignSrc = r.reportData.teacherSignSrc;
-          document.getElementById('rep-teacher-sign-img').src = repTeacherSignSrc;
-          document.getElementById('rep-teacher-sign-img').classList.remove('hidden');
-          document.getElementById('rep-teacher-sign-placeholder').classList.add('hidden');
-        }
+        repTeacherSigned = !!r.reportData.teacherSigned;
+        repTeacherSignSrc = r.reportData.teacherSignSrc || (r.teacherSignSrc || '');
+        repDirSigned = !!r.reportData.dirSigned;
+        repDirSignSrc = r.reportData.dirSignSrc || (r.dirSignSrc || '');
+        toggleRepDirDecision(r.reportData.dirDecision || 'noted');
+        setVal('rep-dir-comment', r.reportData.dirComment || '');
+        currentReportAttachments = (r.reportData.attachments && Array.isArray(r.reportData.attachments)) ? JSON.parse(JSON.stringify(r.reportData.attachments)) : [];
       } else {
-        setVal('rep-summary', '');
-        setVal('rep-benefit', '');
-        setVal('rep-obstacle', '');
+        setVal('rep-doc-num', r.docNum ? r.docNum.replace('๑', '๒') : 'ศธ ๐๔๓๓๓.๐๗/...');
+        setVal('rep-doc-date', formattedDate);
+        setVal('rep-sign-date', formattedDate);
+        setVal('rep-dir-date', formattedDate);
+        setVal('rep-summary', 'ปฏิบัติหน้าที่ราชการตามวัตถุประสงค์และภารกิจที่ได้รับมอบหมายเสร็จสิ้นสมบูรณ์ ได้รับความรู้และประสบการณ์ที่เป็นประโยชน์ต่อการพัฒนาผู้เรียนและการปฏิบัติงานในสถานศึกษา');
+        setVal('rep-benefit', 'สามารถนำแนวทาง องค์ความรู้ และสื่อการเรียนรู้ที่ได้รับมาประยุกต์ใช้ในการจัดกิจกรรมการเรียนรู้และพัฒนาคุณภาพการศึกษาของโรงเรียนวัดบางปูนต่อไป');
+        setVal('rep-obstacle', '-ไม่มีปัญหาและอุปสรรคในการปฏิบัติหน้าที่ราชการ-');
+        repTeacherSigned = !!r.teacherSigned;
+        repTeacherSignSrc = r.teacherSignSrc || '';
+        repDirSigned = !!r.dirSigned;
+        repDirSignSrc = r.dirSignSrc || '';
+        toggleRepDirDecision('noted');
         currentReportAttachments = [];
-        // Default teacher sign from travel request if exists
-        if (r.teacherSigned && r.teacherSignSrc) {
-          repTeacherSigned = true;
-          repTeacherSignSrc = r.teacherSignSrc;
-          document.getElementById('rep-teacher-sign-img').src = repTeacherSignSrc;
-          document.getElementById('rep-teacher-sign-img').classList.remove('hidden');
-          document.getElementById('rep-teacher-sign-placeholder').classList.add('hidden');
+      }
+
+      // Update signature previews in report
+      const teacherSignImg = document.getElementById('rep-teacher-sign-img');
+      const teacherSignPlh = document.getElementById('rep-teacher-sign-placeholder');
+      if (teacherSignImg && teacherSignPlh) {
+        if (repTeacherSigned && repTeacherSignSrc) {
+          teacherSignImg.src = repTeacherSignSrc;
+          teacherSignImg.classList.remove('hidden');
+          teacherSignPlh.classList.add('hidden');
         } else {
-          repTeacherSigned = false;
-          repTeacherSignSrc = '';
-          document.getElementById('rep-teacher-sign-img').classList.add('hidden');
-          document.getElementById('rep-teacher-sign-placeholder').classList.remove('hidden');
+          teacherSignImg.classList.add('hidden');
+          teacherSignPlh.classList.remove('hidden');
         }
       }
 
       renderReportAttachmentsGrid();
-      switchTab('report');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      showToast('เปิดแบบฟอร์มรายงานผลสำหรับคำขอ: ' + r.docNum);
+      if (shouldSwitchTab) {
+        switchTab('report');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      showToast('ดึงข้อมูลคำขอ: ' + (r.docNum || '') + ' สำหรับรายงานผลแล้ว');
+    }
+
+    // ========================================================
+    // DOCUMENT DATE PICKER MODAL LOGIC
+    // ========================================================
+    let docDatePickerTarget = 'rep-doc-date';
+    let currentDocDateFormatted = '';
+
+    function openDocDatePickerModal(targetField) {
+      docDatePickerTarget = targetField || 'rep-doc-date';
+      const titleEl = document.getElementById('doc-date-picker-title');
+      if (titleEl) {
+        titleEl.textContent = (docDatePickerTarget === 'rep-doc-date') ? 'เลือกวันที่รายงานผลการไปราชการ' : 'เลือกวันที่บันทึกข้อความขออนุมัติ';
+      }
+      const now = new Date();
+      const iso = now.toISOString().split('T')[0];
+      const inp = document.getElementById('doc-date-native-input');
+      if (inp) inp.value = iso;
+      previewDocDateChoice(iso);
+      document.getElementById('modal-doc-date-picker').classList.remove('hidden');
+    }
+
+    function closeDocDatePickerModal() {
+      document.getElementById('modal-doc-date-picker').classList.add('hidden');
+    }
+
+    function setQuickDocDate(offsetDays) {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      const iso = d.toISOString().split('T')[0];
+      const inp = document.getElementById('doc-date-native-input');
+      if (inp) inp.value = iso;
+      previewDocDateChoice(iso);
+    }
+
+    function previewDocDateChoice(isoDateStr) {
+      if (!isoDateStr) return;
+      const parts = isoDateStr.split('-');
+      const y = parseInt(parts[0], 10) + 543;
+      const m = thaiMonths[parseInt(parts[1], 10) - 1];
+      const d = parseInt(parts[2], 10);
+      currentDocDateFormatted = toThaiNumerals(d) + ' ' + m + ' ' + toThaiNumerals(y);
+      const prevEl = document.getElementById('doc-date-formatted-preview');
+      if (prevEl) prevEl.textContent = currentDocDateFormatted;
+    }
+
+    function confirmDocDateSelection() {
+      if (!currentDocDateFormatted) return;
+      setVal(docDatePickerTarget, currentDocDateFormatted);
+      if (docDatePickerTarget === 'rep-doc-date') {
+        setVal('rep-sign-date', currentDocDateFormatted);
+        setVal('rep-dir-date', currentDocDateFormatted);
+      } else if (docDatePickerTarget === 'in-doc-date') {
+        const parts = currentDocDateFormatted.split(' ');
+        setVal('in-teacher-sign-day', parts[0]);
+        setVal('in-teacher-sign-month', parts[1]);
+        setVal('in-teacher-sign-year', parts[2]);
+      }
+      closeDocDatePickerModal();
+      showToast('กำหนดวันที่: ' + currentDocDateFormatted);
+    }
+
+    // ========================================================
+    // PREVIEW ACTIVE REPORT WITH ATTACHMENTS
+    // ========================================================
+    function previewActiveReportWithAttachments() {
+      if (!currentReportingId) {
+        populateReportRequestSelector();
+      }
+      const r = travelRequests.find(function(item) { return String(item.id) === String(currentReportingId); });
+      if (!r) {
+        showToast('⚠️ กรุณาเลือกรายการขออนุมัติไปราชการที่จะดูตัวอย่างรายงานผล');
+        return;
+      }
+
+      const summary = getVal('rep-summary').trim();
+      const tempRecord = JSON.parse(JSON.stringify(r));
+      tempRecord.reportData = {
+        docNum: getVal('rep-doc-num') || 'ศธ ๐๔๓๓๓.๐๗/...',
+        docDate: getVal('rep-doc-date') || '๙ กันยายน ๒๕๖๙',
+        subject: getVal('rep-subject') || 'รายงานผลการเดินทางไปราชการ',
+        fullname: getVal('rep-fullname') || r.userName,
+        position: getVal('rep-position') || r.userPosition,
+        purpose: getVal('rep-purpose') || r.purpose,
+        location: getVal('rep-location') || r.location,
+        travelDateText: getVal('rep-travel-date') || r.travelDateText,
+        summary: summary || 'ปฏิบัติหน้าที่ราชการตามวัตถุประสงค์เสร็จสิ้นสมบูรณ์',
+        benefit: getVal('rep-benefit').trim() || '-ไม่มี-',
+        obstacle: getVal('rep-obstacle').trim() || '-ไม่มี-',
+        teacherSigned: repTeacherSigned,
+        teacherSignSrc: repTeacherSignSrc,
+        teacherSignDate: getVal('rep-sign-date') || getVal('rep-doc-date'),
+        dirDecision: repDirDecision,
+        dirComment: getVal('rep-dir-comment').trim(),
+        dirSigned: repDirSigned,
+        dirSignSrc: repDirSignSrc,
+        dirSignDate: getVal('rep-dir-date') || getVal('rep-doc-date'),
+        attachments: currentReportAttachments
+      };
+
+      currentViewingReportRecord = tempRecord;
+      const container = document.getElementById('completed-report-paper-container');
+      container.innerHTML = '';
+
+      const cleanDoc = generateCleanReportDocument(tempRecord);
+      container.appendChild(cleanDoc);
+
+      const subEl = document.getElementById('view-rep-subtitle');
+      if (subEl) {
+        subEl.textContent = 'มุมมองตัวอย่างก่อนพิมพ์: บันทึกข้อความและเอกสารแนบหลักฐาน (' + currentReportAttachments.length + ' ภาพ)';
+      }
+
+      document.getElementById('modal-completed-report-view').classList.remove('hidden');
     }
 
     function openReportDatePickerModal() {
@@ -3593,8 +3925,8 @@
 
       grid.innerHTML = currentReportAttachments.map(function(att, idx) {
         return '<div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-md flex flex-col group">' +
-          '<div class="relative aspect-[4/3] bg-slate-950 overflow-hidden flex items-center justify-center cursor-pointer" data-att-id="' + att.id + '" onclick="previewAttachmentById(this.dataset.attId)">' +
-            '<img src="' + att.dataUrl + '" alt="หลักฐาน" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">' +
+          '<div class="relative w-full h-44 bg-slate-950/80 overflow-hidden flex items-center justify-center p-2 cursor-pointer border-b border-slate-700/60" data-att-id="' + att.id + '" onclick="previewAttachmentById(this.dataset.attId)">' +
+            '<img src="' + att.dataUrl + '" alt="หลักฐาน" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-300">' +
             '<span class="absolute top-2 left-2 px-2 py-0.5 rounded-lg bg-slate-900/80 backdrop-blur-sm text-[10px] text-sky-300 border border-slate-700 font-medium">' +
               att.category +
             '</span>' +
@@ -3621,7 +3953,7 @@
     }
 
     function previewAttachmentById(id) {
-      const att = currentReportAttachments.find(function(a) { return a.id === id; });
+      const att = currentReportAttachments.find(function(a) { return String(a.id) === String(id); });
       if (att) previewImageModal(att.dataUrl, att.caption);
     }
 
@@ -3672,6 +4004,7 @@
     }
 
     function saveReportToHistory() {
+      if (!currentReportingId) { populateReportRequestSelector(); }
       if (!currentReportingId) {
         showToast('⚠️ ไม่พบข้อมูลคำขอที่กำลังรายงานผล');
         return;
@@ -3757,7 +4090,7 @@
       // --- PAGE 1: บันทึกข้อความรายงานผล (1 หน้า A4) ---
       const page1 = document.createElement('div');
       page1.id = 'clean-official-paper';
-      page1.style.cssText = 'box-sizing: border-box; width: 210mm; min-height: 297mm; max-width: 210mm; padding: 15mm 20mm 15mm 25mm; background: #ffffff; color: #000000; font-family: "TH Sarabun IT๙", "THSarabunIT๙", "TH Sarabun PSK", sans-serif; font-size: 16pt; line-height: 1.45; position: relative; margin: 0 auto; page-break-after: always;';
+      page1.style.cssText = 'box-sizing: border-box; width: 210mm; min-height: 297mm; max-width: 210mm; padding: 2.5cm 2.0cm 2.0cm 3.0cm; background: #ffffff; color: #000000; font-family: "TH Sarabun IT๙", "THSarabunIT๙", "TH Sarabun PSK", sans-serif; font-size: 16pt; line-height: 1.45; position: relative; margin: 0 auto; page-break-after: always;';
 
       page1.innerHTML = 
         '<!-- ส่วนหัวตราครุฑ 2.2 ซม. -->' +
@@ -3867,16 +4200,16 @@
       if (rep.attachments && rep.attachments.length > 0) {
         const page2 = document.createElement('div');
         page2.id = 'clean-official-paper-annex';
-        page2.style.cssText = 'box-sizing: border-box; width: 210mm; min-height: 297mm; max-width: 210mm; padding: 15mm 20mm 15mm 25mm; background: #ffffff; color: #000000; font-family: "TH Sarabun IT๙", "THSarabunIT๙", "TH Sarabun PSK", sans-serif; font-size: 16pt; line-height: 1.45; position: relative; margin: 0 auto;';
+        page2.style.cssText = 'box-sizing: border-box; width: 210mm; min-height: 297mm; max-width: 210mm; padding: 2.5cm 2.0cm 2.0cm 3.0cm; background: #ffffff; color: #000000; font-family: "TH Sarabun IT๙", "THSarabunIT๙", "TH Sarabun PSK", sans-serif; font-size: 16pt; line-height: 1.45; position: relative; margin: 0 auto;';
 
-        let imagesGridHtml = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6mm; margin-top: 5mm;">';
+        let imagesGridHtml = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6mm; margin-top: 4mm;">';
         rep.attachments.forEach(function(att, i) {
-          imagesGridHtml += '<div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3mm; background: #fafafa; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">' +
-            '<div style="height: 5.5cm; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px;">' +
-              '<img src="' + att.dataUrl + '" style="max-height: 100%; max-width: 100%; object-fit: contain;">' +
+          imagesGridHtml += '<div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 3mm; background: #ffffff; text-align: center; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid;">' +
+            '<div style="height: 6.2cm; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">' +
+              '<img src="' + att.dataUrl + '" style="max-height: 100%; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: auto;">' +
             '</div>' +
-            '<div style="margin-top: 2mm; font-size: 15pt; line-height: 1.25; font-weight: normal; color: #1e293b;">' +
-              '<b>ภาพที่ ' + (i + 1) + ':</b> ' + (att.caption || att.category) +
+            '<div style="margin-top: 2.5mm; font-size: 15pt; line-height: 1.3; font-weight: normal; color: #1e293b; min-height: 1.1cm; display: flex; align-items: center; justify-content: center;">' +
+              '<span><b>ภาพที่ ' + (i + 1) + ':</b> ' + (att.caption || att.category) + '</span>' +
             '</div>' +
           '</div>';
         });
@@ -3910,6 +4243,7 @@
     }
 
     function printActiveReportDocument() {
+      if (!currentReportingId) { populateReportRequestSelector(); }
       if (!currentReportingId) {
         showToast('⚠️ ไม่พบข้อมูลคำขอที่กำลังรายงาน');
         return;
@@ -3953,7 +4287,7 @@
     let currentViewingReportRecord = null;
 
     function openCompletedReportViewer(reqId) {
-      const r = travelRequests.find(function(item) { return item.id === reqId; });
+      const r = travelRequests.find(function(item) { return String(item.id) === String(reqId); });
       if (!r) return;
 
       currentViewingReportRecord = r;
