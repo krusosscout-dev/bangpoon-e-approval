@@ -1118,20 +1118,17 @@
                 </div>
               </div>
 
-              <!-- ตาราง Responsive -->
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-300">
-                  <thead class="bg-slate-950/60 text-[11px] text-slate-400 uppercase tracking-wider border-b border-slate-800">
+              <!-- ตารางรายการแบบพอดีหน้าจอ 100% ไม่ต้องเลื่อนแนวนอน ข้อมูลครบถ้วนทุกประเด็น -->
+              <div class="w-full overflow-hidden">
+                <table class="w-full text-left text-xs text-slate-300 table-auto">
+                  <thead class="bg-slate-950/70 text-[11px] text-slate-400 uppercase tracking-wider border-b border-slate-800">
                     <tr>
-                      <th class="px-4 py-3 font-semibold">เลขที่คำขอ / วันที่ขอ</th>
-                      <th class="px-4 py-3 font-semibold">ผู้ขอ / ตำแหน่ง</th>
-                      <th class="px-4 py-3 font-semibold">วัตถุประสงค์ & สถานที่</th>
-                      <th class="px-4 py-3 font-semibold">ช่วงเวลาไปราชการ</th>
-                      <th class="px-4 py-3 font-semibold text-center">สถานะรายงาน</th>
-                      <th class="px-4 py-3 font-semibold text-right">การจัดการ</th>
+                      <th class="px-4 py-3 font-semibold w-1/4 min-w-[160px]">เลขที่คำขอ & ผู้ขอ</th>
+                      <th class="px-4 py-3 font-semibold">วัตถุประสงค์ สถานที่ & กำหนดการเดินทาง</th>
+                      <th class="px-4 py-3 font-semibold text-right w-1/4 min-w-[170px]">สถานะ & การดำเนินการ</th>
                     </tr>
                   </thead>
-                  <tbody id="report-list-table-body" class="divide-y divide-slate-800/60 font-light">
+                  <tbody id="report-list-table-body" class="divide-y divide-slate-800/60">
                     <!-- รายการจะถูก render โดย renderReportListTable() -->
                   </tbody>
                 </table>
@@ -3717,47 +3714,62 @@
       tbody.innerHTML = list.map(function(r) {
         const isReported = !!r.reported;
         const statusBadge = isReported 
-          ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"><i class="fa-solid fa-circle-check text-xs"></i> รายงานผลแล้ว</span>'
-          : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 animate-pulse"><i class="fa-solid fa-hourglass-half text-xs"></i> ยังไม่ได้รายงานผล</span>';
+          ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap"><i class="fa-solid fa-circle-check text-xs"></i> รายงานผลแล้ว</span>'
+          : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 whitespace-nowrap animate-pulse"><i class="fa-solid fa-hourglass-half text-xs"></i> ยังไม่ได้รายงานผล</span>';
 
         const actionButtons = isReported
-          ? '<div class="flex items-center justify-end gap-2">' +
-              '<button type="button" onclick="previewCompletedReportById(\'' + r.id + '\')" class="px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 transition text-xs flex items-center gap-1.5">' +
+          ? '<div class="flex items-center justify-end gap-1.5 whitespace-nowrap">' +
+              '<button type="button" onclick="previewCompletedReportById(\'' + r.id + '\')" class="px-2.5 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 transition text-xs flex items-center gap-1.5 font-medium shadow-sm">' +
                 '<i class="fa-solid fa-file-lines"></i> ดูรายงานผล' +
               '</button>' +
-              '<button type="button" onclick="startWriteReportFor(\'' + r.id + '\')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition text-xs flex items-center gap-1.5">' +
+              '<button type="button" onclick="startWriteReportFor(\'' + r.id + '\')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition text-xs flex items-center gap-1.5 font-medium shadow-sm">' +
                 '<i class="fa-solid fa-pen-to-square"></i> แก้ไข' +
               '</button>' +
             '</div>'
-          : '<div class="flex items-center justify-end">' +
-              '<button type="button" onclick="startWriteReportFor(\'' + r.id + '\')" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold shadow-md hover:shadow-emerald-500/20 transition text-xs flex items-center gap-1.5">' +
+          : '<div class="flex items-center justify-end whitespace-nowrap">' +
+              '<button type="button" onclick="startWriteReportFor(\'' + r.id + '\')" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold shadow-md hover:shadow-emerald-500/20 transition text-xs flex items-center gap-1.5">' +
                 '<i class="fa-solid fa-pen-nib"></i> เขียนรายงานผล' +
               '</button>' +
             '</div>';
 
         return '<tr class="hover:bg-slate-850/50 transition">' +
-          '<td class="px-4 py-3 font-mono font-medium text-slate-200">' +
-            '<div>' + (r.docNum || 'ไม่ระบุเลขที่') + '</div>' +
-            '<div class="text-[10px] text-slate-400 font-sans">' + (r.docDate || '-') + '</div>' +
-          '</td>' +
-          '<td class="px-4 py-3">' +
-            '<div class="font-medium text-slate-200">' + (r.userName || '-') + '</div>' +
-            '<div class="text-[10px] text-slate-400">' + (r.userPosition || '-') + '</div>' +
-          '</td>' +
-          '<td class="px-4 py-3 max-w-xs">' +
-            '<div class="font-medium text-slate-200 truncate">' + (r.purpose || r.subject || '-') + '</div>' +
-            '<div class="text-[10px] text-slate-400 truncate flex items-center gap-1">' +
-              '<i class="fa-solid fa-location-dot text-rose-400 text-[9px]"></i> ' + (r.location || '-') +
+          // คอลัมน์ 1: เลขที่คำขอ วันที่ และผู้ขอ (ครบถ้วน ชัดเจน ชื่อไม่แตกบรรทัด)
+          '<td class="px-4 py-3.5 align-top">' +
+            '<div class="font-mono font-bold text-slate-100 text-xs tracking-tight">' + (r.docNum || 'ไม่ระบุเลขที่') + '</div>' +
+            '<div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">' +
+              '<i class="fa-regular fa-calendar text-[10px] text-slate-500"></i>' +
+              '<span>วันที่ขอ: ' + (r.docDate || '-') + '</span>' +
+            '</div>' +
+            '<div class="mt-2 pt-1.5 border-t border-slate-800/70">' +
+              '<div class="font-medium text-sky-300 text-xs flex items-center gap-1.5">' +
+                '<i class="fa-solid fa-user-tie text-[10px] text-sky-400 shrink-0"></i>' +
+                '<span class="font-semibold">' + (r.userName || '-') + '</span>' +
+              '</div>' +
+              '<div class="text-[10px] text-slate-400 pl-4">' + (r.userPosition || '-') + '</div>' +
             '</div>' +
           '</td>' +
-          '<td class="px-4 py-3 text-slate-300 whitespace-nowrap">' +
-            (r.travelDateText || r.docDate || '-') +
+
+          // คอลัมน์ 2: วัตถุประสงค์ สถานที่ และกำหนดการเดินทาง (ข้อมูลครบ 100% อ่านง่าย เป็นระเบียบ)
+          '<td class="px-4 py-3.5 align-top space-y-1.5">' +
+            '<div class="font-semibold text-slate-100 text-xs leading-relaxed">' +
+              (r.purpose || r.subject || '-') +
+            '</div>' +
+            '<div class="text-[11px] text-slate-300 flex items-start gap-1.5 leading-snug">' +
+              '<i class="fa-solid fa-location-dot text-rose-400 text-[10px] mt-0.5 shrink-0"></i>' +
+              '<span>' + (r.location || '-') + '</span>' +
+            '</div>' +
+            '<div class="text-[11px] text-emerald-300/95 flex items-start gap-1.5 leading-snug">' +
+              '<i class="fa-regular fa-calendar-check text-emerald-400 text-[10px] mt-0.5 shrink-0"></i>' +
+              '<span>' + (r.travelDateText || r.docDate || '-') + '</span>' +
+            '</div>' +
           '</td>' +
-          '<td class="px-4 py-3 text-center whitespace-nowrap">' +
-            statusBadge +
-          '</td>' +
-          '<td class="px-4 py-3 text-right whitespace-nowrap">' +
-            actionButtons +
+
+          // คอลัมน์ 3: สถานะรายงานผล & ปุ่มดำเนินการ (อยู่คู่กัน ชิดขวา คลิกได้ทันที ไม่ต้องเลื่อนจอ)
+          '<td class="px-4 py-3.5 align-top text-right">' +
+            '<div class="flex flex-col items-end gap-2">' +
+              statusBadge +
+              actionButtons +
+            '</div>' +
           '</td>' +
         '</tr>';
       }).join('');
