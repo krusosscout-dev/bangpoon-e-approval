@@ -840,7 +840,7 @@
                     <input type="text" id="in-vehicle-custom" placeholder="ระบุยานพาหนะ" class="dotted-input hidden w-28 mr-2 shrink-0 text-[16pt]">
                     
                     <span class="shrink-0 mr-1.5">หมายเลขทะเบียน</span>
-                    <input type="text" id="in-vehicle-plate" placeholder="เช่น ๑กฉ ๙๕๗๘ สิงห์บุรี" class="dotted-input w-44 text-center shrink-0 text-[16pt]" oninput="convertToThaiNum(this)">
+                    <input type="text" id="in-vehicle-plate" placeholder="" class="dotted-input w-44 text-center shrink-0 text-[16pt]" oninput="convertToThaiNum(this)">
                   </div>
 
                   <!-- ตัวเลือก 5: อื่นๆ -->
@@ -866,14 +866,14 @@
             <div class="mt-3 flex justify-end text-[16pt]">
               <div class="w-[8.5cm] text-center flex flex-col items-center">
                 
-                <div class="flex items-center justify-center min-h-[36px] relative w-full">
-                  <span class="absolute left-2 text-slate-800">(ลงชื่อ)</span>
+                <div class="flex items-center justify-center min-h-[36px] w-full">
+                  <span class="text-slate-800 mr-1.5 shrink-0">(ลงชื่อ)</span>
                   
-                  <div id="teacher-sign-box" class="h-9 flex items-center justify-center relative cursor-pointer group" onclick="openSignatureModal('teacher')" title="คลิกเพื่อเซ็นลายมือชื่อ หรือ แนบรูปภาพ">
-                    <span id="teacher-sign-placeholder" class="border-b border-dotted border-black w-44 inline-block ml-10 text-slate-400 group-hover:text-sky-600 text-xs">
+                  <div id="teacher-sign-box" class="h-9 flex items-center justify-center cursor-pointer group" onclick="openSignatureModal('teacher')" title="คลิกเพื่อเซ็นลายมือชื่อ หรือ แนบรูปภาพ">
+                    <span id="teacher-sign-placeholder" class="border-b border-dotted border-black w-44 inline-block text-center text-slate-400 group-hover:text-sky-600 text-xs">
                       คลิกลงลายมือชื่อ
                     </span>
-                    <img id="teacher-sign-img" src="" alt="ลายเซ็นครู" class="hidden h-9 w-auto max-w-[170px] object-contain ml-6">
+                    <img id="teacher-sign-img" src="" alt="ลายเซ็นครู" class="hidden h-9 w-auto max-w-[170px] object-contain">
                   </div>
                 </div>
 
@@ -928,14 +928,14 @@
               <div class="mt-1.5 flex justify-end text-[16pt]">
                 <div class="w-[8.5cm] text-center flex flex-col items-center">
                   
-                  <div class="flex items-center justify-center min-h-[36px] relative w-full">
-                    <span class="absolute left-2 text-slate-800">(ลงชื่อ)</span>
+                  <div class="flex items-center justify-center min-h-[36px] w-full">
+                    <span class="text-slate-800 mr-1.5 shrink-0">(ลงชื่อ)</span>
                     
-                    <div id="dir-sign-box" class="h-9 flex items-center justify-center relative cursor-pointer group" onclick="handleDirectorSignBoxClick()" title="เฉพาะผู้อำนวยการโรงเรียน">
-                      <span id="dir-sign-placeholder" class="border-b border-dotted border-black w-44 inline-block ml-10 text-slate-400 group-hover:text-sky-600 text-xs">
+                    <div id="dir-sign-box" class="h-9 flex items-center justify-center cursor-pointer group" onclick="handleDirectorSignBoxClick()" title="เฉพาะผู้อำนวยการโรงเรียน">
+                      <span id="dir-sign-placeholder" class="border-b border-dotted border-black w-44 inline-block text-center text-slate-400 group-hover:text-sky-600 text-xs">
                         ลงลายมือชื่อผู้อำนวยการ
                       </span>
-                      <img id="dir-sign-img" src="" alt="ลายเซ็น ผอ." class="hidden h-9 w-auto max-w-[170px] object-contain ml-6">
+                      <img id="dir-sign-img" src="" alt="ลายเซ็น ผอ." class="hidden h-9 w-auto max-w-[170px] object-contain">
                     </div>
                   </div>
 
@@ -1129,9 +1129,9 @@
             <!-- ลายเซ็นผู้รายงานผล -->
             <div class="mt-4 flex justify-end text-[16pt]">
               <div class="w-[8.5cm] text-center flex flex-col items-center">
-                <div class="flex items-center justify-center min-h-[38px] relative w-full">
-                  <span class="absolute left-2">(ลงชื่อ)</span>
-                  <div class="border-b border-dotted border-black w-44 inline-block ml-10 text-slate-400 text-xs">
+                <div class="flex items-center justify-center min-h-[38px] w-full">
+                  <span class="mr-1.5 shrink-0">(ลงชื่อ)</span>
+                  <div class="border-b border-dotted border-black w-44 inline-block text-center text-slate-400 text-xs">
                     ลงลายมือชื่อผู้รายงาน
                   </div>
                 </div>
@@ -1158,9 +1158,9 @@
               <div class="border-b border-dotted border-slate-400 w-full h-6 mb-2"></div>
               <div class="flex justify-end">
                 <div class="w-[8.5cm] text-center flex flex-col items-center">
-                  <div class="flex items-center justify-center min-h-[38px] relative w-full">
-                    <span class="absolute left-2">(ลงชื่อ)</span>
-                    <span class="border-b border-dotted border-black w-44 inline-block ml-10 text-slate-400 text-xs">&nbsp;</span>
+                  <div class="flex items-center justify-center min-h-[38px] w-full">
+                    <span class="mr-1.5 shrink-0">(ลงชื่อ)</span>
+                    <span class="border-b border-dotted border-black w-44 inline-block text-center text-slate-400 text-xs">&nbsp;</span>
                   </div>
                   <div class="mt-1">( นางนัทชพร ตั้งศุภจรูญนุกูล )</div>
                   <div>ตำแหน่ง ผู้อำนวยการโรงเรียนวัดบางปูน</div>
@@ -1564,7 +1564,7 @@
         subExpenses: { transport: true, fuel: false, allowance: true, hotel: true },
         vehicleEnabled: true,
         vehicleName: 'รถยนต์ส่วนบุคคล',
-        vehiclePlate: '๑กฉ ๙๕๗๘ สิงห์บุรี',
+        vehiclePlate: '',
         otherText: '',
         teacherSigned: true,
         teacherSignSrc: sampleTeacherSig,
@@ -1596,7 +1596,7 @@
         subExpenses: { transport: false, fuel: false, allowance: false, hotel: false },
         vehicleEnabled: true,
         vehicleName: 'รถยนต์ส่วนกลาง',
-        vehiclePlate: 'กข ๑๒๓๔ สิงห์บุรี',
+        vehiclePlate: '',
         otherText: '',
         teacherSigned: true,
         teacherSignSrc: sampleTeacherSig,
@@ -2340,7 +2340,7 @@
       cleanDoc.style.cssText = 'box-sizing: border-box; width: 210mm; min-height: 297mm; max-width: 210mm; padding: 15mm 20mm 15mm 25mm; background: #ffffff; color: #000000; font-family: "TH Sarabun IT๙", "THSarabunIT๙", "TH Sarabun PSK", sans-serif; font-size: 16pt; line-height: 1.45; position: relative; margin: 0 auto;';
 
       const refdocPart = r.refdoc ? (' ตามหนังสือ ' + r.refdoc) : '';
-      const vehiclePart = r.vehicleEnabled ? (' ไปราชการโดย ' + r.vehicleName + ' หมายเลขทะเบียน ' + (r.vehiclePlate || '....................')) : '';
+      const vehiclePart = r.vehicleEnabled ? (' ไปราชการโดย ' + r.vehicleName + (r.vehiclePlate ? (' หมายเลขทะเบียน ' + r.vehiclePlate) : '')) : '';
 
       cleanDoc.innerHTML = 
         '<!-- ส่วนหัวตราครุฑ 2.2 ซม. -->' +
@@ -2412,11 +2412,11 @@
         '<!-- ลายมือชื่อผู้ขออนุมัติ (ข้อความ 16 พอยต์ ชิดขวา 8.5 ซม. พร้อมลายเซ็น) -->' +
         '<div style="margin-top: 3mm; display: flex; justify-content: flex-end; font-size: 16pt; line-height: 1.35;">' +
         '  <div style="width: 8.5cm; text-align: center; display: flex; flex-direction: column; align-items: center;">' +
-        '    <div style="min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">' +
-        '      <span style="position: absolute; left: 8px;">(ลงชื่อ)</span>' +
+        '    <div style="min-height: 38px; display: flex; align-items: flex-end; justify-content: center; width: 100%;">' +
+        '      <span style="flex-shrink: 0; margin-right: 6px;">(ลงชื่อ)</span>' +
         (r.teacherSigned && r.teacherSignSrc
-          ? ('      <img src="' + r.teacherSignSrc + '" style="height: 38px; width: auto; object-fit: contain;">')
-          : '      <span style="border-bottom: 1px dotted #000; width: 180px; display: inline-block; margin-left: 45px;">&nbsp;</span>'
+          ? ('      <img src="' + r.teacherSignSrc + '" style="height: 38px; width: auto; max-width: 170px; object-fit: contain;">')
+          : '      <span style="border-bottom: 1px dotted #000; width: 170px; display: inline-block; height: 18px; margin-bottom: 3px;">&nbsp;</span>'
         ) +
         '    </div>' +
         '    <div style="margin-top: 1mm;">( ' + r.userName + ' )</div>' +
@@ -2438,11 +2438,11 @@
         ) +
         '  <div style="margin-top: 1.5mm; display: flex; justify-content: flex-end;">' +
         '    <div style="width: 8.5cm; text-align: center; display: flex; flex-direction: column; align-items: center;">' +
-        '      <div style="min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">' +
-        '        <span style="position: absolute; left: 8px;">(ลงชื่อ)</span>' +
+        '      <div style="min-height: 38px; display: flex; align-items: flex-end; justify-content: center; width: 100%;">' +
+        '        <span style="flex-shrink: 0; margin-right: 6px;">(ลงชื่อ)</span>' +
         (r.dirSigned && r.dirSignSrc
-          ? ('        <img src="' + r.dirSignSrc + '" style="height: 38px; width: auto; object-fit: contain;">')
-          : '        <span style="border-bottom: 1px dotted #000; width: 180px; display: inline-block; margin-left: 45px;">&nbsp;</span>'
+          ? ('        <img src="' + r.dirSignSrc + '" style="height: 38px; width: auto; max-width: 170px; object-fit: contain;">')
+          : '        <span style="border-bottom: 1px dotted #000; width: 170px; display: inline-block; height: 18px; margin-bottom: 3px;">&nbsp;</span>'
         ) +
         '      </div>' +
         '      <div style="margin-top: 1mm;">( นางนัทชพร ตั้งศุภจรูญนุกูล )</div>' +
@@ -2514,7 +2514,7 @@
       // Vehicle
       const vType = document.getElementById('in-vehicle-select').value;
       const vCustom = getVal('in-vehicle-custom');
-      const vPlate = getVal('in-vehicle-plate') || '..............................';
+      const vPlate = getVal('in-vehicle-plate');
       const vehicleName = (vType === 'custom' && vCustom) ? vCustom : vType;
 
       const cleanDoc = document.createElement('div');
@@ -2580,7 +2580,7 @@
         '        ' + (subExpenses.hotel ? '[✓]' : '[ ]') + ' ค่าที่พัก' +
         '      </div>' +
         '      <div>' +
-        '        ' + (vehicleEnabled ? '[✓]' : '[ ]') + ' ไปราชการโดย ' + vehicleName + ' &nbsp;&nbsp; หมายเลขทะเบียน ' + vPlate +
+        '        ' + (vehicleEnabled ? '[✓]' : '[ ]') + ' ไปราชการโดย ' + vehicleName + (vPlate ? (' &nbsp;&nbsp; หมายเลขทะเบียน ' + vPlate) : '') +
         '      </div>' +
         (otherEnabled ? ('      <div>[✓] อื่น ๆ ' + getVal('in-other-text') + '</div>') : '') +
         '    </div>' +
@@ -2593,11 +2593,11 @@
         '<!-- ลายมือชื่อผู้ขออนุมัติ (ข้อความ 16 พอยต์ ชิดขวา 8.5 ซม.) -->' +
         '<div style="margin-top: 3mm; display: flex; justify-content: flex-end; font-size: 16pt; line-height: 1.35;">' +
         '  <div style="width: 8.5cm; text-align: center; display: flex; flex-direction: column; align-items: center;">' +
-        '    <div style="min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">' +
-        '      <span style="position: absolute; left: 8px;">(ลงชื่อ)</span>' +
+        '    <div style="min-height: 38px; display: flex; align-items: flex-end; justify-content: center; width: 100%;">' +
+        '      <span style="flex-shrink: 0; margin-right: 6px;">(ลงชื่อ)</span>' +
         (teacherSigned 
-          ? ('      <img src="' + teacherSignSrc + '" style="height: 38px; width: auto; object-fit: contain;">')
-          : '      <span style="border-bottom: 1px dotted #000; width: 180px; display: inline-block; margin-left: 45px;">&nbsp;</span>'
+          ? ('      <img src="' + teacherSignSrc + '" style="height: 38px; width: auto; max-width: 170px; object-fit: contain;">')
+          : '      <span style="border-bottom: 1px dotted #000; width: 170px; display: inline-block; height: 18px; margin-bottom: 3px;">&nbsp;</span>'
         ) +
         '    </div>' +
         '    <div style="margin-top: 1mm;">( ' + fullname + ' )</div>' +
@@ -2619,11 +2619,11 @@
         ) +
         '  <div style="margin-top: 1.5mm; display: flex; justify-content: flex-end;">' +
         '    <div style="width: 8.5cm; text-align: center; display: flex; flex-direction: column; align-items: center;">' +
-        '      <div style="min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">' +
-        '        <span style="position: absolute; left: 8px;">(ลงชื่อ)</span>' +
+        '      <div style="min-height: 38px; display: flex; align-items: flex-end; justify-content: center; width: 100%;">' +
+        '        <span style="flex-shrink: 0; margin-right: 6px;">(ลงชื่อ)</span>' +
         (dirSigned 
-          ? ('        <img src="' + dirSignSrc + '" style="height: 38px; width: auto; object-fit: contain;">')
-          : '        <span style="border-bottom: 1px dotted #000; width: 180px; display: inline-block; margin-left: 45px;">&nbsp;</span>'
+          ? ('        <img src="' + dirSignSrc + '" style="height: 38px; width: auto; max-width: 170px; object-fit: contain;">')
+          : '        <span style="border-bottom: 1px dotted #000; width: 170px; display: inline-block; height: 18px; margin-bottom: 3px;">&nbsp;</span>'
         ) +
         '      </div>' +
         '      <div style="margin-top: 1mm;">( นางนัทชพร ตั้งศุภจรูญนุกูล )</div>' +
