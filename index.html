@@ -223,36 +223,129 @@
     }
 
     /* ======================================================== */
-    /* VIVID 3D DIMENSIONAL BORDERS & GLASSMORPHISM (HIGH CONTRAST) */
+    /* VIVID 3D GLASSMORPHISM & DISTINCT MULTI-COLORED BORDERS */
     /* ======================================================== */
     .dim-card {
-      background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-      border: 1.5px solid rgba(148, 163, 184, 0.35) !important;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.88) 0%, rgba(15, 23, 42, 0.96) 100%) !important;
       backdrop-filter: blur(16px) !important;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
-    .dim-card:hover {
-      border-color: rgba(56, 189, 248, 0.8) !important;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 14px 28px -4px rgba(56, 189, 248, 0.25), 0 10px 14px -6px rgba(0, 0, 0, 0.5) !important;
+
+    /* 1. SKY BLUE BORDER (ขอบฟ้าสดใส - คำขอทั้งหมด / เขียนคำขอใหม่ / แผงข้อมูล) */
+    .dim-card-sky, .dim-border-sky {
+      border: 1.5px solid rgba(56, 189, 248, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(186, 230, 253, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(56, 189, 248, 0.22) !important;
+    }
+    .dim-card-sky:hover {
+      border-color: rgba(56, 189, 248, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(56, 189, 248, 0.4), 0 0 25px rgba(56, 189, 248, 0.35) !important;
       transform: translateY(-2px);
     }
 
+    /* 2. AMBER GOLD BORDER (ขอบส้มทองอำพัน - รออนุมัติ / รอพิจารณา / กำกับติดตาม) */
+    .dim-card-amber, .dim-border-amber {
+      border: 1.5px solid rgba(245, 158, 11, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(254, 240, 138, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(245, 158, 11, 0.22) !important;
+    }
+    .dim-card-amber:hover {
+      border-color: rgba(245, 158, 11, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(245, 158, 11, 0.4), 0 0 25px rgba(245, 158, 11, 0.35) !important;
+      transform: translateY(-2px);
+    }
+
+    /* 3. EMERALD GREEN BORDER (ขอบเขียวมรกต - อนุมัติแล้ว / รายงานผลสำเร็จ / ข้อมูลบุคลากร) */
+    .dim-card-emerald, .dim-border-emerald {
+      border: 1.5px solid rgba(16, 185, 129, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(167, 243, 208, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(16, 185, 129, 0.22) !important;
+    }
+    .dim-card-emerald:hover {
+      border-color: rgba(16, 185, 129, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(16, 185, 129, 0.4), 0 0 25px rgba(16, 185, 129, 0.35) !important;
+      transform: translateY(-2px);
+    }
+
+    /* 4. PURPLE VIOLET BORDER (ขอบม่วงไวโอเล็ต - ชั่วโมง ว.PA สะสม / ปฏิทิน / ศูนย์แอดมิน) */
+    .dim-card-purple, .dim-border-purple {
+      border: 1.5px solid rgba(168, 85, 247, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(233, 213, 255, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(168, 85, 247, 0.22) !important;
+    }
+    .dim-card-purple:hover {
+      border-color: rgba(168, 85, 247, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(168, 85, 247, 0.4), 0 0 25px rgba(168, 85, 247, 0.35) !important;
+      transform: translateY(-2px);
+    }
+
+    /* 5. INDIGO BORDER (ขอบน้ำเงินคราม - ประวัติคำขอ / รายการเอกสาร) */
+    .dim-card-indigo, .dim-border-indigo {
+      border: 1.5px solid rgba(99, 102, 241, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(199, 210, 254, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(99, 102, 241, 0.22) !important;
+    }
+    .dim-card-indigo:hover {
+      border-color: rgba(99, 102, 241, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(99, 102, 241, 0.4), 0 0 25px rgba(99, 102, 241, 0.35) !important;
+      transform: translateY(-2px);
+    }
+
+    /* 6. PINK ROSE BORDER (ขอบชมพูกุหลาบ - ปฏิทินทางลัด / ตั้งค่าเลขสารบรรณ) */
+    .dim-card-pink, .dim-border-pink {
+      border: 1.5px solid rgba(244, 63, 94, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(254, 205, 211, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(244, 63, 94, 0.22) !important;
+    }
+    .dim-card-pink:hover {
+      border-color: rgba(244, 63, 94, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(244, 63, 94, 0.4), 0 0 25px rgba(244, 63, 94, 0.35) !important;
+      transform: translateY(-2px);
+    }
+
+    /* 7. TEAL CYAN BORDER (ขอบฟ้าอมเขียว - งานสารบรรณออกเลข) */
+    .dim-card-teal, .dim-border-teal {
+      border: 1.5px solid rgba(20, 184, 166, 0.65) !important;
+      box-shadow: inset 0 1px 0 0 rgba(153, 246, 228, 0.35), 0 10px 25px -5px rgba(0, 0, 0, 0.55), 0 0 18px -2px rgba(20, 184, 166, 0.22) !important;
+    }
+    .dim-card-teal:hover {
+      border-color: rgba(20, 184, 166, 1) !important;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 14px 28px -4px rgba(20, 184, 166, 0.4), 0 0 25px rgba(20, 184, 166, 0.35) !important;
+      transform: translateY(-2px);
+    }
+
+    /* PANEL STYLES (สำหรับตารางและกล่องเนื้อหาหลักในแต่ละหน้า) */
     .dim-panel {
-      background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.94) 100%) !important;
-      border: 1.5px solid rgba(148, 163, 184, 0.35) !important;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), 0 12px 28px -5px rgba(0, 0, 0, 0.55) !important;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.88) 0%, rgba(15, 23, 42, 0.97) 100%) !important;
       backdrop-filter: blur(16px) !important;
     }
-
-    /* Global high-contrast dimensional borders for cards & tables */
-    #screen-app .border-slate-800,
-    #screen-app .border-slate-700,
-    #screen-login .border-slate-800,
-    #screen-login .border-slate-700 {
-      border-color: rgba(148, 163, 184, 0.32) !important;
+    .dim-panel-sky {
+      border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+      box-shadow: inset 0 1px 0 0 rgba(186, 230, 253, 0.25), 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dim-panel-indigo {
+      border: 1.5px solid rgba(99, 102, 241, 0.5) !important;
+      box-shadow: inset 0 1px 0 0 rgba(199, 210, 254, 0.25), 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dim-panel-amber {
+      border: 1.5px solid rgba(245, 158, 11, 0.5) !important;
+      box-shadow: inset 0 1px 0 0 rgba(254, 240, 138, 0.25), 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dim-panel-emerald {
+      border: 1.5px solid rgba(16, 185, 129, 0.5) !important;
+      box-shadow: inset 0 1px 0 0 rgba(167, 243, 208, 0.25), 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dim-panel-purple {
+      border: 1.5px solid rgba(168, 85, 247, 0.5) !important;
+      box-shadow: inset 0 1px 0 0 rgba(233, 213, 255, 0.25), 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dim-panel-teal {
+      border: 1.5px solid rgba(20, 184, 166, 0.5) !important;
+      box-shadow: inset 0 1px 0 0 rgba(153, 246, 228, 0.25), 0 12px 28px -5px rgba(0, 0, 0, 0.6) !important;
     }
 
+    /* Fallback default border for neutral inner dividers only */
+    .border-slate-800 {
+      border-color: rgba(148, 163, 184, 0.22);
+    }
+    .border-slate-700 {
+      border-color: rgba(148, 163, 184, 0.28);
+    }
+    
     /* Subtle depth highlight on card headers and containers */
     .bg-slate-900\/90,
     .bg-slate-900\/80,
@@ -420,80 +513,61 @@
         <p class="text-[11px] text-slate-400">จัดทำบันทึกข้อความและรายงานผลตามระเบียบงานสารบรรณ</p>
       </div>
 
-      <!-- เลือกบทบาทเพื่อกรอกรหัสผ่าน (เลือกชื่อให้อัตโนมัติและเลื่อนไปช่องรหัสผ่าน - ไม่ข้ามรหัส) -->
-      <div class="space-y-2.5 pt-1">
-        <div class="flex items-center justify-between text-[11px] font-semibold text-slate-400 px-1">
-          <span>คลิกเพื่อเลือกบัญชีผู้ใช้:</span>
-          <span class="text-amber-400/90 text-[10px]"><i class="fa-solid fa-lock text-[9px]"></i> ต้องยืนยันรหัสผ่าน</span>
+      <!-- แถบป้ายความปลอดภัยส่วนบุคคล (ไม่แสดงชื่อ เพื่อป้องกันการเข้าระบบของผู้อื่น) -->
+      <div class="py-2 px-3 rounded-2xl bg-slate-800/80 border border-sky-500/30 flex items-center gap-2.5 shadow-inner">
+        <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm border border-sky-500/30 shrink-0 shadow">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
-        
-        <div class="grid grid-cols-3 gap-2.5">
-          <!-- บัญชี 1: แอดมิน -->
-          <button type="button" onclick="selectRoleToLogin('u0')" id="role-card-u0" class="role-login-card p-3 rounded-2xl border border-slate-700 bg-slate-800/60 hover:bg-slate-800 hover:border-emerald-500/60 transition text-center group shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-center text-base mb-1.5 shadow group-hover:scale-110 transition">
-              <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <div class="font-bold text-xs text-white">แอดมิน</div>
-            <div class="text-[10px] text-slate-300 truncate">นายศักดิ์สิทธิ์</div>
-            <div class="text-[9px] text-emerald-400 font-medium">จัดการระบบ</div>
-          </button>
-
-          <!-- บัญชี 2: ผู้บริหาร -->
-          <button type="button" onclick="selectRoleToLogin('u5')" id="role-card-u5" class="role-login-card p-3 rounded-2xl border border-slate-700 bg-slate-800/60 hover:bg-slate-800 hover:border-amber-500/60 transition text-center group shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 flex items-center justify-center text-base mb-1.5 shadow group-hover:scale-110 transition">
-              <i class="fa-solid fa-stamp"></i>
-            </div>
-            <div class="font-bold text-xs text-white">ผู้บริหาร</div>
-            <div class="text-[10px] text-slate-300 truncate">ผอ.นัทธพร</div>
-            <div class="text-[9px] text-amber-400 font-medium">ลงนามอนุมัติ</div>
-          </button>
-
-          <!-- บัญชี 3: ครูผู้สอน -->
-          <button type="button" onclick="selectRoleToLogin('u1')" id="role-card-u1" class="role-login-card p-3 rounded-2xl border border-slate-700 bg-slate-800/60 hover:bg-slate-800 hover:border-sky-500/60 transition text-center group shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 active-role-card border-sky-500/80 bg-sky-950/40">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-sky-500/20 border border-sky-500/30 text-sky-300 flex items-center justify-center text-base mb-1.5 shadow group-hover:scale-110 transition">
-              <i class="fa-solid fa-chalkboard-user"></i>
-            </div>
-            <div class="font-bold text-xs text-white">ครูผู้สอน</div>
-            <div class="text-[10px] text-slate-300 truncate">นายวราภรณ์</div>
-            <div class="text-[9px] text-sky-400 font-medium">เขียนคำขอ</div>
-          </button>
+        <div class="min-w-0">
+          <div class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span>เข้าสู่ระบบด้วยบัญชีส่วนบุคคล</span>
+            <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Secure Login</span>
+          </div>
+          <div class="text-[10px] text-slate-400 truncate">กรอกชื่อผู้ใช้และรหัสผ่านส่วนบุคคลของท่าน เพื่อเข้าใช้งานระบบ</div>
         </div>
       </div>
 
-      <!-- แบบฟอร์มกรอกรหัสผ่านเพื่อเข้าสู่ระบบอย่างปลอดภัย -->
-      <form id="form-login" onsubmit="handleManualLogin(event)" class="space-y-3 pt-2 border-t border-slate-800">
+      <!-- แบบฟอร์มกรอกรหัสผ่านเพื่อเข้าสู่ระบบอย่างปลอดภัย (ไม่ระบุชื่อใคร ป้องกันการสวมสิทธิ์) -->
+      <form id="form-login" onsubmit="handleManualLogin(event)" class="space-y-3.5 pt-1">
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-slate-300 flex items-center justify-between">
-            <span>ชื่อผู้ใช้งาน (Username)</span>
-            <span class="text-[10px] text-slate-500">เลือกจากด้านบน หรือพิมพ์เอง</span>
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-user-tag text-sky-400 text-xs"></i>
+              <span>ชื่อผู้ใช้งาน (Username)</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">Username หรือ ชื่อ-สกุล</span>
           </label>
           <div class="relative">
-            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-            <input type="text" id="login-username" value="teacher1" placeholder="ชื่อผู้ใช้งาน เช่น admin, teacher1" required class="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-500 transition font-mono">
+            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="login-username" value="" placeholder="กรอกชื่อผู้ใช้งานของท่าน (เช่น admin, teacher1, teacher2 ...)" required autocomplete="username" class="w-full pl-9 pr-3.5 py-2.5 text-xs bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition font-sans">
           </div>
         </div>
 
         <div class="space-y-1.5">
           <label class="text-[11px] font-semibold text-slate-300 flex items-center justify-between">
-            <span>รหัสผ่าน (Password)</span>
-            <span class="text-[10px] text-amber-400/90 font-mono">ค่าเริ่มต้น: 1234</span>
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-key text-amber-400 text-xs"></i>
+              <span>รหัสผ่าน (Password)</span>
+            </span>
+            <span class="text-[10px] text-amber-400/90 font-mono">รหัสผ่านเริ่มต้น: 1234</span>
           </label>
           <div class="relative">
-            <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-            <input type="password" id="login-password" placeholder="กรอกรหัสผ่านเพื่อเข้าสู่ระบบ" required class="w-full pl-9 pr-10 py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-500 transition font-mono">
-            <button type="button" onclick="togglePasswordVisibility('login-password', 'icon-pw-login')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition text-xs">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="password" id="login-password" value="" placeholder="กรอกรหัสผ่านเพื่อเข้าสู่ระบบ" required autocomplete="current-password" class="w-full pl-9 pr-10 py-2.5 text-xs bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition font-mono">
+            <button type="button" onclick="togglePasswordVisibility('login-password', 'icon-pw-login')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition text-xs p-1">
               <i id="icon-pw-login" class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
 
-        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-sky-600 via-sky-500 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-sky-600/30 transition flex items-center justify-center gap-2 mt-2">
-          <i class="fa-solid fa-right-to-bracket"></i>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-sky-600 via-sky-500 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-sky-600/30 transition flex items-center justify-center gap-2 mt-2 group">
+          <i class="fa-solid fa-right-to-bracket group-hover:translate-x-0.5 transition-transform"></i>
           <span>ยืนยันเข้าสู่ระบบ</span>
         </button>
 
-        <div class="text-center text-[10.5px] text-slate-500 pt-1">
-          🔒 ระบบจะบังคับให้เปลี่ยนรหัสผ่านทันทีสำหรับการเข้าใช้งานครั้งแรก
+        <div class="text-center text-[10.5px] text-slate-400/90 pt-1 space-y-1">
+          <div><i class="fa-solid fa-user-lock text-emerald-400"></i> เพื่อความปลอดภัยและความเป็นส่วนตัว กรุณาใช้บัญชีของตนเองเท่านั้น</div>
+          <div class="text-[9.5px] text-slate-500">🔒 บังคับเปลี่ยนรหัสผ่านทันทีสำหรับการเข้าใช้งานครั้งแรก (หากยังใช้ 1234)</div>
         </div>
       </form>
 
@@ -740,107 +814,107 @@
             </button>
           </div>
 
-          <!-- การ์ดสรุปสถิติ 4 ช่องแบบ Modern Glassmorphism (รวม ชั่วโมง ว.PA สะสม) -->
+          <!-- การ์ดสรุปสถิติ 4 ช่องแบบ Modern Glassmorphism (สีขอบและมิติแตกต่างกันชัดเจน) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            <!-- การ์ด 1: คำขอทั้งหมด -->
-            <div class="dim-card p-5 rounded-2xl relative overflow-hidden group">
+            <!-- การ์ด 1: คำขอทั้งหมด (ขอบสีฟ้าสดใส Sky Blue) -->
+            <div class="dim-card dim-card-sky p-5 rounded-2xl relative overflow-hidden group">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-400" id="card-label-1">คำขอของฉันทั้งหมด</span>
-                <div class="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center text-base border border-sky-500/25 group-hover:scale-110 transition">
+                <span class="text-xs font-medium text-sky-200" id="card-label-1">คำขอของฉันทั้งหมด</span>
+                <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-base border border-sky-400/40 group-hover:scale-110 transition shadow">
                   <i class="fa-solid fa-folder-open"></i>
                 </div>
               </div>
               <div class="mt-3 flex items-baseline gap-2">
                 <span class="text-3xl font-bold text-white tracking-tight" id="card-stat-1">0</span>
-                <span class="text-xs text-slate-400 font-light">รายการ</span>
+                <span class="text-xs text-slate-300 font-light">รายการ</span>
               </div>
-              <div class="mt-1 text-[11px] text-slate-500" id="card-sub-1">ประวัติคำขอส่วนบุคคล</div>
+              <div class="mt-1 text-[11px] text-sky-300/80" id="card-sub-1">ประวัติคำขอส่วนบุคคล</div>
             </div>
 
-            <!-- การ์ด 2: รอผู้บริหารอนุมัติ -->
-            <div class="dim-card p-5 rounded-2xl relative overflow-hidden group">
+            <!-- การ์ด 2: รอผู้บริหารอนุมัติ (ขอบสีส้มทองอำพัน Amber Gold) -->
+            <div class="dim-card dim-card-amber p-5 rounded-2xl relative overflow-hidden group">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-400" id="card-label-2">รอผู้บริหารอนุมัติ</span>
-                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-base border border-amber-500/25 group-hover:scale-110 transition">
+                <span class="text-xs font-medium text-amber-200" id="card-label-2">รอผู้บริหารอนุมัติ</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-base border border-amber-400/40 group-hover:scale-110 transition shadow">
                   <i class="fa-solid fa-hourglass-half animate-pulse"></i>
                 </div>
               </div>
               <div class="mt-3 flex items-baseline gap-2">
-                <span class="text-3xl font-bold text-amber-400 tracking-tight" id="card-stat-2">0</span>
-                <span class="text-xs text-slate-400 font-light">รายการ</span>
+                <span class="text-3xl font-bold text-amber-300 tracking-tight" id="card-stat-2">0</span>
+                <span class="text-xs text-slate-300 font-light">รายการ</span>
               </div>
-              <div class="mt-1 text-[11px] text-slate-500" id="card-sub-2">อยู่ระหว่างพิจารณา</div>
+              <div class="mt-1 text-[11px] text-amber-300/80" id="card-sub-2">อยู่ระหว่างพิจารณา</div>
             </div>
 
-            <!-- การ์ด 3: อนุมัติแล้วพร้อมเดินทาง -->
-            <div class="dim-card p-5 rounded-2xl relative overflow-hidden group">
+            <!-- การ์ด 3: อนุมัติแล้วพร้อมเดินทาง (ขอบสีเขียวมรกต Emerald Green) -->
+            <div class="dim-card dim-card-emerald p-5 rounded-2xl relative overflow-hidden group">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-400" id="card-label-3">อนุมัติแล้ว</span>
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base border border-emerald-500/25 group-hover:scale-110 transition">
+                <span class="text-xs font-medium text-emerald-200" id="card-label-3">อนุมัติแล้ว</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-base border border-emerald-400/40 group-hover:scale-110 transition shadow">
                   <i class="fa-solid fa-circle-check"></i>
                 </div>
               </div>
               <div class="mt-3 flex items-baseline gap-2">
-                <span class="text-3xl font-bold text-emerald-400 tracking-tight" id="card-stat-3">0</span>
-                <span class="text-xs text-slate-400 font-light">รายการ</span>
+                <span class="text-3xl font-bold text-emerald-300 tracking-tight" id="card-stat-3">0</span>
+                <span class="text-xs text-slate-300 font-light">รายการ</span>
               </div>
-              <div class="mt-1 text-[11px] text-slate-500" id="card-sub-3">พร้อมออกเดินทาง</div>
+              <div class="mt-1 text-[11px] text-emerald-300/80" id="card-sub-3">พร้อมออกเดินทาง</div>
             </div>
 
-            <!-- การ์ด 4: ชั่วโมง ว.PA พัฒนาตนเองสะสม -->
-            <div class="dim-card p-5 rounded-2xl relative overflow-hidden group">
+            <!-- การ์ด 4: ชั่วโมง ว.PA พัฒนาตนเองสะสม (ขอบสีม่วงไวโอเล็ต Purple Violet) -->
+            <div class="dim-card dim-card-purple p-5 rounded-2xl relative overflow-hidden group">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-400">ชั่วโมง ว.PA สะสม</span>
-                <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center text-base border border-purple-500/25 group-hover:scale-110 transition">
+                <span class="text-xs font-medium text-purple-200">ชั่วโมง ว.PA สะสม</span>
+                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-base border border-purple-400/40 group-hover:scale-110 transition shadow">
                   <i class="fa-solid fa-award"></i>
                 </div>
               </div>
               <div class="mt-3 flex items-baseline gap-2">
-                <span class="text-3xl font-bold text-purple-300 tracking-tight" id="card-stat-pa">0</span>
-                <span class="text-xs text-slate-400 font-light" id="card-unit-4">ชั่วโมง</span>
+                <span class="text-3xl font-bold text-purple-200 tracking-tight" id="card-stat-pa">0</span>
+                <span class="text-xs text-slate-300 font-light" id="card-unit-4">ชั่วโมง</span>
               </div>
-              <div class="mt-1 text-[11px] text-slate-500">จากการอบรม/ราชการที่ได้รับอนุมัติ</div>
+              <div class="mt-1 text-[11px] text-purple-300/80">จากการอบรม/ราชการที่ได้รับอนุมัติ</div>
             </div>
           </div>
 
-          <!-- ทางลัดการทำงานด่วน (Quick Actions Grid) -->
+          <!-- ทางลัดการทำงานด่วน (Quick Actions Grid) - ขอบสีแตกต่างกันตามประเภทงาน -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-            <button type="button" onclick="handleNewRequestClick()" class="dim-card p-4 rounded-2xl shadow-lg text-left transition group">
-              <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center text-sm border border-sky-500/30 group-hover:scale-110 transition mb-2 shadow">
+            <button type="button" onclick="handleNewRequestClick()" class="dim-card dim-card-sky p-4 rounded-2xl shadow-lg text-left transition group">
+              <div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm border border-sky-400/30 group-hover:scale-110 transition mb-2 shadow">
                 <i class="fa-solid fa-pen-to-square"></i>
               </div>
               <div class="text-xs font-bold text-white">เขียนคำขอใหม่</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">จัดทำบันทึกข้อความ</div>
+              <div class="text-[10px] text-sky-300/80 mt-0.5">จัดทำบันทึกข้อความ</div>
             </button>
 
-            <button type="button" onclick="switchTab('history')" class="dim-card p-4 rounded-2xl shadow-lg text-left transition group">
-              <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-sm border border-indigo-500/30 group-hover:scale-110 transition mb-2 shadow">
+            <button type="button" onclick="switchTab('history')" class="dim-card dim-card-indigo p-4 rounded-2xl shadow-lg text-left transition group">
+              <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm border border-indigo-400/30 group-hover:scale-110 transition mb-2 shadow">
                 <i class="fa-solid fa-clock-rotate-left"></i>
               </div>
               <div class="text-xs font-bold text-white">ประวัติคำขอของฉัน</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">ติดตามผลการอนุมัติ</div>
+              <div class="text-[10px] text-indigo-300/80 mt-0.5">ติดตามผลการอนุมัติ</div>
             </button>
 
-            <button type="button" onclick="switchTab('report')" class="dim-card p-4 rounded-2xl shadow-lg text-left transition group">
-              <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-sm border border-amber-500/30 group-hover:scale-110 transition mb-2 shadow">
+            <button type="button" onclick="switchTab('report')" class="dim-card dim-card-emerald p-4 rounded-2xl shadow-lg text-left transition group">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm border border-emerald-400/30 group-hover:scale-110 transition mb-2 shadow">
                 <i class="fa-solid fa-file-circle-check"></i>
               </div>
               <div class="text-xs font-bold text-white">รายงานผลไปราชการ</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">สรุปผลหลังกลับมา</div>
+              <div class="text-[10px] text-emerald-300/80 mt-0.5">สรุปผลหลังกลับมา</div>
             </button>
 
-            <button type="button" onclick="switchTab('calendar')" class="dim-card p-4 rounded-2xl shadow-lg text-left transition group">
-              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/30 group-hover:scale-110 transition mb-2 shadow">
-                <i class="fa-regular fa-calendar-days"></i>
+            <button type="button" onclick="switchTab('calendar')" class="dim-card dim-card-pink p-4 rounded-2xl shadow-lg text-left transition group">
+              <div class="w-9 h-9 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-sm border border-pink-400/30 group-hover:scale-110 transition mb-2 shadow">
+                <i class="fa-solid fa-calendar-days"></i>
               </div>
               <div class="text-xs font-bold text-white">ปฏิทินไปราชการ</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">ดูกำหนดการทั้งโรงเรียน</div>
+              <div class="text-[10px] text-pink-300/80 mt-0.5">ดูกำหนดการทั้งโรงเรียน</div>
             </button>
           </div>
 
-          <!-- ตารางคำขอล่าสุด -->
-          <div class="dim-panel rounded-2xl shadow-xl overflow-hidden">
+          <!-- ตารางคำขอล่าสุด (กรอบสีฟ้า Sky Blue) -->
+          <div class="dim-panel dim-panel-sky rounded-2xl shadow-xl overflow-hidden">
             <div class="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/40">
               <div class="flex items-center gap-2.5">
                 <div class="w-2 h-2 rounded-full bg-sky-400"></div>
@@ -1176,7 +1250,7 @@
         <!-- แท็บ 3: ประวัติ / รายการคำขอไปราชการ (HISTORY TAB)       -->
         <!-- ==================================================== -->
         <section id="tab-history" class="hidden max-w-6xl mx-auto space-y-4">
-          <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-panel-indigo shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
@@ -1215,7 +1289,7 @@
         <section id="tab-calendar" class="hidden space-y-5 max-w-6xl mx-auto">
           
           <!-- Calendar Header & Navigation Controls -->
-          <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-4 sm:p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
+          <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl dim-card dim-card-purple p-4 sm:p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
               <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xl border border-emerald-500/25 shadow-inner">
                 <i class="fa-regular fa-calendar-days"></i>
@@ -1342,7 +1416,7 @@
         <!-- แท็บ 4: พิจารณาและลงนามอนุมัติ (APPROVAL TAB เฉพาะ ผอ.) -->
         <!-- ==================================================== -->
         <section id="tab-approval" class="hidden max-w-6xl mx-auto space-y-4">
-          <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-panel-amber shadow-xl overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex items-center justify-between">
               <div>
                 <h3 class="text-base font-bold text-amber-300 flex items-center gap-2">
@@ -1385,33 +1459,33 @@
           <div id="report-subview-list" class="space-y-4">
             <!-- แถบสถิติรายงานผล -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-              <div class="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-lg flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl border border-indigo-500/30">
+              <div class="dim-card dim-card-sky p-4 rounded-2xl shadow-lg flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-xl border border-sky-400/40 shadow">
                   <i class="fa-solid fa-clipboard-check"></i>
                 </div>
                 <div>
-                  <div class="text-xs text-slate-400 font-medium">คำขอที่อนุมัติแล้วทั้งหมด</div>
+                  <div class="text-xs text-sky-200 font-medium">คำขอที่อนุมัติแล้วทั้งหมด</div>
                   <div class="text-2xl font-bold text-white tracking-tight" id="stat-rep-total">0</div>
                 </div>
               </div>
 
-              <div class="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-lg flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl border border-emerald-500/30">
+              <div class="dim-card dim-card-emerald p-4 rounded-2xl shadow-lg flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl border border-emerald-400/40 shadow">
                   <i class="fa-solid fa-circle-check"></i>
                 </div>
                 <div>
-                  <div class="text-xs text-slate-400 font-medium">รายงานผลเรียบร้อยแล้ว</div>
-                  <div class="text-2xl font-bold text-emerald-400 tracking-tight" id="stat-rep-done">0</div>
+                  <div class="text-xs text-emerald-200 font-medium">รายงานผลเรียบร้อยแล้ว</div>
+                  <div class="text-2xl font-bold text-emerald-300 tracking-tight" id="stat-rep-done">0</div>
                 </div>
               </div>
 
-              <div class="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-lg flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl border border-amber-500/30">
+              <div class="dim-card dim-card-amber p-4 rounded-2xl shadow-lg flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xl border border-amber-400/40 shadow">
                   <i class="fa-solid fa-hourglass-half animate-pulse"></i>
                 </div>
                 <div>
-                  <div class="text-xs text-slate-400 font-medium">รอดำเนินการรายงานผล</div>
-                  <div class="text-2xl font-bold text-amber-400 tracking-tight" id="stat-rep-pending">0</div>
+                  <div class="text-xs text-amber-200 font-medium">รอดำเนินการรายงานผล</div>
+                  <div class="text-2xl font-bold text-amber-300 tracking-tight" id="stat-rep-pending">0</div>
                 </div>
               </div>
             </div>
@@ -1433,7 +1507,7 @@
               คลิก 'รายงานของฉัน' เพื่อเขียนสรุปผลภารกิจของตนเอง
             </div>
           </div>
-  <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+  <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl dim-panel-emerald shadow-xl overflow-hidden">
               <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5">
                   <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/30">
@@ -1732,8 +1806,8 @@
         <!-- ===================================================== -->
         <section id="tab-tracking" class="hidden space-y-5 max-w-6xl mx-auto">
           
-          <!-- Tracking Header -->
-          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-card p-6 shadow-xl flex flex-wrap items-center justify-between gap-4">
+          <!-- Tracking Header (กรอบสีส้มทองอำพัน Amber) -->
+          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-card dim-card-amber p-6 shadow-xl flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-4">
               <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl border border-indigo-500/30 shadow-inner">
                 <i class="fa-solid fa-chart-line"></i>
@@ -1825,8 +1899,8 @@
         <!-- ===================================================== -->
         <section id="tab-saraban" class="hidden space-y-5 max-w-6xl mx-auto">
           
-          <!-- Saraban Control Card -->
-          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-card p-6 shadow-xl space-y-4">
+          <!-- Saraban Control Card (กรอบสีฟ้าอมเขียว Teal) -->
+          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-card dim-card-teal p-6 shadow-xl space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-4">
               <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl border border-indigo-500/30 shadow-inner">
@@ -1852,7 +1926,7 @@
           </div>
 
           <!-- Saraban Requests Table Card -->
-          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-card border border-slate-800 shadow-xl overflow-hidden">
+          <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl dim-panel-teal shadow-xl overflow-hidden">
             <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
               <div class="font-bold text-sm text-white flex items-center gap-2">
                 <i class="fa-solid fa-list-check text-indigo-400"></i>
@@ -1886,7 +1960,7 @@
 
         <!-- Modal กำหนดเลขหนังสือราชการด้วยตนเอง -->
         <div id="modal-edit-docnum" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-          <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div class="bg-slate-900 border-2 border-sky-500/70 rounded-3xl max-w-md w-full p-6 shadow-2xl shadow-sky-500/10 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
               <h4 class="font-bold text-sm text-white flex items-center gap-2">
                 <i class="fa-solid fa-pen-nib text-indigo-400"></i>
@@ -1927,7 +2001,7 @@
 
         <!-- Modal ตั้งค่าเลขรันสารบรรณอัตโนมัติ -->
         <div id="modal-saraban-config" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-          <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+          <div class="bg-slate-900 border-2 border-teal-500/70 rounded-3xl max-w-md w-full p-6 shadow-2xl shadow-teal-500/10 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
               <h4 class="font-bold text-sm text-white flex items-center gap-2">
                 <i class="fa-solid fa-gear text-sky-400"></i>
@@ -2014,7 +2088,7 @@
               </button>
             </div>
 
-            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl dim-panel-emerald shadow-xl overflow-hidden">
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-300">
                   <thead class="bg-slate-950/70 text-slate-400 font-semibold border-b border-slate-800 uppercase text-[10px] tracking-wider">
@@ -2036,7 +2110,7 @@
 
           <!-- SUB-VIEW 2: เลขที่หนังสือราชการอัตโนมัติ (สารบรรณ) -->
           <div id="adm-view-saraban" class="hidden space-y-4">
-            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-6 shadow-xl space-y-5">
+            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl dim-card dim-card-teal p-6 shadow-xl space-y-5">
               <div class="flex items-start gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl border border-indigo-500/30 shrink-0">
                   <i class="fa-solid fa-stamp"></i>
@@ -2088,7 +2162,7 @@
 
           <!-- SUB-VIEW 3: ตั้งค่า Telegram แจ้งเตือนอัตโนมัติ -->
           <div id="adm-view-telegram" class="hidden space-y-4">
-            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-6 shadow-xl space-y-5">
+            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl dim-card dim-card-sky p-6 shadow-xl space-y-5">
               <div class="flex items-start gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-2xl border border-sky-500/30 shrink-0">
                   <i class="fa-brands fa-telegram"></i>
@@ -2188,7 +2262,7 @@
 
           <!-- SUB-VIEW 4: สำรอง & กู้คืนข้อมูล (Backup & Restore) -->
           <div id="adm-view-backup" class="hidden space-y-4">
-            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-6 shadow-xl space-y-6">
+            <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl dim-card dim-card-purple p-6 shadow-xl space-y-6">
               <div class="flex items-start gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl border border-purple-500/30 shrink-0">
                   <i class="fa-solid fa-database"></i>
@@ -3252,6 +3326,22 @@
     }
   
     // ========================================================
+    // SECURE LOGIN & CREDENTIAL VALIDATION ENGINE
+    // ไม่แสดงชื่อผู้ใช้ใดๆ บนหน้าจอ เพื่อป้องกันการเข้าใช้งานของผู้อื่น
+    // ========================================================
+    function renderLoginRoleCards() {
+      // Safe no-op: ไม่แสดงชื่อบุคคลใดๆ บนหน้าจอล็อกอิน เพื่อความปลอดภัยสูงสุด
+    }
+
+    function handleLoginUserSelect(uid) {
+      // Safe no-op
+    }
+
+    function selectRoleToLogin(uid) {
+      // Safe no-op
+    }
+
+    // ========================================================
     // PASSWORD MANAGEMENT & SECURITY ENGINE
     // ========================================================
     let pendingLoginUser = null;
@@ -3795,6 +3885,7 @@
         users = defaultPersonnel;
         saveUsers();
       }
+      renderLoginRoleCards();
 
       const storedReqs = localStorage.getItem('bangpun_requests_v5');
       if (storedReqs) {
@@ -3825,6 +3916,7 @@
 
     function saveUsers() {
       localStorage.setItem('bangpun_users_v5', JSON.stringify(users));
+      renderLoginRoleCards();
     }
 
     function saveRequests() {
@@ -3899,7 +3991,9 @@
       const pVal = document.getElementById('login-password').value.trim();
 
       const found = users.find(function(u) {
-        return u.username.toLowerCase() === uVal.toLowerCase() && u.password === pVal;
+        const matchUser = (u.username && u.username.toLowerCase() === uVal.toLowerCase());
+        const matchName = (u.name && u.name.trim().toLowerCase() === uVal.toLowerCase());
+        return (matchUser || matchName) && u.password === pVal;
       });
 
       if (found) {
@@ -6474,7 +6568,7 @@
 
   <!-- MODAL: เปลี่ยนรหัสผ่านทั่วไป (Self-Service) -->
   <div id="modal-change-password" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 select-none">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+    <div class="bg-slate-900 border-2 border-purple-500/70 rounded-3xl max-w-md w-full p-6 shadow-2xl shadow-purple-500/10 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h4 class="font-bold text-sm text-white flex items-center gap-2">
           <i class="fa-solid fa-key text-amber-400"></i>
