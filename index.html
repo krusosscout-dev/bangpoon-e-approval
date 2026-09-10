@@ -2184,14 +2184,26 @@
                       <span id="tg-token-toggle-text">👁️ แสดง Token</span>
                     </button>
                   </label>
-                  <input type="password" id="adm-tg-token" placeholder="เช่น 7123456789:AAHKy7..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-sky-500 text-white text-xs font-mono">
+                  <input type="password" id="adm-tg-token" value="8869644277:AAGB630RFBsN0GDIh1en4LWizKsp1oBd8-8" placeholder="เช่น 7123456789:AAHKy7..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-sky-500 text-white text-xs font-mono">
                   <span class="text-[10px] text-slate-500">สร้าง Token ได้ฟรีจาก @BotFather บน Telegram</span>
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-semibold text-slate-300">Telegram Chat ID หรือ Channel ID</label>
-                  <input type="text" id="adm-tg-chatid" placeholder="เช่น -1001234567890 หรือ 123456789" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-sky-500 text-white text-xs font-mono">
-                  <span class="text-[10px] text-slate-500">Chat ID ของกลุ่มหรือช่อง (หาได้จากบอท @userinfobot)</span>
+                  <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-slate-300">Telegram Chat ID หรือ Channel ID</label>
+                    <button type="button" onclick="autoDetectTelegramChatId()" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 hover:underline">
+                      <i class="fa-solid fa-wand-magic-sparkles"></i>
+                      <span>🔍 ตรวจหา Chat ID อัตโนมัติ</span>
+                    </button>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input type="text" id="adm-tg-chatid" value="-5221267405" placeholder="เช่น -1001234567890 หรือ 123456789" class="flex-grow px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-sky-500 text-white text-xs font-mono">
+                    <button type="button" onclick="autoDetectTelegramChatId()" title="กดเพื่อดึง Chat ID อัตโนมัติหลังจากพิมพ์สวัสดีในกลุ่ม" class="px-3 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold transition shrink-0 flex items-center gap-1.5">
+                      <i class="fa-solid fa-bolt"></i>
+                      <span class="hidden sm:inline">ดึง ID อัตโนมัติ</span>
+                    </button>
+                  </div>
+                  <span class="text-[10px] text-slate-400">ดึงบอทเข้ากลุ่มแล้วพิมพ์ "สวัสดี" ในกลุ่ม 1 ครั้ง จากนั้นกดปุ่ม <b>ดึง ID อัตโนมัติ</b> ได้เลย</span>
                 </div>
               </div>
 
@@ -2226,8 +2238,8 @@
                   <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
                     <input type="checkbox" id="adm-tg-ev-daily" checked class="w-4 h-4 rounded text-sky-600 bg-slate-900 border-slate-700">
                     <div class="text-xs">
-                      <div class="font-semibold text-slate-200">☀️ สรุปการไปราชการเฉพาะวันนั้น (Daily Briefing)</div>
-                      <div class="text-[10px] text-slate-500">แจ้งเตือนยามเช้าว่าวันนี้มีคุณครูท่านใดไปราชการที่ไหนบ้าง</div>
+                      <div class="font-semibold text-slate-200">☀️ แจ้งเตือนเฉพาะวันที่มีคนไปราชการ (วันไหนไม่มีคนไป จะไม่ส่งข้อความ)</div>
+                      <div class="text-[10px] text-slate-400">ส่งแจ้งเตือนยามเช้า "เฉพาะวันที่มีคณะครูเดินทางจริงเท่านั้น" หากวันใดไม่มีครูไปราชการ ระบบจะไม่ส่งข้อความใดๆ รบกวน</div>
                     </div>
                   </label>
                 </div>
@@ -2235,28 +2247,61 @@
 
               <!-- Buttons: Save & Test -->
               <div class="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800">
-                <button type="button" onclick="testTelegramConnection()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/30 text-xs font-semibold transition flex items-center gap-2">
-                  <i class="fa-solid fa-paper-plane"></i>
-                  <span>🚀 ทดสอบส่งข้อความเข้า Telegram</span>
-                </button>
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <button type="button" onclick="testTelegramConnection()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 hover:text-sky-200 border border-sky-500/40 text-xs font-semibold transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-paper-plane text-sky-400"></i>
+                    <span>🧪 ทดสอบการเชื่อมต่อทั่วไป</span>
+                  </button>
 
-                <button type="button" onclick="saveTelegramConfigFromUI()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5">
+                  <button type="button" onclick="testTelegramDailyBriefing()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 border border-amber-500/40 text-xs font-semibold transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-sun text-amber-400"></i>
+                    <span>☀️ ทดสอบส่งสรุปประจำวัน</span>
+                  </button>
+                </div>
+
+                <button type="button" onclick="saveTelegramConfigFromUI()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-sky-600 via-sky-500 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-sky-600/20 transition flex items-center gap-2">
                   <i class="fa-solid fa-floppy-disk"></i>
-                  <span>บันทึกการตั้งค่า Telegram</span>
+                  <span>💾 บันทึกการตั้งค่า Telegram</span>
                 </button>
               </div>
 
-              <!-- Quick Instruction Guide -->
-              <div class="p-4 rounded-xl bg-sky-950/20 border border-sky-500/20 text-xs text-sky-300/90 space-y-1">
-                <div class="font-bold flex items-center gap-1.5 text-sky-200">
-                  <i class="fa-solid fa-circle-info"></i> คำแนะนำการเชื่อมต่อ Telegram Bot:
+              <!-- คู่มือขั้นตอนการสร้างและเชื่อมต่อ Telegram Bot อย่างละเอียด (ทำตามได้ใน 2 นาที) -->
+              <div class="p-4 sm:p-5 rounded-2xl bg-sky-950/30 border border-sky-500/30 space-y-3 shadow-inner">
+                <div class="text-xs font-bold flex items-center gap-2 text-sky-300">
+                  <i class="fa-solid fa-book-open"></i>
+                  <span>คู่มือแนะนำขั้นตอนการสร้างและเชื่อมต่อ Telegram Bot โรงเรียนวัดบางปูน (ทำตามง่ายใน 2 นาที):</span>
                 </div>
-                <div class="text-[11px] text-slate-300 space-y-1 pl-5 list-disc">
-                  <div>1. ค้นหา <b>@BotFather</b> ในแอป Telegram แล้วพิมพ์ <code>/newbot</code> เพื่อตั้งชื่อบอท จะได้ <b>HTTP API Token</b> มาใส่ในช่องด้านบน</div>
-                  <div>2. ดึงบอทเข้ากลุ่มไลน์/กลุ่มงานโรงเรียน และตั้งให้บอทเป็น Admin ของกลุ่ม</div>
-                  <div>3. ดึงบอท <b>@userinfobot</b> เข้ากลุ่ม หรือพิมพ์ในกลุ่มเพื่อดู Chat ID (มักขึ้นต้นด้วยเครื่องหมายลบ เช่น <code>-100...</code>) แล้วนำมาใส่ในช่อง Chat ID</div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <!-- ขั้นตอนที่ 1 -->
+                  <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+                    <div class="font-bold text-amber-300 flex items-center gap-1.5">
+                      <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-center text-[11px] leading-5 font-bold inline-block">1</span>
+                      <span>วิธีสร้าง Bot Token ฟรี</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                      เปิดแอป Telegram ค้นหาบัญชีชื่อ <b class="text-white">@BotFather</b> แล้วส่งข้อความ <code class="bg-slate-950 px-1.5 py-0.5 rounded text-sky-300 font-mono">/newbot</code> จากนั้นตั้งชื่อบอท (เช่น <i>บางปูนแจ้งเตือน</i>) และ Username (เช่น <i>bangpun_travel_bot</i>) ท่านจะได้รับ <b>HTTP API Token</b> ให้นำมาวางในช่อง <b>Telegram Bot Token</b> ด้านบน
+                    </p>
+                  </div>
+
+                  <!-- ขั้นตอนที่ 2 -->
+                  <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+                    <div class="font-bold text-emerald-300 flex items-center gap-1.5">
+                      <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 text-center text-[11px] leading-5 font-bold inline-block">2</span>
+                      <span>วิธีหา Chat ID (กลุ่มครู หรือ ส่วนตัว)</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">
+                      • <b>ส่งเข้ากลุ่มครู:</b> ดึงบอทที่สร้างเข้ากลุ่มโรงเรียน แล้วตั้งบอทเป็น <b class="text-white">Admin</b> จากนั้นดึง <b class="text-white">@RawDataBot</b> หรือ <b class="text-white">@getidsbot</b> เข้ากลุ่มเพื่อดู Chat ID (มักขึ้นต้นด้วย <code class="bg-slate-950 px-1.5 py-0.5 rounded text-emerald-300 font-mono">-100...</code>) นำมาใส่ช่อง <b>Chat ID</b><br>
+                      • <b>ส่งเข้าส่วนตัว:</b> ทักหาบอทที่สร้างกด Start แล้วค้นหาบอท <b class="text-white">@userinfobot</b> เพื่อดู Id ตัวเอง
+                    </p>
+                  </div>
                 </div>
-              </div>
+
+                <div class="p-2.5 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-[11px] text-emerald-300 flex items-center gap-2">
+                  <i class="fa-solid fa-circle-check text-emerald-400 shrink-0"></i>
+                  <span>เมื่อกรอกครบแล้ว กดปุ่ม <b>"🧪 ทดสอบการเชื่อมต่อทั่วไป"</b> หรือ <b>"☀️ ทดสอบส่งสรุปประจำวัน"</b> เพื่อทดสอบส่งเข้ากลุ่ม Telegram ได้ทันที</span>
+                </div>
+              </div></div>
             </div>
           </div>
 
@@ -2806,8 +2851,8 @@
     // TELEGRAM BOT NOTIFICATIONS ENGINE (CLIENT-SIDE FETCH)
     // ========================================================
     const defaultTelegramConfig = {
-      botToken: '',
-      chatId: '',
+      botToken: '8869644277:AAGB630RFBsN0GDIh1en4LWizKsp1oBd8-8',
+      chatId: '-5221267405',
       enabled: true,
       notifyRequest: true,
       notifyApproval: true,
@@ -2819,7 +2864,12 @@
     function getTelegramConfig() {
       const saved = localStorage.getItem('bangpun_telegram_config');
       if (saved) {
-        try { return JSON.parse(saved); } catch(e) {}
+        try {
+          const parsed = JSON.parse(saved);
+          if (!parsed.botToken) parsed.botToken = '8869644277:AAGB630RFBsN0GDIh1en4LWizKsp1oBd8-8';
+          if (!parsed.chatId) parsed.chatId = '-5221267405';
+          return parsed;
+        } catch(e) {}
       }
       return defaultTelegramConfig;
     }
@@ -2881,9 +2931,20 @@
       }
     }
 
+    // Helper: Escape HTML special characters for Telegram Bot API
+    function escapeTg(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
     function sendTelegramNotification(type, data) {
       const cfg = getTelegramConfig();
-      if (!cfg.botToken || !cfg.chatId) return;
+      const token = (cfg.botToken || '').trim();
+      const chat = (cfg.chatId || '').trim();
+      if (!token || !chat) return;
 
       let shouldSend = false;
       let message = '';
@@ -2893,11 +2954,11 @@
         message = '🔔 <b>ระบบขออนุมัติไปราชการ (โรงเรียนวัดบางปูน)</b>\n' +
                   '📝 <b>มีการบันทึกส่งคำขอไปราชการใหม่</b>\n' +
                   '━━━━━━━━━━━━━━━━━━\n' +
-                  '👤 <b>ผู้ขอ:</b> ' + (data.userName || '-') + ' (' + (data.userPosition || '-') + ')\n' +
-                  '📋 <b>เรื่อง:</b> ' + (data.subject || data.purpose || '-') + '\n' +
-                  '📍 <b>สถานที่:</b> ' + (data.location || '-') + '\n' +
-                  '🗓️ <b>กำหนดการ:</b> ' + (data.travelDateText || data.docDate || '-') + '\n' +
-                  '🔢 <b>เลขที่คำขอ:</b> ' + (data.docNum || '-') + '\n' +
+                  '👤 <b>ผู้ขอ:</b> ' + escapeTg(data.userName || '-') + ' (' + escapeTg(data.userPosition || '-') + ')\n' +
+                  '📋 <b>เรื่อง:</b> ' + escapeTg(data.subject || data.purpose || '-') + '\n' +
+                  '📍 <b>สถานที่:</b> ' + escapeTg(data.location || '-') + '\n' +
+                  '🗓️ <b>กำหนดการ:</b> ' + escapeTg(data.travelDateText || data.docDate || '-') + '\n' +
+                  '🔢 <b>เลขที่คำขอ:</b> ' + escapeTg(data.docNum || '-') + '\n' +
                   '━━━━━━━━━━━━━━━━━━\n' +
                   '⏳ <i>สถานะ: รอผู้บริหารพิจารณาลงนามอนุมัติ</i>';
       } else if (type === 'approval' && cfg.notifyApproval !== false) {
@@ -2905,11 +2966,11 @@
         message = '🔔 <b>ระบบขออนุมัติไปราชการ (โรงเรียนวัดบางปูน)</b>\n' +
                   '✅ <b>ผู้บริหารได้ลงนามอนุมัติคำขอแล้ว</b>\n' +
                   '━━━━━━━━━━━━━━━━━━\n' +
-                  '👤 <b>คุณครู:</b> ' + (data.userName || '-') + '\n' +
-                  '📋 <b>เรื่อง:</b> ' + (data.subject || data.purpose || '-') + '\n' +
-                  '📍 <b>สถานที่:</b> ' + (data.location || '-') + '\n' +
-                  '🗓️ <b>วันเดินทาง:</b> ' + (data.travelDateText || data.docDate || '-') + '\n' +
-                  '✍️ <b>คำสั่ง:</b> ' + (data.dirComment || 'อนุมัติให้เดินทางไปราชการได้') + '\n' +
+                  '👤 <b>คุณครู:</b> ' + escapeTg(data.userName || '-') + '\n' +
+                  '📋 <b>เรื่อง:</b> ' + escapeTg(data.subject || data.purpose || '-') + '\n' +
+                  '📍 <b>สถานที่:</b> ' + escapeTg(data.location || '-') + '\n' +
+                  '🗓️ <b>วันเดินทาง:</b> ' + escapeTg(data.travelDateText || data.docDate || '-') + '\n' +
+                  '✍️ <b>คำสั่ง:</b> ' + escapeTg(data.dirComment || 'อนุมัติให้เดินทางไปราชการได้') + '\n' +
                   '━━━━━━━━━━━━━━━━━━\n' +
                   '🚗 <i>คุณครูพร้อมออกเดินทางไปปฏิบัติราชการ</i>';
       } else if (type === 'report' && cfg.notifyReport !== false) {
@@ -2917,25 +2978,25 @@
         message = '🔔 <b>ระบบขออนุมัติไปราชการ (โรงเรียนวัดบางปูน)</b>\n' +
                   '📋 <b>มีการส่งรายงานผลการไปราชการแล้ว</b>\n' +
                   '━━━━━━━━━━━━━━━━━━\n' +
-                  '👤 <b>ผู้รายงาน:</b> ' + (data.userName || '-') + '\n' +
-                  '📋 <b>เรื่อง:</b> ' + (data.subject || data.purpose || '-') + '\n' +
-                  '📍 <b>สถานที่:</b> ' + (data.location || '-') + '\n' +
+                  '👤 <b>ผู้รายงาน:</b> ' + escapeTg(data.userName || '-') + '\n' +
+                  '📋 <b>เรื่อง:</b> ' + escapeTg(data.subject || data.purpose || '-') + '\n' +
+                  '📍 <b>สถานที่:</b> ' + escapeTg(data.location || '-') + '\n' +
                   '🎯 <b>ผลการปฏิบัติงาน:</b> สำเร็จลุล่วงตามวัตถุประสงค์\n' +
                   '━━━━━━━━━━━━━━━━━━\n' +
                   '🎉 <i>ภารกิจเสร็จสิ้นสมบูรณ์ บันทึกเข้าระบบแล้ว</i>';
       } else if (type === 'daily' && cfg.notifyDaily !== false) {
         shouldSend = true;
-        message = data; // full text passed in
+        message = data; // already formatted
       }
 
       if (!shouldSend || !message) return;
 
-      const url = 'https://api.telegram.org/bot' + cfg.botToken + '/sendMessage';
+      const url = 'https://api.telegram.org/bot' + token + '/sendMessage';
       fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chat_id: cfg.chatId,
+          chat_id: chat,
           text: message,
           parse_mode: 'HTML'
         })
@@ -2985,6 +3046,114 @@
       })
       .catch(function(err) {
         showToast('❌ การเชื่อมต่อล้มเหลว: ' + err.message);
+      });
+    }
+
+    // ฟังก์ชันทดสอบส่งสรุปภารกิจประจำวันเข้า Telegram ทันที (สำหรับ Admin กดทดสอบ)
+    // ฟังก์ชันตรวจหา Chat ID อัตโนมัติจากข้อความล่าสุดในกลุ่ม (Auto-detect Chat ID)
+    function autoDetectTelegramChatId() {
+      const cfg = getTelegramConfig();
+      const token = (document.getElementById('adm-tg-token').value || cfg.botToken || '').trim();
+      if (!token) {
+        showToast('⚠️ กรุณาระบุ Bot Token ก่อนค้นหา');
+        return;
+      }
+
+      showToast('⏳ กำลังค้นหา Chat ID จาก Telegram...');
+      fetch('https://api.telegram.org/bot' + token + '/getUpdates')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.ok) {
+            showToast('❌ ตรวจสอบไม่สำเร็จ: ' + (data.description || 'Token ไม่ถูกต้อง'));
+            return;
+          }
+          if (!data.result || data.result.length === 0) {
+            showToast('ℹ️ ยังไม่พบข้อความ: กรุณาดึงบอทเข้ากลุ่มแล้วพิมพ์ "สวัสดี" ในกลุ่ม 1 ครั้ง แล้วกดปุ่มนี้ใหม่ครับ');
+            return;
+          }
+
+          // Search from the latest updates for a group or chat
+          let foundChat = null;
+          for (let i = data.result.length - 1; i >= 0; i--) {
+            const item = data.result[i];
+            const c = (item.message && item.message.chat) || (item.my_chat_member && item.my_chat_member.chat) || (item.channel_post && item.channel_post.chat);
+            if (c && c.id) {
+              foundChat = c;
+              break;
+            }
+          }
+
+          if (foundChat) {
+            const chatEl = document.getElementById('adm-tg-chatid');
+            if (chatEl) chatEl.value = foundChat.id;
+            const chatName = foundChat.title || foundChat.first_name || 'แชท/กลุ่ม';
+            showToast('✅ ตรวจพบ Chat ID แล้ว: ' + foundChat.id + ' (' + chatName + ') กดบันทึกได้เลย!');
+          } else {
+            showToast('⚠️ ไม่พบ Chat ID กรุณาลองพิมพ์ข้อความในกลุ่มอีกครั้ง');
+          }
+        })
+        .catch(function(err) {
+          showToast('❌ การเชื่อมต่อล้มเหลว: ' + err.message);
+        });
+    }
+
+    function testTelegramDailyBriefing() {
+      const cfg = getTelegramConfig();
+      const token = (cfg.botToken || '').trim();
+      const chat = (cfg.chatId || '').trim();
+      if (!token || !chat) {
+        showToast('⚠️ กรุณากรอก Bot Token และ Chat ID ให้ครบก่อน');
+        return;
+      }
+
+      const now = new Date();
+      const dNum = toThaiNumerals(now.getDate());
+      const mName = thaiMonths[now.getMonth()];
+      const yNum = toThaiNumerals(now.getFullYear() + 543);
+      const todayText = dNum + ' ' + mName + ' ' + yNum;
+
+      let msg = '☀️ <b>[ทดสอบ] แจ้งเตือนภารกิจไปราชการประจำวัน (โรงเรียนวัดบางปูน)</b>\n' +
+                '🗓️ วันที่: <b>' + todayText + '</b>\n' +
+                '━━━━━━━━━━━━━━━━━━\n';
+
+      const approvedReqs = travelRequests.filter(function(r) { return r.approved; });
+      if (approvedReqs.length > 0) {
+        msg += '📋 รายการภารกิจไปราชการที่ได้รับอนุมัติ (ตัวอย่าง):\n\n';
+        approvedReqs.slice(0, 3).forEach(function(r, idx) {
+          msg += (idx + 1) + '. <b>' + escapeTg(r.userName) + '</b> (' + escapeTg(r.userPosition) + ')\n' +
+                 '   📍 ' + escapeTg(r.location || '-') + '\n' +
+                 '   🎯 ' + escapeTg(r.purpose || r.subject || '-') + '\n' +
+                 '   🚗 พาหนะ: ' + escapeTg(r.vehicleName || 'รถยนต์ส่วนบุคคล') + '\n\n';
+        });
+      } else {
+        msg += '🎉 วันนี้ไม่มีรายการเดินทางไปราชการของคณะครู\n\n';
+      }
+
+      msg += '━━━━━━━━━━━━━━━━━━\n' +
+             'ขอให้ทุกท่านเดินทางปลอดภัยและปฏิบัติราชการลุล่วงด้วยดีครับ 🙏\n\n' +
+             '📌 <i>(หมายเหตุ: ระบบจริงจะส่งการแจ้งเตือน <u>เฉพาะวันที่มีคณะครูเดินทางจริงเท่านั้น</u> หากวันใดไม่มีคนไป ระบบจะไม่ส่งข้อความรบกวนครับ)</i>';
+
+      showToast('⏳ กำลังทดสอบส่งข้อความแจ้งเตือนประจำวันเข้า Telegram...');
+      const url = 'https://api.telegram.org/bot' + token + '/sendMessage';
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chat,
+          text: msg,
+          parse_mode: 'HTML'
+        })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(result) {
+        if (result.ok) {
+          showToast('✅ ทดสอบส่งสรุปประจำวันเข้า Telegram สำเร็จ!');
+        } else {
+          showToast('❌ ส่งไม่สำเร็จ: ' + result.description);
+        }
+      })
+      .catch(function(err) {
+        showToast('❌ เกิดข้อผิดพลาด: ' + err.message);
       });
     }
 
@@ -3877,6 +4046,13 @@
     });
 
     function initStorage() {
+      const curTg = getTelegramConfig();
+      if (!curTg.botToken || !curTg.chatId) {
+        curTg.botToken = '8869644277:AAGB630RFBsN0GDIh1en4LWizKsp1oBd8-8';
+        curTg.chatId = '-5221267405';
+        curTg.enabled = true;
+        saveTelegramConfig(curTg);
+      }
       setTimeout(checkDailyTravelBriefing, 1500);
       const storedUsers = localStorage.getItem('bangpun_users_v5');
       if (storedUsers) {
